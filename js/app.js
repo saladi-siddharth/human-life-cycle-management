@@ -10,11 +10,42 @@ const App = {
     // Register routes
     this._registerRoutes();
 
+    // Listen to Supabase auth changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        Store.reset();
+        Router.navigate('/');
+      } else if (event === 'SIGNED_IN' && session) {
+        Store.set('user', session.user);
+        if (session.user.user_metadata?.appState) {
+          try {
+            const savedState = JSON.parse(session.user.user_metadata.appState);
+            Store._state = Store._deepMerge(Store._state, savedState);
+            Store._persist();
+          } catch(e) { console.error('Failed to parse appState from Supabase', e); }
+        } else if (session.user.user_metadata?.identityType && !Store.get('identityType')) {
+          Store.set('identityType', session.user.user_metadata.identityType);
+        }
+        
+        // Auto-redirect from public auth pages if already logged in and onboarded
+        if (Store.isOnboarded && (window.location.hash === '#/auth' || window.location.hash === '#/identity')) {
+          Router.navigate('/dashboard');
+        }
+      }
+    });
+
     // Navigation guard
     Router.beforeEach((to, from) => {
       // Allow public routes
-      const publicRoutes = ['/', '/identity', '/pricing'];
+      const publicRoutes = ['/', '/auth', '/identity', '/pricing'];
       if (publicRoutes.includes(to)) return true;
+
+      // Check auth state
+      const isAuthed = !!Store.get('user');
+
+      if (!isAuthed && to !== '/onboarding') {
+        return '/auth';
+      }
 
       // If not onboarded, redirect to identity
       if (!Store.identityType && to !== '/onboarding') {
@@ -29,13 +60,29 @@ const App = {
       return true;
     });
 
-    // Initialize router
-    Router.init();
+    // Check initial session before routing
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        Store.set('user', session.user);
+        if (session.user.user_metadata?.appState) {
+          try {
+            const savedState = JSON.parse(session.user.user_metadata.appState);
+            Store._state = Store._deepMerge(Store._state, savedState);
+            Store._persist();
+          } catch(e) { console.error('Failed to parse appState from Supabase', e); }
+        } else if (session.user.user_metadata?.identityType && !Store.get('identityType')) {
+          Store.set('identityType', session.user.user_metadata.identityType);
+        }
+      }
+      // Initialize router
+      Router.init();
+    });
   },
 
   _registerRoutes() {
     // Public pages
     Router.register('/', (container) => LandingPage.render(container));
+    Router.register('/auth', (container) => AuthPage.render(container));
     Router.register('/identity', (container) => IdentityPage.render(container));
     Router.register('/onboarding', (container) => OnboardingPage.render(container));
 

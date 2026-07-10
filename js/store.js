@@ -80,7 +80,6 @@ const Store = {
     if (saved) {
       try {
         this._state = JSON.parse(saved);
-        // Merge with defaults for any new fields
         this._state = this._deepMerge(this._defaults, this._state);
       } catch (e) {
         console.warn('Failed to parse stored state, using defaults');
@@ -128,6 +127,16 @@ const Store = {
   _persist() {
     try {
       localStorage.setItem(this._storageKey, JSON.stringify(this._state));
+      
+      // If we have a supabase client and are logged in, sync state to user_metadata
+      if (window.supabaseClient && this._state.user) {
+        // Debounce or just fire and forget (don't await) to avoid blocking UI
+        supabaseClient.auth.updateUser({
+          data: {
+            appState: JSON.stringify(this._state)
+          }
+        }).catch(err => console.warn('Supabase sync failed:', err));
+      }
     } catch (e) {
       console.warn('Failed to persist state:', e);
     }
@@ -150,10 +159,13 @@ const Store = {
     });
   },
 
-  reset() {
+  async reset() {
     this._state = JSON.parse(JSON.stringify(this._defaults));
     this._persist();
     this._notify('*', null);
+    if (window.supabaseClient) {
+      await supabaseClient.auth.signOut();
+    }
   },
 
   // Convenience getters

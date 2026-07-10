@@ -122,7 +122,8 @@ const IdentityPage = {
     });
 
     // Add selection
-    document.getElementById(`card-${type}`).classList.add('identity-card--selected');
+    const cardEl = document.getElementById(`card-${type}`);
+    if (cardEl) cardEl.classList.add('identity-card--selected');
 
     // Save to store
     Store.set('identityType', type);

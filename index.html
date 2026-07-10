@@ -10,6 +10,21 @@
   
   <title>LifeGPS — Your Life Navigator</title>
 
+  <!-- Google Analytics (GA4 mock setup for zero-cost) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- Sentry Error Tracking -->
+  <script
+    src="https://js.sentry-cdn.com/XXXXXXXXXX.min.js"
+    crossorigin="anonymous"
+  ></script>
+
   <!-- Favicon (emoji-based) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 
@@ -31,7 +46,16 @@
   <div id="app"></div>
 
   <!-- Scripts (order matters: dependencies first) -->
-  <!-- Data Layer -->
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+
+  <!-- Three.js (For WOW moments) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Data Layer & Services -->
+  <script src="js/config.js"></script>
+  <script src="js/services/groq.js"></script>
   <script src="js/data/mock-data.js"></script>
   <script src="js/data/ai-responses.js"></script>
 
@@ -45,6 +69,7 @@
 
   <!-- Pages -->
   <script src="js/pages/landing.js"></script>
+  <script src="js/pages/auth.js"></script>
   <script src="js/pages/identity.js"></script>
   <script src="js/pages/onboarding.js"></script>
   <script src="js/pages/dashboard.js"></script>

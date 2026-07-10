@@ -6,6 +6,9 @@ const LandingPage = {
   render(container) {
     container.innerHTML = `
       <div class="app-shell--public">
+        <!-- Three.js Canvas Container -->
+        <div id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.6;"></div>
+
         <!-- Navigation -->
         <nav class="landing-nav" id="landingNav">
           <a class="landing-nav__brand" href="#/">
@@ -16,7 +19,10 @@ const LandingPage = {
             <span class="landing-nav__link" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Features</span>
             <span class="landing-nav__link" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">Impact</span>
             <span class="landing-nav__link" onclick="Router.navigate('/pricing')">Pricing</span>
-            <button class="btn btn--primary btn--sm" onclick="Router.navigate('/identity')">Get Started</button>
+            ${Store.get('user') 
+              ? `<button class="btn btn--primary btn--sm" onclick="Router.navigate('/dashboard')">Dashboard</button>`
+              : `<button class="btn btn--primary btn--sm" onclick="Router.navigate('/auth')">Get Started</button>`
+            }
           </div>
         </nav>
 
@@ -46,9 +52,10 @@ const LandingPage = {
             </p>
 
             <div class="hero__cta">
-              <button class="btn btn--primary btn--lg" onclick="Router.navigate('/identity')">
-                🚀 Start Your Journey — Free
-              </button>
+              ${Store.get('user')
+                ? `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/dashboard')">🧭 Open My Dashboard</button>`
+                : `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/auth')">🚀 Start Your Journey — Free</button>`
+              }
               <button class="btn btn--secondary btn--lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
                 Learn More ↓
               </button>
@@ -70,7 +77,7 @@ const LandingPage = {
             tailored to your exact stage and goals.
           </p>
           <div class="identity-cards">
-            <div class="identity-card identity-card--student" onclick="Router.navigate('/identity')">
+            <div class="identity-card identity-card--student" onclick="LandingPage.selectPreviewIdentity('student')">
               <span class="identity-card__emoji">🎓</span>
               <h3 class="identity-card__title">Student</h3>
               <p class="identity-card__desc">Navigating education, building skills, and planning your first career moves</p>
@@ -89,8 +96,8 @@ const LandingPage = {
                 </div>
               </div>
             </div>
-
-            <div class="identity-card identity-card--employee" onclick="Router.navigate('/identity')">
+ 
+            <div class="identity-card identity-card--employee" onclick="LandingPage.selectPreviewIdentity('employee')">
               <span class="identity-card__emoji">💼</span>
               <h3 class="identity-card__title">Employee</h3>
               <p class="identity-card__desc">Growing your career, managing finances, and achieving work-life balance</p>
@@ -109,8 +116,8 @@ const LandingPage = {
                 </div>
               </div>
             </div>
-
-            <div class="identity-card identity-card--business" onclick="Router.navigate('/identity')">
+ 
+            <div class="identity-card identity-card--business" onclick="LandingPage.selectPreviewIdentity('business')">
               <span class="identity-card__emoji">🚀</span>
               <h3 class="identity-card__title">Business Owner</h3>
               <p class="identity-card__desc">Scaling your venture while maintaining personal health and relationships</p>
@@ -208,9 +215,10 @@ const LandingPage = {
               Join thousands of people who've taken control of their careers, health, 
               and finances with AI-powered guidance.
             </p>
-            <button class="btn btn--primary btn--lg" onclick="Router.navigate('/identity')" style="position: relative; z-index: 1;">
-              🧭 Start Free — It Takes 30 Seconds
-            </button>
+            ${Store.get('user')
+              ? `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/dashboard')" style="position: relative; z-index: 1;">🧭 Open Dashboard</button>`
+              : `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/auth')" style="position: relative; z-index: 1;">🧭 Start Free — It Takes 30 Seconds</button>`
+            }
           </div>
         </section>
 
@@ -223,7 +231,88 @@ const LandingPage = {
       </div>
     `;
 
-    // Nav scroll effect
+    this._setupScrollListener();
+    this._initThreeJS();
+  },
+
+  selectPreviewIdentity(type) {
+    Store.set('identityType', type);
+    Router.navigate('/auth');
+  },
+
+  _initThreeJS() {
+    if (!window.THREE) return;
+    
+    const container = document.getElementById('hero-canvas');
+    if (!container) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // Particles
+    const geometry = new THREE.BufferGeometry();
+    const particlesCount = 300;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for(let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 15;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    const material = new THREE.PointsMaterial({
+      size: 0.05,
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particlesMesh = new THREE.Points(geometry, material);
+    scene.add(particlesMesh);
+    
+    camera.position.z = 5;
+
+    // Mouse interaction
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX / window.innerWidth - 0.5;
+      mouseY = e.clientY / window.innerHeight - 0.5;
+    });
+
+    const animate = () => {
+      // Clean up if navigating away
+      if (!document.getElementById('hero-canvas')) return;
+      
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.y += 0.001;
+      particlesMesh.rotation.x += 0.001;
+      
+      // Gentle mouse parallax
+      particlesMesh.rotation.y += mouseX * 0.01;
+      particlesMesh.rotation.x += mouseY * 0.01;
+      
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      if (!document.getElementById('hero-canvas')) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  },
+
+  _setupScrollListener() {
     const nav = document.getElementById('landingNav');
     const handleScroll = () => {
       if (window.scrollY > 50) {

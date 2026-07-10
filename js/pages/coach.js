@@ -13,7 +13,7 @@ const CoachPage = {
     if (this.messages.length === 0) {
       this.messages.push({
         role: 'ai',
-        text: AIResponses.getGreeting(type),
+        text: `Welcome! I'm your LifeGPS AI Coach, powered by Llama 3 on Groq. I'm ready to help you navigate your journey as a ${type}. What's on your mind today?`,
         time: this._formatTime()
       });
     }
@@ -100,7 +100,7 @@ const CoachPage = {
       .replace(/\n/g, '<br>');
   },
 
-  send() {
+  async send() {
     const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text) return;
@@ -114,23 +114,31 @@ const CoachPage = {
 
     input.value = '';
     this._reRenderMessages();
+    this._showTyping();
 
-    // Show typing indicator
-    setTimeout(() => {
-      this._showTyping();
-    }, 300);
+    const type = Store.identityType || 'student';
+    
+    // Prepare conversation history for Groq
+    const conversationHistory = this.messages
+      .filter(msg => msg.role === 'user' || msg.role === 'ai')
+      .map(msg => ({
+        role: msg.role === 'ai' ? 'assistant' : 'user',
+        content: msg.text
+      }));
 
-    // AI response after delay
-    setTimeout(() => {
-      const type = Store.identityType || 'student';
-      const response = AIResponses.getResponse(text, type);
-      this.messages.push({
-        role: 'ai',
-        text: response,
-        time: this._formatTime()
-      });
-      this._reRenderMessages();
-    }, 1500 + Math.random() * 1000);
+    // Call Groq API
+    const response = await GroqService.getCompletion(conversationHistory, type);
+
+    // Remove typing indicator
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+
+    this.messages.push({
+      role: 'ai',
+      text: response,
+      time: this._formatTime()
+    });
+    this._reRenderMessages();
   },
 
   quickAction(topic) {
