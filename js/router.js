@@ -1,84 +1,158 @@
-/* ============================================================
-   SPA ROUTER — Hash-based Client-Side Routing
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════════════
+   LIFEGPS ROUTER — SPA Client-Side Router & Reactive View Engine
+   ═══════════════════════════════════════════════════════════════════ */
 
 const Router = {
   routes: {},
   currentRoute: null,
-  beforeHooks: [],
-
-  init() {
-    window.addEventListener('hashchange', () => this._handleRoute());
-    window.addEventListener('load', () => this._handleRoute());
-  },
 
   register(path, handler) {
     this.routes[path] = handler;
   },
 
-  navigate(path) {
-    window.location.hash = path;
+  render() {
+    if (!this.currentRoute) return;
+    const handler = this.routes[this.currentRoute];
+    if (handler) {
+      const app = document.getElementById('app');
+      if (app) {
+        const page = handler();
+        if (typeof page === 'string') {
+          app.innerHTML = page;
+        } else if (page instanceof HTMLElement) {
+          app.innerHTML = '';
+          app.appendChild(page);
+        }
+        this._initPage(this.currentRoute);
+      }
+    }
   },
 
-  beforeEach(hook) {
-    this.beforeHooks.push(hook);
+  refresh() {
+    this.render();
   },
 
-  _handleRoute() {
-    const hash = window.location.hash.slice(1) || '/';
-    const path = hash.split('?')[0];
+  navigate(path, pushState = true) {
+    if (this.currentRoute === path) {
+      this.render();
+      return;
+    }
 
-    // Run before hooks
-    for (const hook of this.beforeHooks) {
-      const result = hook(path, this.currentRoute);
-      if (result === false) return;
-      if (typeof result === 'string') {
-        this.navigate(result);
+    // Auth guard
+    const publicRoutes = ['/', '/pricing', '/auth/login', '/auth/register', '/auth/forgot-password'];
+    if (!publicRoutes.includes(path) && !Store.isLoggedIn()) {
+      this.navigate('/auth/login');
+      return;
+    }
+
+    // Onboarding guard
+    if (Store.isLoggedIn() && !Store.isOnboarded()) {
+      const onboardingRoutes = ['/onboarding/identity', '/onboarding/profile', '/onboarding/goals', '/onboarding/complete'];
+      if (!onboardingRoutes.includes(path) && !publicRoutes.includes(path) && path !== '/auth/login' && path !== '/auth/register') {
+        this.navigate('/onboarding/identity');
         return;
       }
     }
 
-    // Find matching route
-    const handler = this.routes[path];
-    if (handler) {
-      this.currentRoute = path;
-      this._transition(handler);
-    } else {
-      // 404 - redirect to landing
-      this.navigate('/');
+    const app = document.getElementById('app');
+
+    // Page exit animation
+    if (this.currentRoute && app && app.firstChild) {
+      app.firstChild.classList?.add('page-exit');
     }
-  },
-
-  _transition(handler) {
-    const container = document.getElementById('app');
-    if (!container) return;
-
-    // Exit animation
-    container.classList.add('page-exit');
 
     setTimeout(() => {
-      container.classList.remove('page-exit');
-      handler(container);
-      container.classList.add('page-enter');
+      this.currentRoute = path;
+      if (pushState) {
+        history.pushState({ path }, '', `#${path}`);
+      }
 
-      setTimeout(() => {
-        container.classList.remove('page-enter');
-      }, 400);
-
-      // Scroll to top
-      window.scrollTo(0, 0);
-
-      // Update active sidebar link
-      this._updateActiveLink();
-    }, 200);
+      const handler = this.routes[path];
+      if (handler) {
+        app.innerHTML = '';
+        const page = handler();
+        if (typeof page === 'string') {
+          app.innerHTML = page;
+        } else if (page instanceof HTMLElement) {
+          app.appendChild(page);
+        }
+        // Page enter animation
+        if (app.firstChild) {
+          app.firstChild.classList?.add('page-enter');
+        }
+        // Scroll to top
+        window.scrollTo(0, 0);
+        // Init page scripts
+        this._initPage(path);
+      } else {
+        app.innerHTML = this._notFoundPage();
+      }
+    }, this.currentRoute ? 100 : 0);
   },
 
-  _updateActiveLink() {
-    document.querySelectorAll('.sidebar__link').forEach(link => {
-      link.classList.remove('sidebar__link--active');
-      if (link.dataset.route === this.currentRoute) {
-        link.classList.add('sidebar__link--active');
-      }
+  _initPage(path) {
+    // Intersection observer for reveal animations
+    setTimeout(() => {
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        observer.observe(el);
+      });
+
+      // Counter animations
+      document.querySelectorAll('[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        this._animateCount(el, 0, target, 1500);
+      });
+    }, 100);
+  },
+
+  _animateCount(el, start, end, duration) {
+    const startTime = performance.now();
+    const step = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + (end - start) * eased);
+      el.textContent = current.toLocaleString();
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  },
+
+  _notFoundPage() {
+    return `
+      <div class="auth-page">
+        <div class="auth-card" style="text-align:center;">
+          <div style="font-size:64px;margin-bottom:16px;">🗺️</div>
+          <h2>Page Not Found</h2>
+          <p style="margin:16px 0;">The page you're looking for doesn't exist or has been moved.</p>
+          <button class="btn btn-primary btn-full" onclick="Router.navigate('/')">Go Home</button>
+        </div>
+      </div>
+    `;
+  },
+
+  init() {
+    // Reactive subscription: auto-render view on any Store state update
+    Store.subscribe(() => {
+      this.render();
     });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', (e) => {
+      const path = e.state?.path || this._getHashPath() || '/';
+      this.navigate(path, false);
+    });
+
+    // Handle initial route
+    const initialPath = this._getHashPath() || '/';
+    this.navigate(initialPath, false);
   }
 };

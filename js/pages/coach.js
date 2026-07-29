@@ -1,200 +1,132 @@
-/* ============================================================
-   AI COACH CHAT PAGE
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════════════
+   AI COACH CHAT PAGE — Powered by AIService (Gemini & Fallback Engine)
+   ═══════════════════════════════════════════════════════════════════ */
 
-const CoachPage = {
-  messages: [],
+function CoachPage() {
+  const profile = Store.get('profile') || {};
+  const hasKey = !!Store.get('apiSettings.geminiKey');
 
-  render(container) {
-    Navigation.setPageTitle('AI Coach');
-    const type = Store.identityType || 'student';
-
-    // Initialize with greeting if empty
-    if (this.messages.length === 0) {
-      this.messages.push({
-        role: 'ai',
-        text: `Welcome! I'm your LifeGPS AI Coach, powered by Llama 3 on Groq. I'm ready to help you navigate your journey as a ${type}. What's on your mind today?`,
-        time: this._formatTime()
-      });
-    }
-
-    container.querySelector('.page-content').innerHTML = `
-      <div class="glass-card" style="padding: 0; overflow: hidden;">
-        <div class="chat-container">
-          <!-- Chat Header -->
-          <div style="padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: var(--space-3);">
-            <div class="avatar" style="background: var(--gradient-primary);">🤖</div>
-            <div>
-              <div style="font-weight: 600;">LifeGPS AI Coach</div>
-              <div style="font-size: var(--text-xs); color: var(--color-accent); display: flex; align-items: center; gap: 4px;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); display: inline-block;"></span>
-                Online — Ready to help
-              </div>
-            </div>
-            <div style="margin-left: auto;">
-              <span class="badge badge--primary">AI Powered</span>
-            </div>
+  const content = `
+    <div class="coach-page">
+      <div class="coach-header">
+        <div class="coach-avatar">🤖</div>
+        <div>
+          <div style="font-weight:700;display:flex;align-items:center;gap:8px;">
+            LifeGPS AI Master Coach
+            <span class="badge ${hasKey ? 'badge-success' : 'badge-primary'}">${hasKey ? 'Gemini 1.5 Live' : 'AI Assistant Active'}</span>
           </div>
-
-          <!-- Quick Actions -->
-          <div class="chat-quick-actions">
-            <div class="chat-quick-action" onclick="CoachPage.quickAction('career')">🎯 Career advice</div>
-            <div class="chat-quick-action" onclick="CoachPage.quickAction('health')">💚 Health check</div>
-            <div class="chat-quick-action" onclick="CoachPage.quickAction('finance')">💰 Finance review</div>
-            <div class="chat-quick-action" onclick="CoachPage.quickAction('plan my week')">📅 Plan my week</div>
-            <div class="chat-quick-action" onclick="CoachPage.quickAction('motivate me')">🔥 Motivate me</div>
-          </div>
-
-          <!-- Messages -->
-          <div class="chat-messages" id="chatMessages">
-            ${this.messages.map(msg => this._renderMessage(msg)).join('')}
-          </div>
-
-          <!-- Input Area -->
-          <div class="chat-input-area">
-            <textarea class="chat-input" id="chatInput" placeholder="Ask your AI Coach anything..." rows="1"
-              onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); CoachPage.send();}"></textarea>
-            <button class="btn btn--primary" onclick="CoachPage.send()" style="height: 44px;">
-              Send ↑
-            </button>
-          </div>
+          <div class="coach-status"><span class="coach-status-dot"></span> Always Online • Context Aware</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="clearChat()"><i class="fas fa-trash"></i> Clear</button>
         </div>
       </div>
-    `;
 
-    this._scrollToBottom();
-  },
-
-  _renderMessage(msg) {
-    if (msg.role === 'ai') {
-      return `
-        <div class="chat-message chat-message--ai">
-          <div class="chat-message__avatar chat-message__avatar--ai">🤖</div>
-          <div>
-            <div class="chat-message__bubble">${this._formatMarkdown(msg.text)}</div>
-            <div class="chat-message__time">${msg.time}</div>
-          </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-bubble ai">
+          Welcome back, <strong>${profile.name || 'Friend'}</strong>! 👋 I'm your AI Life GPS Coach.
+          <br><br>
+          I have real-time access to your 5 domain scores (Career, Health, Finance, Work, Life). Ask me anything:
+          <br><br>
+          • 🎯 <strong>Career</strong> — Resume ATS keyword optimization & salary negotiations<br>
+          • 💪 <strong>Health</strong> — Custom 4-week workout splits & sleep debt recovery<br>
+          • 💰 <strong>Finance</strong> — 50/30/20 budget optimization & savings acceleration<br>
+          • ⚡ <strong>Work</strong> — Eisenhower matrix priorities & anti-burnout planning<br>
+          <br>
+          What milestone are we targeting today?
         </div>
-      `;
-    } else {
-      return `
-        <div class="chat-message chat-message--user">
-          <div class="chat-message__avatar chat-message__avatar--user">${Store.userInitials}</div>
-          <div>
-            <div class="chat-message__bubble">${msg.text}</div>
-            <div class="chat-message__time" style="text-align: right;">${msg.time}</div>
-          </div>
-        </div>
-      `;
-    }
-  },
+      </div>
 
-  _formatMarkdown(text) {
-    // Simple markdown: **bold**, *italic*, \n, numbered lists
-    return text
+      <div class="chat-suggestions" id="chat-suggestions">
+        ${[
+          'Analyze my resume ATS score & skill gaps',
+          'How can I optimize my financial savings rate?',
+          'Create a 4-week workout & sleep protocol',
+          'Help me prioritize my top work tasks today'
+        ].map(s => `<button class="chat-suggestion" onclick="sendSuggestion('${s.replace(/'/g, "\\'")}')">${s}</button>`).join('')}
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="coach-input" placeholder="Ask your AI Life Coach anything..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="chat-send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  `;
+
+  return UI.dashboardLayout('/dashboard/coach', content);
+}
+
+async function sendMessage() {
+  const input = document.getElementById('coach-input');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+
+  const chatMessages = document.getElementById('chat-messages');
+
+  // Add user bubble
+  chatMessages.innerHTML += `<div class="chat-bubble user">${escapeHtml(message)}</div>`;
+
+  // Hide suggestions
+  const suggestions = document.getElementById('chat-suggestions');
+  if (suggestions) suggestions.style.display = 'none';
+
+  // Typing indicator
+  chatMessages.innerHTML += `
+    <div class="chat-bubble ai" id="typing-indicator">
+      <div class="typing-indicator"><span></span><span></span><span></span></div>
+    </div>
+  `;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Call AIService
+  try {
+    const aiText = await AIService.generateResponse(message);
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) indicator.remove();
+
+    const formatted = aiText
+      .replace(/### (.*?)\n/g, '<h4 style="margin:8px 0;color:var(--cyan);">$1</h4>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n\n/g, '<br><br>')
-      .replace(/\n(\d+\.)/g, '<br>$1')
-      .replace(/\n- /g, '<br>• ')
+      .replace(/`([^`]+)`/g, '<code style="background:rgba(99,102,241,0.2);padding:2px 6px;border-radius:4px;color:var(--indigo-light); font-family:monospace;">$1</code>')
       .replace(/\n/g, '<br>');
-  },
 
-  async send() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    // Add user message
-    this.messages.push({
-      role: 'user',
-      text: text,
-      time: this._formatTime()
-    });
-
-    input.value = '';
-    this._reRenderMessages();
-    this._showTyping();
-
-    const type = Store.identityType || 'student';
-    
-    // Prepare conversation history for Groq
-    const conversationHistory = this.messages
-      .filter(msg => msg.role === 'user' || msg.role === 'ai')
-      .map(msg => ({
-        role: msg.role === 'ai' ? 'assistant' : 'user',
-        content: msg.text
-      }));
-
-    // Call Groq API
-    const response = await GroqService.getCompletion(conversationHistory, type);
-
-    // Remove typing indicator
-    const typingIndicator = document.getElementById('typingIndicator');
-    if (typingIndicator) typingIndicator.remove();
-
-    this.messages.push({
-      role: 'ai',
-      text: response,
-      time: this._formatTime()
-    });
-    this._reRenderMessages();
-  },
-
-  quickAction(topic) {
-    const queries = {
-      'career': 'Give me career advice based on my current situation',
-      'health': 'How\'s my health looking? Any recommendations?',
-      'finance': 'Can you review my financial situation?',
-      'plan my week': 'Help me plan my week for maximum productivity',
-      'motivate me': 'I need some motivation today!'
-    };
-
-    const input = document.getElementById('chatInput');
-    if (input) {
-      input.value = queries[topic] || topic;
-      this.send();
-    }
-  },
-
-  _showTyping() {
-    const container = document.getElementById('chatMessages');
-    if (!container) return;
-    
-    const typingHtml = `
-      <div class="chat-message chat-message--ai" id="typingIndicator">
-        <div class="chat-message__avatar chat-message__avatar--ai">🤖</div>
-        <div class="chat-message__bubble">
-          <div class="typing-indicator">
-            <div class="typing-indicator__dot"></div>
-            <div class="typing-indicator__dot"></div>
-            <div class="typing-indicator__dot"></div>
-          </div>
+    const bubbleId = 'b_' + Date.now();
+    chatMessages.innerHTML += `
+      <div class="chat-bubble ai" id="${bubbleId}">
+        ${formatted}
+        <div style="margin-top:12px;padding-top:8px;border-top:1px solid var(--glass-border);">
+          <button class="btn btn-primary btn-sm" style="font-size:11px;" onclick="convertAIToTask('${escapeHtml(message)}')">
+            <i class="fas fa-plus"></i> Add Recommendation to Action Matrix
+          </button>
         </div>
       </div>
     `;
-    container.insertAdjacentHTML('beforeend', typingHtml);
-    this._scrollToBottom();
-  },
-
-  _reRenderMessages() {
-    const container = document.getElementById('chatMessages');
-    if (!container) return;
-    container.innerHTML = this.messages.map(msg => this._renderMessage(msg)).join('');
-    this._scrollToBottom();
-  },
-
-  _scrollToBottom() {
-    const container = document.getElementById('chatMessages');
-    if (container) {
-      setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
-      }, 50);
-    }
-  },
-
-  _formatTime() {
-    const now = new Date();
-    return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  } catch (err) {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) indicator.remove();
+    chatMessages.innerHTML += `<div class="chat-bubble ai">Sorry, I encountered an issue processing your request. Please try again!</div>`;
   }
-};
+}
+
+function sendSuggestion(text) {
+  document.getElementById('coach-input').value = text;
+  sendMessage();
+}
+
+function convertAIToTask(msgText) {
+  Store.addTask({ title: `AI Goal: Execute ${msgText}`, domain: 'work', quadrant: 'q2' });
+  UI.toast('success', 'Goal Added!', 'Converted AI recommendation into an action item in your Eisenhower Matrix.');
+}
+
+function clearChat() {
+  const chatMessages = document.getElementById('chat-messages');
+  chatMessages.innerHTML = `<div class="chat-bubble ai">Chat history cleared. What else can I help you achieve? 😊</div>`;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}

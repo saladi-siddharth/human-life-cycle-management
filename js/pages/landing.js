@@ -1,327 +1,282 @@
-/* ============================================================
+/* ═══════════════════════════════════════════════════════════════════
    LANDING PAGE
-   ============================================================ */
+   ═══════════════════════════════════════════════════════════════════ */
 
-const LandingPage = {
-  render(container) {
-    container.innerHTML = `
-      <div class="app-shell--public">
-        <!-- Three.js Canvas Container -->
-        <div id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.6;"></div>
+function LandingPage() {
+  return `
+    <div class="landing-page">
+      ${UI.publicTopbar()}
 
-        <!-- Navigation -->
-        <nav class="landing-nav" id="landingNav">
-          <a class="landing-nav__brand" href="#/">
-            <div class="landing-nav__logo">🧭</div>
-            <span class="landing-nav__name">LifeGPS</span>
-          </a>
-          <div class="landing-nav__links">
-            <span class="landing-nav__link" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Features</span>
-            <span class="landing-nav__link" onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">Impact</span>
-            <span class="landing-nav__link" onclick="Router.navigate('/pricing')">Pricing</span>
-            ${Store.get('user') 
-              ? `<button class="btn btn--primary btn--sm" onclick="Router.navigate('/dashboard')">Dashboard</button>`
-              : `<button class="btn btn--primary btn--sm" onclick="Router.navigate('/auth')">Get Started</button>`
-            }
+      <!-- HERO SECTION -->
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        ${UI.particles(25)}
+        <div class="orb orb-indigo" style="top:-100px;right:-100px;"></div>
+        <div class="orb orb-violet" style="bottom:-150px;left:-100px;"></div>
+
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="animate-bounce">✨</span>
+            <span>AI-Powered Life Management Platform</span>
           </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <section class="hero">
-          <div class="hero__bg">
-            <div class="hero__orb hero__orb--1"></div>
-            <div class="hero__orb hero__orb--2"></div>
-            <div class="hero__orb hero__orb--3"></div>
-            <div class="hero__grid"></div>
+          <h1>
+            Your <span class="text-gradient">Life GPS</span> for<br>
+            Career, Health & Success
+          </h1>
+          <p class="hero-subtitle">
+            One intelligent platform that captures who you are — Student, Employee, or Business Owner —
+            and guides your entire journey across Career, Health, Finance, Work & Life.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-xl" onclick="Router.navigate('/auth/register')">
+              <i class="fas fa-rocket"></i> Start Free — It Takes 60 Seconds
+            </button>
+            <button class="btn btn-secondary btn-xl" onclick="Router.navigate('/pricing')">
+              <i class="fas fa-play-circle"></i> See Plans
+            </button>
           </div>
-
-          <div class="hero__content">
-            <div class="hero__badge">
-              <span class="hero__badge-dot"></span>
-              AI-Powered Life Management Platform
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-count="50000">0</div>
+              <div class="hero-stat-label">Active Users</div>
             </div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-count="260">0</div>
+              <div class="hero-stat-label">Smart Features</div>
+            </div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-value">4.9<span style="font-size:0.6em;opacity:0.7;">/5</span></div>
+              <div class="hero-stat-label">User Rating</div>
+            </div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-value" data-count="45">0</div>
+              <div class="hero-stat-label">Countries</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <h1 class="hero__title">
-              Your Life<br>
-              <span class="hero__title-highlight">Deserves a GPS</span>
-            </h1>
+      <!-- IDENTITY SECTION -->
+      <section class="section" style="background:var(--bg-secondary);">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-label">One Question. Infinite Guidance.</span>
+            <h2>Who Are You <span class="text-gradient">Today?</span></h2>
+            <p>Your answer shapes your entire experience — personalized roadmaps, insights, and tools designed for your exact life stage.</p>
+          </div>
+          <div class="features-grid" style="max-width:1000px;">
+            <div class="feature-card hover-lift reveal delay-1" onclick="Router.navigate('/auth/register')">
+              <div class="feature-icon" style="background:rgba(99,102,241,0.12);font-size:32px;">🎓</div>
+              <h3>Student</h3>
+              <p>College selection, scholarship finder, internship tracker, campus placement prep, career path mapping, and academic excellence tools.</p>
+              <div style="margin-top:16px;">
+                <span class="badge badge-primary">Career Mapping</span>
+                <span class="badge badge-info">Skill Gaps</span>
+              </div>
+            </div>
+            <div class="feature-card hover-lift reveal delay-2" onclick="Router.navigate('/auth/register')">
+              <div class="feature-icon" style="background:rgba(16,185,129,0.12);font-size:32px;">💼</div>
+              <h3>Employee</h3>
+              <p>Career growth engine, salary negotiation, promotion predictor, performance review prep, side hustle management, and burnout prevention.</p>
+              <div style="margin-top:16px;">
+                <span class="badge badge-success">Growth Track</span>
+                <span class="badge badge-warning">Salary Intel</span>
+              </div>
+            </div>
+            <div class="feature-card hover-lift reveal delay-3" onclick="Router.navigate('/auth/register')">
+              <div class="feature-icon" style="background:rgba(245,158,11,0.12);font-size:32px;">🏢</div>
+              <h3>Business Owner</h3>
+              <p>Business dashboard, fundraising CRM, team management, growth playbooks, exit planning, and CEO development program.</p>
+              <div style="margin-top:16px;">
+                <span class="badge badge-warning">Scale Tools</span>
+                <span class="badge badge-danger">Exit Plan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <p class="hero__subtitle">
-              One platform. One identity. Lifetime guidance across Career, Health, Finance, 
-              Productivity & Life Success — powered by AI that knows you.
-            </p>
+      <!-- DOMAINS SECTION -->
+      <section class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-label">5 Life Domains. One Platform.</span>
+            <h2>Holistic <span class="text-gradient-accent">Intelligence</span></h2>
+            <p>Unlike fragmented apps, LifeGPS connects every domain — your career decisions consider your health, and your finances align with your life goals.</p>
+          </div>
+          <div class="features-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:1200px;">
+            ${[
+              { icon: '🚀', title: 'Career', desc: 'Roadmap, skills, certifications, resume builder, interview prep', color: '#6366f1' },
+              { icon: '💪', title: 'Health', desc: 'Fitness plans, nutrition, sleep, mental health, preventive care', color: '#10b981' },
+              { icon: '💰', title: 'Finance', desc: 'Budget, investments, debt elimination, tax optimization', color: '#f59e0b' },
+              { icon: '⚡', title: 'Work', desc: 'Productivity, tasks, focus mode, meeting optimizer', color: '#06b6d4' },
+              { icon: '🌟', title: 'Life Success', desc: 'Vision board, happiness tracker, legacy, relationships', color: '#ec4899' },
+            ].map((d, i) => `
+              <div class="feature-card hover-lift reveal delay-${i + 1}" style="text-align:center;">
+                <div style="font-size:40px;margin-bottom:12px;">${d.icon}</div>
+                <h3 style="color:${d.color};">${d.title}</h3>
+                <p>${d.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </section>
 
-            <div class="hero__cta">
-              ${Store.get('user')
-                ? `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/dashboard')">🧭 Open My Dashboard</button>`
-                : `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/auth')">🚀 Start Your Journey — Free</button>`
-              }
-              <button class="btn btn--secondary btn--lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
-                Learn More ↓
+      <!-- HOW IT WORKS -->
+      <section class="section" style="background:var(--bg-secondary);">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-label">Simple Start. Massive Impact.</span>
+            <h2>How It <span class="text-gradient">Works</span></h2>
+          </div>
+          <div class="how-steps reveal">
+            <div class="how-step">
+              <div class="how-step-number animated-gradient" style="color:white;">1</div>
+              <h3>Answer One Question</h3>
+              <p style="color:var(--text-muted);font-size:14px;">Student, Employee, or Business Owner? That's all we need to start building your personalized experience.</p>
+            </div>
+            <div class="how-step">
+              <div class="how-step-number" style="background:rgba(6,182,212,0.15);color:var(--cyan);">2</div>
+              <h3>Get Your Life Roadmap</h3>
+              <p style="color:var(--text-muted);font-size:14px;">Our AI builds your custom 5/10/20-year plan across all five life domains with actionable milestones.</p>
+            </div>
+            <div class="how-step">
+              <div class="how-step-number" style="background:rgba(16,185,129,0.15);color:var(--emerald);">3</div>
+              <h3>Grow With Intelligence</h3>
+              <p style="color:var(--text-muted);font-size:14px;">Real-time AI coaching, predictive alerts, opportunity scanner, and adaptive goal tracking for life.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI COACH PREVIEW -->
+      <section class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-label">24/7 AI Life Coach</span>
+            <h2>Your Personal <span class="text-gradient-warm">AI Companion</span></h2>
+            <p>Ask anything about career moves, financial decisions, health goals, or life balance. Get expert-level guidance instantly.</p>
+          </div>
+          <div class="card-glass reveal" style="max-width:700px;margin:0 auto;padding:32px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+              <div class="coach-avatar"><span>🤖</span></div>
+              <div>
+                <div style="font-weight:700;">LifeGPS AI Coach</div>
+                <div class="coach-status"><span class="coach-status-dot"></span> Always Online</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="chat-bubble ai">
+                Hi! I'm your AI Life Coach. I can help with career decisions, financial planning, health goals, and more. What's on your mind today? 😊
+              </div>
+              <div class="chat-bubble user">
+                I'm thinking about switching careers from marketing to data science. Is it worth it?
+              </div>
+              <div class="chat-bubble ai">
+                Great question! Based on market trends, data science roles have grown <strong>42% this year</strong> with an avg salary of <strong>$135K</strong>. Given your marketing analytics background, you already have 3/7 key skills. Here's a 6-month transition plan I'd recommend...
+              </div>
+            </div>
+            <div style="margin-top:16px;text-align:center;">
+              <button class="btn btn-primary" onclick="Router.navigate('/auth/register')">
+                <i class="fas fa-comments"></i> Talk to AI Coach
               </button>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="hero__scroll-hint">
-            <span>Scroll to explore</span>
-            <span>↓</span>
+      <!-- TESTIMONIALS -->
+      <section class="section" style="background:var(--bg-secondary);">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-label">Loved by Thousands</span>
+            <h2>Success <span class="text-gradient">Stories</span></h2>
           </div>
-        </section>
-
-        <!-- Identity Preview Section -->
-        <section style="padding: var(--space-24) var(--space-6); text-align: center;">
-          <div class="label mb-4" style="color: var(--color-primary-light);">ONE QUESTION TO START</div>
-          <h2 style="margin-bottom: var(--space-3);">Who Are You Today?</h2>
-          <p class="text-secondary" style="margin-bottom: var(--space-10); max-width: 500px; margin-inline: auto;">
-            Answer one simple question and unlock a personalized life management experience 
-            tailored to your exact stage and goals.
-          </p>
-          <div class="identity-cards">
-            <div class="identity-card identity-card--student" onclick="LandingPage.selectPreviewIdentity('student')">
-              <span class="identity-card__emoji">🎓</span>
-              <h3 class="identity-card__title">Student</h3>
-              <p class="identity-card__desc">Navigating education, building skills, and planning your first career moves</p>
-              <div class="identity-card__features">
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>College & Scholarship Finder</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Career Path Builder</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Student Budget Optimizer</span>
-                </div>
+          <div class="testimonials-grid reveal">
+            <div class="testimonial-card hover-lift">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"LifeGPS completely transformed my career trajectory. I went from confused engineering student to landing my dream job at Google — the AI career coach was like having a personal mentor 24/7."</p>
+              <div class="testimonial-author">
+                <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#06b6d4);">RK</div>
+                <div><div class="testimonial-name">Ravi Kumar</div><div class="testimonial-role">Software Engineer at Google</div></div>
               </div>
             </div>
- 
-            <div class="identity-card identity-card--employee" onclick="LandingPage.selectPreviewIdentity('employee')">
-              <span class="identity-card__emoji">💼</span>
-              <h3 class="identity-card__title">Employee</h3>
-              <p class="identity-card__desc">Growing your career, managing finances, and achieving work-life balance</p>
-              <div class="identity-card__features">
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Promotion Roadmap</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Salary Negotiation Coach</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Burnout Prevention</span>
-                </div>
+            <div class="testimonial-card hover-lift">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"As a business owner, I was juggling a thousand things. LifeGPS gave me clarity on finances, health, and team management all in one place. My revenue grew 3x in one year."</p>
+              <div class="testimonial-author">
+                <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#f43f5e);">PS</div>
+                <div><div class="testimonial-name">Priya Sharma</div><div class="testimonial-role">Founder & CEO, NexaTech</div></div>
               </div>
             </div>
- 
-            <div class="identity-card identity-card--business" onclick="LandingPage.selectPreviewIdentity('business')">
-              <span class="identity-card__emoji">🚀</span>
-              <h3 class="identity-card__title">Business Owner</h3>
-              <p class="identity-card__desc">Scaling your venture while maintaining personal health and relationships</p>
-              <div class="identity-card__features">
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Business Financial Dashboard</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Founder Burnout Prevention</span>
-                </div>
-                <div class="identity-card__feature">
-                  <span class="identity-card__feature-icon">✓</span>
-                  <span>Exit Strategy Planner</span>
-                </div>
+            <div class="testimonial-card hover-lift">
+              <div class="testimonial-stars">★★★★★</div>
+              <p class="testimonial-text">"The holistic approach is what sets LifeGPS apart. It connected my career stress to health issues and financial anxiety — then gave me a plan to fix everything together."</p>
+              <div class="testimonial-author">
+                <div class="avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4);">AM</div>
+                <div><div class="testimonial-name">Ankit Mehta</div><div class="testimonial-role">Senior Manager, Deloitte</div></div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Features Section -->
-        <section class="features-section" id="features">
-          <div class="features-section__header">
-            <div class="label mb-4" style="color: var(--color-secondary);">COMPREHENSIVE PLATFORM</div>
-            <h2 style="margin-bottom: var(--space-3);">Five Domains. One Platform.</h2>
-            <p class="text-secondary" style="max-width: 500px; margin-inline: auto;">
-              Unlike fragmented tools, LifeGPS connects every aspect of your life for 
-              truly intelligent guidance.
-            </p>
+      <!-- CTA SECTION -->
+      <section class="cta-section">
+        <div class="orb orb-indigo" style="top:-100px;left:50%;transform:translateX(-50%);opacity:0.15;"></div>
+        <div class="cta-box reveal gradient-border">
+          <h2>Ready to Map Your <span class="text-gradient">Life Journey?</span></h2>
+          <p>Join 50,000+ users who are transforming their careers, health, finances, and overall life satisfaction with LifeGPS.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-xl" onclick="Router.navigate('/auth/register')">
+              <i class="fas fa-rocket"></i> Get Started Free
+            </button>
+            <button class="btn btn-secondary btn-xl" onclick="Router.navigate('/pricing')">View Pricing</button>
           </div>
-          <div class="features-section__grid stagger-in">
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(108, 92, 231, 0.15); color: var(--color-primary-light)">🎯</div>
-              <h4 class="feature-item__title">Career Intelligence</h4>
-              <p class="feature-item__desc">Personalized career roadmaps, skill gap analysis, and AI-powered job matching based on your unique profile.</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(16, 185, 129, 0.15); color: var(--color-accent)">💚</div>
-              <h4 class="feature-item__title">Holistic Health</h4>
-              <p class="feature-item__desc">Fitness, nutrition, mental wellness, and preventive care — all adapted to your life stage and work demands.</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(245, 158, 11, 0.15); color: var(--color-warning)">💰</div>
-              <h4 class="feature-item__title">Smart Finance</h4>
-              <p class="feature-item__desc">Budget optimization, investment guidance, and financial planning that grows with your income and goals.</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(0, 210, 255, 0.15); color: var(--color-secondary)">⚡</div>
-              <h4 class="feature-item__title">Productivity Engine</h4>
-              <p class="feature-item__desc">Time management, deep work scheduling, and energy optimization matched to your natural rhythms.</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(236, 72, 153, 0.15); color: #EC4899">🌟</div>
-              <h4 class="feature-item__title">Life Success</h4>
-              <p class="feature-item__desc">Vision boards, happiness tracking, relationship health, and legacy planning for a fulfilled life.</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-item__icon" style="background: rgba(139, 92, 246, 0.15); color: #A78BFA">🤖</div>
-              <h4 class="feature-item__title">AI Life Coach</h4>
-              <p class="feature-item__desc">24/7 AI companion that understands your complete picture and provides contextual, actionable advice.</p>
+          <p style="margin-top:16px;font-size:13px;color:var(--text-dim);">No credit card required. Free forever plan available.</p>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="landing-footer">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand"><span class="text-gradient">🧭 LifeGPS</span></div>
+            <p class="footer-desc">The intelligent life management platform that grows with you from student to retiree. Career, Health, Finance, Work & Life — all in one place.</p>
+          </div>
+          <div>
+            <div class="footer-title">Product</div>
+            <div class="footer-links">
+              <a onclick="Router.navigate('/pricing')">Pricing</a>
+              <a onclick="Router.navigate('/auth/register')">Get Started</a>
+              <a href="#">AI Coach</a>
+              <a href="#">Mobile App</a>
             </div>
           </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="stats-section" id="stats">
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-item__number" data-count="260">260+</div>
-              <div class="stat-item__label">Features Built</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-item__number" data-count="5">5</div>
-              <div class="stat-item__label">Life Domains</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-item__number" data-count="3">3</div>
-              <div class="stat-item__label">Identity Paths</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-item__number" data-count="24">24/7</div>
-              <div class="stat-item__label">AI Coach Access</div>
+          <div>
+            <div class="footer-title">Company</div>
+            <div class="footer-links">
+              <a href="#">About Us</a>
+              <a href="#">Careers</a>
+              <a href="#">Blog</a>
+              <a href="#">Contact</a>
             </div>
           </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-          <div class="cta-section__card">
-            <h2 style="margin-bottom: var(--space-3); position: relative; z-index: 1;">
-              Ready to Navigate Your <span class="text-gradient">Life Journey</span>?
-            </h2>
-            <p class="text-secondary mb-8" style="position: relative; z-index: 1;">
-              Join thousands of people who've taken control of their careers, health, 
-              and finances with AI-powered guidance.
-            </p>
-            ${Store.get('user')
-              ? `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/dashboard')" style="position: relative; z-index: 1;">🧭 Open Dashboard</button>`
-              : `<button class="btn btn--primary btn--lg" onclick="Router.navigate('/auth')" style="position: relative; z-index: 1;">🧭 Start Free — It Takes 30 Seconds</button>`
-            }
+          <div>
+            <div class="footer-title">Legal</div>
+            <div class="footer-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
+              <a href="#">Cookie Policy</a>
+              <a href="#">GDPR</a>
+            </div>
           </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="landing-footer">
-          <p class="landing-footer__text">
-            © 2026 LifeGPS — Your Life Navigator. Built with ❤️ for lifelong growth.
-          </p>
-        </footer>
-      </div>
-    `;
-
-    this._setupScrollListener();
-    this._initThreeJS();
-  },
-
-  selectPreviewIdentity(type) {
-    Store.set('identityType', type);
-    Router.navigate('/auth');
-  },
-
-  _initThreeJS() {
-    if (!window.THREE) return;
-    
-    const container = document.getElementById('hero-canvas');
-    if (!container) return;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-
-    // Particles
-    const geometry = new THREE.BufferGeometry();
-    const particlesCount = 300;
-    const posArray = new Float32Array(particlesCount * 3);
-
-    for(let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 15;
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    const material = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0x00f0ff,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending
-    });
-
-    const particlesMesh = new THREE.Points(geometry, material);
-    scene.add(particlesMesh);
-    
-    camera.position.z = 5;
-
-    // Mouse interaction
-    let mouseX = 0;
-    let mouseY = 0;
-    
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX / window.innerWidth - 0.5;
-      mouseY = e.clientY / window.innerHeight - 0.5;
-    });
-
-    const animate = () => {
-      // Clean up if navigating away
-      if (!document.getElementById('hero-canvas')) return;
-      
-      requestAnimationFrame(animate);
-      particlesMesh.rotation.y += 0.001;
-      particlesMesh.rotation.x += 0.001;
-      
-      // Gentle mouse parallax
-      particlesMesh.rotation.y += mouseX * 0.01;
-      particlesMesh.rotation.x += mouseY * 0.01;
-      
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      if (!document.getElementById('hero-canvas')) return;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  },
-
-  _setupScrollListener() {
-    const nav = document.getElementById('landingNav');
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        nav.classList.add('landing-nav--scrolled');
-      } else {
-        nav.classList.remove('landing-nav--scrolled');
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-  }
-};
+        </div>
+        <div class="footer-bottom">
+          <p>© ${new Date().getFullYear()} LifeGPS. All rights reserved. Built with ❤️ for dreamers, doers, and achievers.</p>
+        </div>
+      </footer>
+    </div>
+  `;
+}

@@ -1,153 +1,250 @@
-/* ============================================================
-   HEALTH DASHBOARD
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════════════
+   HEALTH & WELLNESS PAGE — Interactive Trackers & Dynamic Score Engine
+   ═══════════════════════════════════════════════════════════════════ */
 
-const HealthPage = {
-  render(container) {
-    Navigation.setPageTitle('Health');
-    const type = Store.identityType || 'student';
-    const score = Store.getMetric('healthScore') || 65;
-    const data = MockData.health;
-    const tips = data[type]?.tips || data.student.tips;
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+function HealthPage() {
+  const healthData = Store.get('health') || {};
+  const scores = Store.get('scores') || {};
+  const waterIntake = healthData.waterIntake || 0;
+  const waterTarget = healthData.waterTarget || 2500;
+  const fillPercent = Math.min(100, Math.round((waterIntake / waterTarget) * 100));
 
-    container.querySelector('.page-content').innerHTML = `
-      <div class="stagger-in">
-        <div class="page-header">
-          <h2 class="page-header__title">💚 Health Dashboard</h2>
-          <p class="page-header__subtitle">Your holistic wellness tracker — fitness, nutrition, sleep & mental health</p>
-        </div>
+  const sleepLogs = healthData.sleepLogs || [];
+  const workoutLogs = healthData.workoutLogs || [];
+  const macroLogs = healthData.macroLogs || { protein: 140, carbs: 210, fat: 65 };
 
-        <!-- Score Cards -->
-        <div class="bento-grid bento-grid--dashboard mb-6">
-          <div class="stat-card stat-card--secondary">
-            <div class="stat-card__label">Wellness Score</div>
-            <div class="stat-card__value" style="color: var(--color-accent)">${score}%</div>
-            <div class="stat-card__change stat-card__change--down">↓ 2% this week</div>
-          </div>
-          <div class="stat-card stat-card--accent">
-            <div class="stat-card__label">Avg Sleep</div>
-            <div class="stat-card__value">${(data.sleepData.reduce((a,b)=>a+b,0)/7).toFixed(1)}<span style="font-size: var(--text-base); font-weight: 400"> hrs</span></div>
-            <div class="stat-card__change stat-card__change--up">↑ 0.3 hrs</div>
-          </div>
-          <div class="stat-card stat-card--primary">
-            <div class="stat-card__label">Active Habits</div>
-            <div class="stat-card__value">${data.habits.length}</div>
-            <div class="stat-card__change" style="color: var(--text-secondary)">Tracking daily</div>
-          </div>
-          <div class="stat-card stat-card--warning">
-            <div class="stat-card__label">Stress Level</div>
-            <div class="stat-card__value" style="color: ${data.stressLevels[6] > 60 ? 'var(--color-danger)' : 'var(--color-warning)'}">${data.stressLevels[6]}%</div>
-            <div class="stat-card__change stat-card__change--down">↓ 5% this week</div>
-          </div>
-        </div>
+  // Calculate recommendation
+  let recIcon = '💧';
+  let recTitle = 'Hydration Alert';
+  let recText = `You are at ${fillPercent}% of your daily water intake goal (${waterIntake}ml / ${waterTarget}ml). Drink 500ml now!`;
+  if (fillPercent >= 100 && sleepLogs.length && sleepLogs[0].quality < 4) {
+    recIcon = '😴';
+    recTitle = 'Sleep Recovery Optimization';
+    recText = 'Your sleep quality dropped last night. Avoid screens 1 hour before bed and keep bedroom at 68°F.';
+  } else if (fillPercent >= 100) {
+    recIcon = '🔥';
+    recTitle = 'Peak Physical Conditioning';
+    recText = 'Hydration target achieved! Complete a 30-min resistance training session to maintain high performance.';
+  }
 
-        <div class="bento-grid bento-grid--2-col mb-6">
-          <!-- Weekly Activity Chart -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">Weekly Activity</div>
-                <div class="glass-card__subtitle">Activity score by day</div>
-              </div>
-              <span class="badge badge--success">This Week</span>
-            </div>
-            ${Charts.barChart(data.weeklyActivity, days, 140, ['#6C5CE7', '#7C6CF7', '#00D2FF', '#10B981', '#6C5CE7', '#F59E0B', '#EF4444'])}
-          </div>
+  const content = `
+    <div class="health-page">
+      ${UI.sectionHeader(
+        'Health & Wellness Protocol',
+        'Track hydration, sleep recovery, workouts, nutrition, and mental stress in real-time.',
+        `<button class="btn btn-primary btn-sm" onclick="openWorkoutModal()"><i class="fas fa-plus"></i> Log Workout</button>`
+      )}
 
-          <!-- Sleep Quality -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">Sleep Pattern</div>
-                <div class="glass-card__subtitle">Hours of sleep this week</div>
-              </div>
-              <span class="badge badge--info">Target: 7.5 hrs</span>
-            </div>
-            ${Charts.lineChart(data.sleepData, days, 140, '#00D2FF')}
+      <!-- Real-Time Recommendation -->
+      ${UI.recommendationBanner(recIcon, recTitle, recText, 'Log Hydration (+500ml)', 'quickAddWater(500)')}
+
+      <!-- Domain Score Banner -->
+      <div class="card card-glass" style="margin-bottom:var(--space-xl);display:flex;align-items:center;justify-content:space-between;padding:24px;">
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="font-size:42px;background:rgba(16,185,129,0.15);width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">💪</div>
+          <div>
+            <h2 style="margin:0;font-size:24px;">Health Score: <span style="color:var(--emerald);">${scores.health || 80}/100</span></h2>
+            <p style="margin:4px 0 0 0;color:var(--text-secondary);font-size:var(--text-sm);">Calculated dynamically from sleep consistency, water intake, and exercise frequency.</p>
           </div>
         </div>
-
-        <div class="bento-grid bento-grid--2-col mb-6">
-          <!-- Habit Tracker -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">Habit Tracker</div>
-                <div class="glass-card__subtitle">Build streaks, build your best self</div>
-              </div>
-            </div>
-            <div class="flex flex-col gap-4">
-              ${data.habits.map(habit => `
-                <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: rgba(255,255,255,0.02); border-radius: var(--radius-md);">
-                  <span style="font-size: 1.5rem">${habit.icon}</span>
-                  <div class="flex-1">
-                    <div style="font-size: var(--text-sm); font-weight: 600;">${habit.name}</div>
-                    <div class="progress progress--sm progress--success mt-2">
-                      <div class="progress__bar animate-progress" style="width: ${(habit.streak / habit.target) * 100}%"></div>
-                    </div>
-                  </div>
-                  <div style="text-align: right;">
-                    <div style="font-family: var(--font-heading); font-weight: 700; color: var(--color-accent);">${habit.streak}</div>
-                    <div style="font-size: 10px; color: var(--text-tertiary);">/ ${habit.target} days</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Stress & Tips -->
-          <div class="flex flex-col gap-6">
-            <!-- Stress Monitor -->
-            <div class="glass-card">
-              <div class="glass-card__header">
-                <div>
-                  <div class="glass-card__title">Stress Monitor</div>
-                  <div class="glass-card__subtitle">Weekly stress levels</div>
-                </div>
-              </div>
-              ${Charts.lineChart(data.stressLevels, days, 100, '#F59E0B')}
-            </div>
-
-            <!-- Stage-Specific Tips -->
-            <div class="glass-card">
-              <div class="glass-card__header">
-                <div>
-                  <div class="glass-card__title">💡 Tips for You</div>
-                  <div class="glass-card__subtitle">Based on your ${type} lifestyle</div>
-                </div>
-              </div>
-              <div class="flex flex-col gap-3">
-                ${tips.map(tip => `
-                  <div style="display: flex; gap: var(--space-3); padding: var(--space-3); background: rgba(16,185,129,0.06); border-radius: var(--radius-md); border: 1px solid rgba(16,185,129,0.1);">
-                    <span style="color: var(--color-accent)">✦</span>
-                    <span style="font-size: var(--text-sm); color: var(--text-secondary)">${tip}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Preventive Health Calendar -->
-        <div class="glass-card">
-          <div class="glass-card__header">
-            <div>
-              <div class="glass-card__title">📅 Preventive Health Calendar</div>
-              <div class="glass-card__subtitle">Upcoming checkups and screenings</div>
-            </div>
-          </div>
-          <div class="bento-grid bento-grid--dashboard">
-            ${data.preventiveCalendar.map(event => `
-              <div style="padding: var(--space-4); background: rgba(255,255,255,0.03); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
-                <div style="font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-1);">${event.event}</div>
-                <div style="font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--space-2);">${new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                <span class="badge ${event.status === 'upcoming' ? 'badge--warning' : event.status === 'scheduled' ? 'badge--success' : 'badge--neutral'}">${event.status}</span>
-              </div>
-            `).join('')}
-          </div>
+        <div style="text-align:right;">
+          <span class="badge badge-success">Optimal Vitality</span>
         </div>
       </div>
-    `;
+
+      <!-- 4 Core Sub-Component Grid -->
+      <div class="grid grid-2" style="gap:24px;">
+        
+        <!-- 1. Hydration & Water Intake Tracker -->
+        <div class="card card-glass">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-glass-water" style="color:var(--cyan);"></i> Hydration Tracker</h3>
+            <span style="font-weight:700;color:var(--cyan);">${waterIntake} / ${waterTarget} ml (${fillPercent}%)</span>
+          </div>
+          
+          <div class="water-gauge-container">
+            <div class="water-bottle">
+              <div class="water-fill" style="height:${fillPercent}%;"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:10px;">
+              <button class="btn btn-outline btn-sm" onclick="quickAddWater(250)">+250ml 🥛</button>
+              <button class="btn btn-primary btn-sm" onclick="quickAddWater(500)">+500ml 🚰</button>
+              <button class="btn btn-outline btn-sm" onclick="quickAddWater(750)">+750ml 🍾</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Sleep & Recovery Analyzer -->
+        <div class="card card-glass">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-bed" style="color:var(--indigo-light);"></i> Sleep & Recovery</h3>
+            <button class="btn btn-ghost btn-sm" onclick="openSleepModal()"><i class="fas fa-plus"></i> Log Sleep</button>
+          </div>
+          
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            ${sleepLogs.slice(0, 3).map(s => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+                <div>
+                  <div style="font-weight:600;">${s.hours} Hours (${'⭐'.repeat(s.quality)})</div>
+                  <div style="font-size:var(--text-xs);color:var(--text-muted);">${s.date} • Bedtime: ${s.bedtime}</div>
+                </div>
+                <span class="badge ${s.hours >= 7.5 ? 'badge-success' : 'badge-warning'}">${s.hours >= 7.5 ? 'Recovered' : 'Sleep Debt'}</span>
+              </div>
+            `).join('') || '<p style="color:var(--text-muted);">No sleep logs recorded yet.</p>'}
+          </div>
+        </div>
+
+        <!-- 3. Workout & Fitness Logger -->
+        <div class="card card-glass">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-running" style="color:var(--emerald);"></i> Fitness & Workouts</h3>
+            <button class="btn btn-ghost btn-sm" onclick="openWorkoutModal()"><i class="fas fa-plus"></i> Add Session</button>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            ${workoutLogs.map(w => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+                <div>
+                  <div style="font-weight:600;">${w.type}</div>
+                  <div style="font-size:var(--text-xs);color:var(--text-muted);">${w.duration} mins • ${w.calories} kcal burned</div>
+                </div>
+                <span class="badge badge-accent">${w.date}</span>
+              </div>
+            `).join('') || '<p style="color:var(--text-muted);">No workout logs recorded yet.</p>'}
+          </div>
+        </div>
+
+        <!-- 4. Mindfulness & Stress Check-in -->
+        <div class="card card-glass">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-spa" style="color:var(--purple);"></i> Mind & Stress Relief</h3>
+            <span class="badge badge-purple">4-7-8 Breathing</span>
+          </div>
+
+          <div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+            <div id="breathing-circle" style="width:80px;height:80px;border-radius:50%;background:rgba(168,85,247,0.2);border:3px solid var(--purple);margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--purple);transition:all 4s ease;">
+              Breathe
+            </div>
+            <button class="btn btn-outline btn-sm" id="breath-btn" onclick="toggleBreathingTimer()">Start 2-Min Reset</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  return UI.dashboardLayout('/dashboard/health', content);
+}
+
+// ─── Health Interactive Handlers ───────────────────────────
+function quickAddWater(amount) {
+  Store.logWater(amount);
+  UI.toast('success', 'Hydration Logged', `Added +${amount}ml of water to your daily total.`);
+  Router.render();
+}
+
+function openSleepModal() {
+  const html = `
+    <h3>Log Sleep Session</h3>
+    <form onsubmit="saveSleepForm(event)" style="display:flex;flex-direction:column;gap:14px;margin-top:16px;">
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);">Sleep Duration (Hours)</label>
+        <input type="number" step="0.5" id="sleep-hours" class="chat-input" value="7.5" required>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);">Quality Rating (1 to 5 Stars)</label>
+        <select id="sleep-quality" class="chat-input">
+          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+          <option value="4" selected>⭐⭐⭐⭐ Good</option>
+          <option value="3">⭐⭐⭐ Fair</option>
+          <option value="2">⭐⭐ Poor</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Sleep Log</button>
+    </form>
+  `;
+  UI.modal(html);
+}
+
+function saveSleepForm(e) {
+  e.preventDefault();
+  const hours = document.getElementById('sleep-hours').value;
+  const quality = document.getElementById('sleep-quality').value;
+  Store.logSleep({ hours, quality });
+  UI.closeModal();
+  UI.toast('success', 'Sleep Recorded', 'Your sleep recovery metrics have been updated.');
+  Router.render();
+}
+
+function openWorkoutModal() {
+  const html = `
+    <h3>Log Exercise & Workout Session</h3>
+    <form onsubmit="saveWorkoutForm(event)" style="display:flex;flex-direction:column;gap:14px;margin-top:16px;">
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);">Workout Type</label>
+        <input type="text" id="workout-type" class="chat-input" placeholder="e.g. Resistance Training, Outdoor Run, Yoga" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);">Duration (Mins)</label>
+          <input type="number" id="workout-dur" class="chat-input" value="45" required>
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);">Calories Burned (kcal)</label>
+          <input type="number" id="workout-cal" class="chat-input" value="300" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success">Save Workout Session</button>
+    </form>
+  `;
+  UI.modal(html);
+}
+
+function saveWorkoutForm(e) {
+  e.preventDefault();
+  const type = document.getElementById('workout-type').value;
+  const duration = document.getElementById('workout-dur').value;
+  const calories = document.getElementById('workout-cal').value;
+  Store.logWorkout({ type, duration, calories });
+  UI.closeModal();
+  UI.toast('success', 'Workout Logged!', `Great job! Recorded ${duration} mins of ${type}.`);
+  Router.render();
+}
+
+let breathInterval = null;
+function toggleBreathingTimer() {
+  const circle = document.getElementById('breathing-circle');
+  const btn = document.getElementById('breath-btn');
+  if (breathInterval) {
+    clearInterval(breathInterval);
+    breathInterval = null;
+    btn.textContent = 'Start 2-Min Reset';
+    circle.style.transform = 'scale(1)';
+    circle.textContent = 'Breathe';
+    return;
   }
-};
+
+  btn.textContent = 'Stop Exercise';
+  let expanding = true;
+  circle.textContent = 'Inhale';
+  circle.style.transform = 'scale(1.5)';
+
+  breathInterval = setInterval(() => {
+    if (expanding) {
+      circle.textContent = 'Exhale';
+      circle.style.transform = 'scale(0.8)';
+    } else {
+      circle.textContent = 'Inhale';
+      circle.style.transform = 'scale(1.5)';
+    }
+    expanding = !expanding;
+  }, 4000);
+}
+
+window.quickAddWater = quickAddWater;
+window.openSleepModal = openSleepModal;
+window.saveSleepForm = saveSleepForm;
+window.openWorkoutModal = openWorkoutModal;
+window.saveWorkoutForm = saveWorkoutForm;
+window.toggleBreathingTimer = toggleBreathingTimer;
+

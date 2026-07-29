@@ -1,182 +1,120 @@
-/* ============================================================
-   MAIN DASHBOARD — Life GPS Overview
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN DASHBOARD — Master Overview & Real-Time Command Center
+   ═══════════════════════════════════════════════════════════════════ */
 
-const DashboardPage = {
-  render(container) {
-    Navigation.setPageTitle('Dashboard');
-    const type = Store.identityType || 'student';
-    const name = Store.userName || 'Explorer';
-    const metrics = Store.get('metrics') || {};
-    const balance = metrics.lifeBalance || { career: 70, health: 65, finance: 58, work: 70, life: 75 };
-    const typeEmoji = { student: '🎓', employee: '💼', business: '🚀' }[type];
-    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+function DashboardPage() {
+  const profile = Store.get('profile') || {};
+  const scores = Store.get('scores') || {};
+  const tasks = Store.get('tasks') || [];
+  const finances = Store.get('finances') || {};
+  const urgentTasks = tasks.filter(t => !t.completed && (t.quadrant === 'q1' || t.priority === 'high'));
 
-    const hour = new Date().getHours();
-    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const income = Number(finances.monthlyIncome) || 75000;
 
-    // Priority alerts based on lowest score
-    const sorted = Object.entries(balance).sort((a, b) => a[1] - b[1]);
-    const weakest = sorted[0];
-    const strongest = sorted[sorted.length - 1];
+  const content = `
+    <div class="dashboard-page">
+      ${UI.sectionHeader(
+        `Welcome back, ${profile.name || 'Rohan'}! 👋`,
+        `Here is your real-time LifeGPS overview. Your Life Master Score is ${scores.life || 78}/100.`,
+        `<button class="btn btn-primary btn-sm" onclick="Router.navigate('/dashboard/coach')">🤖 Ask AI Coach</button>`
+      )}
 
-    container.querySelector('.page-content').innerHTML = `
-      <div class="stagger-in">
-        <!-- Welcome Banner -->
-        <div class="dashboard-welcome mb-6">
-          <div class="dashboard-welcome__greeting">${greeting}, ${name} ${typeEmoji}</div>
-          <div class="dashboard-welcome__message">
-            Your Life Score is <strong>${metrics.overallScore || 68}/100</strong>. 
-            Your strongest area is <strong style="color: var(--color-accent)">${strongest[0]}</strong> (${strongest[1]}%) 
-            and <strong style="color: var(--color-warning)">${weakest[0]}</strong> (${weakest[1]}%) needs attention.
+      <!-- Overall Life Score Hero Banner -->
+      <div class="card card-glass" style="margin-bottom:var(--space-xl);padding:28px;background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(6,182,212,0.15));border:1px solid rgba(99,102,241,0.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+          <div>
+            <span class="badge badge-primary" style="margin-bottom:8px;">Lifecycle Stage: ${profile.lifeStage || 'Student & Pro Build'}</span>
+            <h2 style="margin:0;font-size:32px;">Master Life Score: <span style="color:var(--cyan);">${scores.life || 78}/100</span></h2>
+            <p style="margin:6px 0 0 0;color:var(--text-secondary);font-size:var(--text-sm);">
+              Monthly Income: <strong style="color:var(--emerald);">₹${income.toLocaleString()}</strong> • Dynamically computed across Career (${scores.career}), Health (${scores.health}), Finance (${scores.finance}), Work (${scores.work}), and Life Success (${scores.success}).
+            </p>
           </div>
-          <div class="dashboard-welcome__emoji">🧭</div>
-        </div>
-
-        <!-- Stat Cards Row -->
-        <div class="bento-grid bento-grid--dashboard mb-6">
-          <div class="stat-card stat-card--primary">
-            <div class="stat-card__label">Career Score</div>
-            <div class="stat-card__value text-gradient">${balance.career}%</div>
-            <div class="stat-card__change stat-card__change--up">↑ 3% this month</div>
-            <div class="stat-card__icon" style="background: rgba(108,92,231,0.12); color: var(--color-primary-light)">🎯</div>
-          </div>
-          <div class="stat-card stat-card--secondary">
-            <div class="stat-card__label">Health Score</div>
-            <div class="stat-card__value" style="color: var(--color-accent)">${balance.health}%</div>
-            <div class="stat-card__change stat-card__change--down">↓ 2% this month</div>
-            <div class="stat-card__icon" style="background: rgba(16,185,129,0.12); color: var(--color-accent)">💚</div>
-          </div>
-          <div class="stat-card stat-card--accent">
-            <div class="stat-card__label">Finance Score</div>
-            <div class="stat-card__value" style="color: var(--color-warning)">${balance.finance}%</div>
-            <div class="stat-card__change stat-card__change--up">↑ 5% this month</div>
-            <div class="stat-card__icon" style="background: rgba(245,158,11,0.12); color: var(--color-warning)">💰</div>
-          </div>
-          <div class="stat-card stat-card--warning">
-            <div class="stat-card__label">Life Score</div>
-            <div class="stat-card__value" style="color: var(--color-secondary)">${balance.life}%</div>
-            <div class="stat-card__change stat-card__change--up">↑ 1% this month</div>
-            <div class="stat-card__icon" style="background: rgba(0,210,255,0.12); color: var(--color-secondary)">🌟</div>
-          </div>
-        </div>
-
-        <!-- Main Content Grid -->
-        <div class="bento-grid bento-grid--2-col mb-6">
-          <!-- Life Balance Radar -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">Life Balance</div>
-                <div class="glass-card__subtitle">Your score across all 5 domains</div>
-              </div>
-              <span class="badge badge--primary">${typeLabel}</span>
-            </div>
-            <div class="radar-chart-container">
-              ${Charts.radarChart(balance, 260)}
-            </div>
-          </div>
-
-          <!-- Overall Score + Quick Actions -->
-          <div class="flex flex-col gap-6">
-            <div class="glass-card" style="text-align: center;">
-              <div class="glass-card__header" style="justify-content: center;">
-                <div class="glass-card__title">Overall Life Score</div>
-              </div>
-              ${Charts.scoreRing('overall', metrics.overallScore || 68, 150, 10, '#6C5CE7')}
-              <p class="text-secondary mt-4" style="font-size: var(--text-sm)">
-                ${metrics.overallScore >= 70 ? '🌟 You\'re doing great! Keep the momentum.' : '💪 Room for growth — let\'s focus on your weak spots.'}
-              </p>
-            </div>
-
-            <div class="glass-card">
-              <div class="glass-card__header">
-                <div class="glass-card__title">Quick Actions</div>
-              </div>
-              <div class="quick-actions">
-                <div class="quick-action" onclick="Router.navigate('/coach')">
-                  <span class="quick-action__icon">🤖</span>
-                  <span>Talk to AI Coach</span>
-                </div>
-                <div class="quick-action" onclick="Router.navigate('/career')">
-                  <span class="quick-action__icon">🎯</span>
-                  <span>View Career Plan</span>
-                </div>
-                <div class="quick-action" onclick="Router.navigate('/health')">
-                  <span class="quick-action__icon">💚</span>
-                  <span>Health Check-in</span>
-                </div>
-                <div class="quick-action" onclick="Router.navigate('/finance')">
-                  <span class="quick-action__icon">💰</span>
-                  <span>Financial Review</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Priority Alerts & Notifications -->
-        <div class="bento-grid bento-grid--2-col">
-          <!-- Priority Alerts -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">🚨 Priority Alerts</div>
-                <div class="glass-card__subtitle">What needs your attention now</div>
-              </div>
-            </div>
-            <div class="flex flex-col gap-3">
-              <div class="list-item" onclick="Router.navigate('/health')">
-                <div class="list-item__dot" style="background: var(--color-warning)"></div>
-                <div class="flex-1">
-                  <div style="font-size: var(--text-sm); font-weight: 500;">Health score dropped to ${balance.health}%</div>
-                  <div style="font-size: var(--text-xs); color: var(--text-tertiary)">You missed 3 workouts this week</div>
-                </div>
-                <span class="badge badge--warning">Action Needed</span>
-              </div>
-              <div class="list-item" onclick="Router.navigate('/finance')">
-                <div class="list-item__dot" style="background: var(--color-info)"></div>
-                <div class="flex-1">
-                  <div style="font-size: var(--text-sm); font-weight: 500;">Budget review due this week</div>
-                  <div style="font-size: var(--text-xs); color: var(--text-tertiary)">Entertainment spending is at 85% of limit</div>
-                </div>
-                <span class="badge badge--info">Review</span>
-              </div>
-              <div class="list-item" onclick="Router.navigate('/career')">
-                <div class="list-item__dot" style="background: var(--color-accent)"></div>
-                <div class="flex-1">
-                  <div style="font-size: var(--text-sm); font-weight: 500;">New skill recommendation available</div>
-                  <div style="font-size: var(--text-xs); color: var(--text-tertiary)">AI Coach found a relevant course for you</div>
-                </div>
-                <span class="badge badge--success">New</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent Milestones -->
-          <div class="glass-card">
-            <div class="glass-card__header">
-              <div>
-                <div class="glass-card__title">🏆 Recent Milestones</div>
-                <div class="glass-card__subtitle">Celebrate your achievements</div>
-              </div>
-            </div>
-            <div class="timeline">
-              ${MockData.life.milestones.map((m, i) => `
-                <div class="timeline__item">
-                  <div class="timeline__dot ${i === 0 ? 'timeline__dot--current' : 'timeline__dot--completed'}"></div>
-                  <div class="timeline__content">
-                    <div class="timeline__title">${m.icon} ${m.title}</div>
-                    <div class="timeline__time">${m.date}</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-secondary" onclick="Router.navigate('/student/colleges')">🎓 Colleges & Scholarships</button>
+            <button class="btn btn-primary" onclick="Router.navigate('/dashboard/finance')">💰 Finance Ledger</button>
           </div>
         </div>
       </div>
-    `;
 
-    Charts.animateRings();
-  }
-};
+      <!-- 5 Main Domain Cards -->
+      <div class="grid grid-5" style="gap:14px;margin-bottom:var(--space-xl);">
+        
+        <div class="card card-glass card-hover" onclick="Router.navigate('/student/colleges')" style="cursor:pointer;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:24px;">🎓</span>
+            <span class="badge badge-info">${scores.career}/100</span>
+          </div>
+          <h4 style="margin:10px 0 2px 0;">Indian Colleges</h4>
+          <p style="margin:0;font-size:11px;color:var(--text-muted);">Filtered by field & NIRF</p>
+        </div>
+
+        <div class="card card-glass card-hover" onclick="Router.navigate('/dashboard/health')" style="cursor:pointer;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:24px;">💪</span>
+            <span class="badge badge-success">${scores.health}/100</span>
+          </div>
+          <h4 style="margin:10px 0 2px 0;">Health & Wellness</h4>
+          <p style="margin:0;font-size:11px;color:var(--text-muted);">Water gauge & sleep recovery</p>
+        </div>
+
+        <div class="card card-glass card-hover" onclick="Router.navigate('/dashboard/finance')" style="cursor:pointer;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:24px;">💰</span>
+            <span class="badge badge-purple">${scores.finance}/100</span>
+          </div>
+          <h4 style="margin:10px 0 2px 0;">Finance & Ledger</h4>
+          <p style="margin:0;font-size:11px;color:var(--text-muted);">Dynamic income re-analysis</p>
+        </div>
+
+        <div class="card card-glass card-hover" onclick="Router.navigate('/dashboard/work')" style="cursor:pointer;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:24px;">⚡</span>
+            <span class="badge badge-warning">${scores.work}/100</span>
+          </div>
+          <h4 style="margin:10px 0 2px 0;">Work Execution</h4>
+          <p style="margin:0;font-size:11px;color:var(--text-muted);">Eisenhower matrix & Pomodoro</p>
+        </div>
+
+        <div class="card card-glass card-hover" onclick="Router.navigate('/dashboard/life')" style="cursor:pointer;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:24px;">🌟</span>
+            <span class="badge badge-primary">${scores.success}/100</span>
+          </div>
+          <h4 style="margin:10px 0 2px 0;">Life Success</h4>
+          <p style="margin:0;font-size:11px;color:var(--text-muted);">Life Wheel 5 Pillars & Goals</p>
+        </div>
+
+      </div>
+
+      <!-- Urgent Priority Tasks Section -->
+      <div class="card card-glass">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-tasks" style="color:var(--indigo-light);"></i> High Priority Action Items</h3>
+          <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/dashboard/work')">View All Matrix Tasks →</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${urgentTasks.map(t => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" onchange="toggleTaskDone('${t.id}')">
+                <span style="font-weight:600;font-size:var(--text-sm);">${t.title}</span>
+              </div>
+              <span class="badge badge-danger">URGENT</span>
+            </div>
+          `).join('') || '<p style="color:var(--text-muted);">No urgent tasks pending! Great job staying ahead.</p>'}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  return UI.dashboardLayout('/dashboard', content);
+}
+
+function toggleTaskDone(id) {
+  Store.toggleTask(id);
+  Router.render();
+}
+window.toggleTaskDone = toggleTaskDone;
+

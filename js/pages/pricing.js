@@ -1,205 +1,154 @@
-/* ============================================================
+/* ═══════════════════════════════════════════════════════════════════
    PRICING PAGE
-   ============================================================ */
+   ═══════════════════════════════════════════════════════════════════ */
 
-const PricingPage = {
-  render(container) {
-    const isInApp = Store.isOnboarded;
+function PricingPage() {
+  const content = `
+    <div class="landing-page">
+      ${UI.publicTopbar()}
 
-    if (isInApp) {
-      Navigation.setPageTitle('Pricing');
-      container.querySelector('.page-content').innerHTML = this._getContent();
+      <section class="section" style="padding-top:120px;">
+        <div class="orb orb-cyan" style="top:50px;left:50%;transform:translateX(-50%);"></div>
+        <div class="container text-center">
+          <div class="section-label reveal">Simple, Transparent Pricing</div>
+          <h1 class="reveal delay-1">Invest in Your <span class="text-gradient">Life Journey</span></h1>
+          <p class="hero-subtitle reveal delay-2">Choose the plan that fits your current life stage. No hidden fees, cancel anytime.</p>
+
+          <!-- Billing Toggle -->
+          <div class="reveal delay-3" style="display:flex;justify-content:center;align-items:center;gap:12px;margin:40px 0;">
+            <span style="font-weight:600;" id="bill-monthly-label">Monthly</span>
+            <label class="toggle" style="transform:scale(1.2);">
+              <input type="checkbox" id="billing-toggle" onchange="togglePricing()">
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-weight:600;color:var(--text-muted);" id="bill-annual-label">Annually <span class="badge badge-success" style="font-size:10px;margin-left:4px;">Save 20%</span></span>
+          </div>
+
+          <div class="pricing-grid reveal delay-4">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+              <div class="pricing-header">
+                <h3>Starter</h3>
+                <p>For individuals starting their journey</p>
+                <div class="pricing-price">
+                  <span class="currency">$</span><span class="amount">0</span><span class="period">/mo</span>
+                </div>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Basic Life Score</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 1 Active Goal per Domain</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Manual Tracker</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Community Support</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> AI Coach Access</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> Advanced Analytics</div>
+              </div>
+              <button class="btn btn-outline btn-full" onclick="Router.navigate('/auth/register')">Get Started Free</button>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="pricing-card popular">
+              <div class="pricing-badge">Most Popular</div>
+              <div class="pricing-header">
+                <h3>Growth</h3>
+                <p>For professionals seeking serious growth</p>
+                <div class="pricing-price">
+                  <span class="currency">$</span><span class="amount price-val" data-monthly="9.99" data-annual="7.99">9.99</span><span class="period">/mo</span>
+                </div>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Advanced Life Score</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Unlimited Goals</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> AI Coach (100 msgs/mo)</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Automated Tracking</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Smart Alerts</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> 1-on-1 Human Coaching</div>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="Router.navigate('/auth/register')">Start 14-Day Free Trial</button>
+            </div>
+
+            <!-- Elite Plan -->
+            <div class="pricing-card">
+              <div class="pricing-header">
+                <h3>Elite</h3>
+                <p>For high-achievers and business owners</p>
+                <div class="pricing-price">
+                  <span class="currency">$</span><span class="amount price-val" data-monthly="29.99" data-annual="23.99">29.99</span><span class="period">/mo</span>
+                </div>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Everything in Growth</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Unlimited AI Coach</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Priority Support</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Custom Data Integrations</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Advanced Market Intel</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 1-on-1 Quarterly Review</div>
+              </div>
+              <button class="btn btn-outline btn-full" onclick="Router.navigate('/auth/register')">Upgrade to Elite</button>
+            </div>
+          </div>
+          
+          <div class="faq-section reveal" style="margin-top:80px;text-align:left;max-width:800px;margin-left:auto;margin-right:auto;">
+            <h2 class="text-center" style="margin-bottom:40px;">Frequently Asked Questions</h2>
+            <div class="card-glass" style="margin-bottom:16px;">
+              <h4 style="margin-bottom:8px;">Can I switch between plans?</h4>
+              <p style="color:var(--text-secondary);font-size:14px;">Yes, you can upgrade or downgrade your plan at any time. Prorated charges or credits will be applied automatically.</p>
+            </div>
+            <div class="card-glass" style="margin-bottom:16px;">
+              <h4 style="margin-bottom:8px;">Is there a discount for students?</h4>
+              <p style="color:var(--text-secondary);font-size:14px;">Yes! We offer a 50% discount on the Growth plan for verified students. Contact support with your .edu email address.</p>
+            </div>
+            <div class="card-glass" style="margin-bottom:16px;">
+              <h4 style="margin-bottom:8px;">What happens when my free trial ends?</h4>
+              <p style="color:var(--text-secondary);font-size:14px;">If you haven't added a payment method, your account will automatically downgrade to the free Starter plan. You won't lose your data, but premium features will be locked.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="landing-footer" style="margin-top:0;">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-brand"><span class="text-gradient">🧭 LifeGPS</span></div>
+            <p class="footer-desc">The intelligent life management platform that grows with you from student to retiree.</p>
+          </div>
+          <div>
+            <div class="footer-title">Product</div>
+            <div class="footer-links">
+              <a onclick="Router.navigate('/')">Home</a>
+              <a onclick="Router.navigate('/auth/register')">Get Started</a>
+            </div>
+          </div>
+          <div>
+            <div class="footer-title">Legal</div>
+            <div class="footer-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  `;
+  
+  // Attach toggle logic after render
+  window.togglePricing = function() {
+    const isAnnual = document.getElementById('billing-toggle').checked;
+    const l1 = document.getElementById('bill-monthly-label');
+    const l2 = document.getElementById('bill-annual-label');
+    
+    if (isAnnual) {
+      l1.style.color = 'var(--text-muted)';
+      l2.style.color = 'var(--text-primary)';
     } else {
-      container.innerHTML = `
-        <div class="app-shell--public">
-          <nav class="landing-nav landing-nav--scrolled">
-            <a class="landing-nav__brand" href="#/">
-              <div class="landing-nav__logo">🧭</div>
-              <span class="landing-nav__name">LifeGPS</span>
-            </a>
-            <div class="landing-nav__links">
-              <span class="landing-nav__link" onclick="Router.navigate('/')">Home</span>
-              <button class="btn btn--primary btn--sm" onclick="Router.navigate('/identity')">Get Started</button>
-            </div>
-          </nav>
-          <div style="padding: calc(72px + var(--space-8)) var(--space-6) var(--space-12);">
-            ${this._getContent()}
-          </div>
-          <footer class="landing-footer">
-            <p class="landing-footer__text">© 2026 LifeGPS — Your Life Navigator</p>
-          </footer>
-        </div>
-      `;
+      l1.style.color = 'var(--text-primary)';
+      l2.style.color = 'var(--text-muted)';
     }
-  },
+    
+    document.querySelectorAll('.price-val').forEach(el => {
+      el.textContent = isAnnual ? el.dataset.annual : el.dataset.monthly;
+    });
+  };
 
-  _getContent() {
-    return `
-      <div class="stagger-in">
-        <div style="text-align: center; margin-bottom: var(--space-10);">
-          <div class="label mb-4" style="color: var(--color-primary-light)">PRICING PLANS</div>
-          <h2 style="margin-bottom: var(--space-3);">Invest in Your <span class="text-gradient">Entire Life</span></h2>
-          <p class="text-secondary" style="max-width: 500px; margin-inline: auto;">
-            Every plan includes AI-powered guidance across all 5 life domains. Upgrade for deeper insights and premium features.
-          </p>
-        </div>
-
-        <div class="pricing-grid">
-          <!-- Free -->
-          <div class="pricing-card">
-            <div class="pricing-card__name">Starter</div>
-            <div class="pricing-card__price">$0<span>/mo</span></div>
-            <div class="pricing-card__desc">Perfect for exploring what LifeGPS can do</div>
-            <div class="pricing-card__features">
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Basic dashboard (all 5 domains)</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>AI Coach (5 messages/day)</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Goal tracking (3 active goals)</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Basic career roadmap</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Health habit tracker</span>
-              </div>
-            </div>
-            <button class="btn btn--secondary btn--full" onclick="App.showToast('success', 'Already Free!', 'You are on the free plan.')">Current Plan</button>
-          </div>
-
-          <!-- Growth -->
-          <div class="pricing-card">
-            <div class="pricing-card__name">Growth</div>
-            <div class="pricing-card__price">$9.99<span>/mo</span></div>
-            <div class="pricing-card__desc">For serious self-improvers ready to level up</div>
-            <div class="pricing-card__features">
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Everything in Starter</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Unlimited AI Coach</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Advanced analytics</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Career skill gap analysis</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Financial forecasting</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Unlimited goals</span>
-              </div>
-            </div>
-            <button class="btn btn--primary btn--full" onclick="App.showToast('info', 'Coming Soon', 'Subscriptions launching soon!')">Upgrade →</button>
-          </div>
-
-          <!-- Pro (Featured) -->
-          <div class="pricing-card pricing-card--featured">
-            <div class="pricing-card__name">Pro</div>
-            <div class="pricing-card__price">$29.99<span>/mo</span></div>
-            <div class="pricing-card__desc">The complete life management experience</div>
-            <div class="pricing-card__features">
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Everything in Growth</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>AI Career & Salary Coach</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Predictive life analytics</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Investment portfolio builder</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Peer benchmarking</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Priority support</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Accountability groups</span>
-              </div>
-            </div>
-            <button class="btn btn--primary btn--full" onclick="App.showToast('info', 'Coming Soon', 'Subscriptions launching soon!')" style="box-shadow: var(--shadow-glow-primary)">Get Pro →</button>
-          </div>
-
-          <!-- Elite -->
-          <div class="pricing-card">
-            <div class="pricing-card__name">Elite</div>
-            <div class="pricing-card__price">$99<span>/mo</span></div>
-            <div class="pricing-card__desc">For executives and serious business owners</div>
-            <div class="pricing-card__features">
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Everything in Pro</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>1:1 monthly coaching call</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Business financial dashboard</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>Exit strategy planning</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>White-glove onboarding</span>
-              </div>
-              <div class="pricing-card__feature">
-                <span class="pricing-card__check">✓</span>
-                <span>API access</span>
-              </div>
-            </div>
-            <button class="btn btn--accent btn--full" onclick="App.showToast('info', 'Coming Soon', 'Subscriptions launching soon!')">Contact Sales →</button>
-          </div>
-        </div>
-
-        <!-- FAQ -->
-        <div style="max-width: 700px; margin: var(--space-16) auto 0; text-align: center;">
-          <h3 style="margin-bottom: var(--space-8);">Frequently Asked Questions</h3>
-          <div class="glass-card" style="text-align: left;">
-            ${[
-              { q: 'Can I switch plans anytime?', a: 'Yes! Upgrade or downgrade at any time. Changes take effect immediately.' },
-              { q: 'Is there a free trial?', a: 'The Starter plan is free forever. Growth and Pro plans include a 14-day free trial.' },
-              { q: 'What payment methods do you accept?', a: 'Credit cards, debit cards, and PayPal. Enterprise plans support invoicing.' },
-              { q: 'Can I export my data?', a: 'Absolutely! Your data is yours. Export anytime from Settings.' }
-            ].map(faq => `
-              <div style="padding: var(--space-4) 0; border-bottom: 1px solid var(--glass-border);">
-                <div style="font-weight: 600; font-size: var(--text-sm); margin-bottom: var(--space-2);">${faq.q}</div>
-                <div style="font-size: var(--text-sm); color: var(--text-secondary);">${faq.a}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-};
+  return content;
+}
