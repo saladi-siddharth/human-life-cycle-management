@@ -167,6 +167,7 @@ function handleLogin() {
     return;
   }
   Store.login(email, password);
+  EmailService.sendSecurityAlert('Login Attempt', `Successful login for user ${email} at ${new Date().toLocaleTimeString()}`, email);
   UI.toast('success', 'Welcome Back!', 'You have been signed in successfully.');
   if (Store.isOnboarded()) {
     Router.navigate('/dashboard');
@@ -177,6 +178,7 @@ function handleLogin() {
 
 function handleGoogleLogin() {
   Store.loginWithGoogle();
+  EmailService.sendSecurityAlert('Google OAuth Login', 'Successful Google Authentication on BioVerse platform.');
   UI.toast('success', 'Google Sign-In', 'Successfully signed in with Google.');
   if (Store.isOnboarded()) {
     Router.navigate('/dashboard');
@@ -214,7 +216,8 @@ function handleRegister() {
   }
 
   Store.register(name, email, password);
-  UI.toast('success', 'Account Created!', 'Welcome to LifeGPS! Let\'s set up your profile.');
+  EmailService.sendWelcomeEmail(name, email);
+  UI.toast('success', 'Account Created!', 'Welcome to BioVerse! Let\'s set up your profile.');
   Router.navigate('/onboarding/identity');
 }
 
@@ -224,6 +227,7 @@ function handleForgotPassword() {
     UI.toast('error', 'Invalid Email', 'Please enter a valid email address.');
     return;
   }
+  EmailService.sendSecurityAlert('Password Reset Request', `Password reset token requested for ${email}`, email);
   UI.toast('success', 'Reset Link Sent', `We've sent a password reset link to ${email}`);
   setTimeout(() => Router.navigate('/auth/login'), 2000);
 }

@@ -15,7 +15,7 @@ function DashboardPage() {
     <div class="dashboard-page">
       ${UI.sectionHeader(
         `Welcome back, ${profile.name || 'Rohan'}! 👋`,
-        `Here is your real-time LifeGPS overview. Your Life Master Score is ${scores.life || 78}/100.`,
+        `Here is your real-time BioVerse overview. Your Life Master Score is ${scores.life || 78}/100.`,
         `<button class="btn btn-primary btn-sm" onclick="Router.navigate('/dashboard/coach')">🤖 Ask AI Coach</button>`
       )}
 

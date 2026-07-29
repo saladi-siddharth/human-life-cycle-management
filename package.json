@@ -1,0 +1,19 @@
+{
+  "name": "bioverse-india",
+  "version": "2.4.0",
+  "description": "BioVerse — Intelligent Life Management Platform with Machine Learning & Gmail SMTP Dispatcher",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "bioverse",
+    "life-management",
+    "ai-coach",
+    "machine-learning",
+    "gmail-smtp",
+    "india"
+  ],
+  "author": "BioVerse Team",
+  "license": "MIT"
+}

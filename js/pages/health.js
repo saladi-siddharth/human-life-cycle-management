@@ -139,6 +139,10 @@ function HealthPage() {
 // ─── Health Interactive Handlers ───────────────────────────
 function quickAddWater(amount) {
   Store.logWater(amount);
+  const healthData = Store.get('health') || {};
+  if (healthData.waterIntake >= (healthData.waterTarget || 2500)) {
+    EmailService.sendHealthAlert('Hydration Goal Achieved! 🎉', `You hit your 2,500ml daily target (${healthData.waterIntake}ml logged).`);
+  }
   UI.toast('success', 'Hydration Logged', `Added +${amount}ml of water to your daily total.`);
   Router.render();
 }
@@ -171,6 +175,11 @@ function saveSleepForm(e) {
   const hours = document.getElementById('sleep-hours').value;
   const quality = document.getElementById('sleep-quality').value;
   Store.logSleep({ hours, quality });
+  if (Number(hours) < 6.5 || Number(quality) <= 2) {
+    EmailService.sendHealthAlert('Sleep Debt Alert ⚠️', `Recorded ${hours} hours of sleep (Rating: ${quality}/5 stars). Review your recovery protocol.`);
+  } else {
+    EmailService.sendHealthAlert('Sleep Logged 😴', `Recorded ${hours} hours of sleep with quality rating ${quality}/5 stars.`);
+  }
   UI.closeModal();
   UI.toast('success', 'Sleep Recorded', 'Your sleep recovery metrics have been updated.');
   Router.render();
@@ -206,6 +215,7 @@ function saveWorkoutForm(e) {
   const duration = document.getElementById('workout-dur').value;
   const calories = document.getElementById('workout-cal').value;
   Store.logWorkout({ type, duration, calories });
+  EmailService.sendHealthAlert('Workout Completed 💪', `Completed ${duration} mins of ${type} (${calories} kcal burned).`);
   UI.closeModal();
   UI.toast('success', 'Workout Logged!', `Great job! Recorded ${duration} mins of ${type}.`);
   Router.render();

@@ -163,6 +163,7 @@ function saveTaskForm(e) {
   const title = document.getElementById('task-title').value;
   const quadrant = document.getElementById('task-quad').value;
   Store.addTask({ title, quadrant, domain: 'work' });
+  EmailService.sendWorkAlert('Eisenhower Task Added', `New Task "${title}" assigned to Matrix ${quadrant.toUpperCase()}`);
   UI.closeModal();
   UI.toast('success', 'Task Created', 'Added new task to your matrix.');
   Router.render();

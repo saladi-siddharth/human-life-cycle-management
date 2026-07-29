@@ -11,7 +11,7 @@ const Store = {
     onboardingComplete: true,
     profile: {
       name: 'Rohan Sharma',
-      email: 'rohan.sharma@lifegps.in',
+      email: 'rohan.sharma@bioverse.in',
       avatar: '',
       lifeStage: 'Higher Education & Career Build',
       goalIntensity: 'ambitious',
@@ -200,11 +200,11 @@ const Store = {
 
   _notify() { this._listeners.forEach(fn => fn(this._state)); },
   _save() {
-    try { localStorage.setItem('lifegps_state', JSON.stringify(this._state)); } catch (e) {}
+    try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
   },
   _load() {
     try {
-      const saved = localStorage.getItem('lifegps_state');
+      const saved = localStorage.getItem('bioverse_state');
       if (saved) {
         const data = JSON.parse(saved);
         Object.assign(this._state, data);
@@ -409,7 +409,7 @@ const Store = {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `lifegps_india_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `bioverse_india_backup_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   },
@@ -433,6 +433,110 @@ const Store = {
       { type: 'student', icon: '🏆', title: 'NSP Scholarship Deadline', text: 'Central Sector Scheme application verification ends soon.', time: '1h ago', unread: true },
       { type: 'finance', icon: '💰', title: 'Income & Budget Re-analyzed', text: 'Your monthly savings rate is optimized for Nifty index SIP.', time: '3h ago', unread: false }
     ];
+  },
+
+  addNotification(n) {
+    if (!this._state.notifications) this._state.notifications = [];
+    this._state.notifications.unshift({
+      type: n.type || 'general',
+      icon: n.icon || '🔔',
+      title: n.title,
+      text: n.text,
+      time: n.time || 'Just now',
+      unread: true
+    });
+    this._save();
+    this._notify();
+  },
+
+  // ─── Auth State Management ────────────────────────────────
+  isLoggedIn() {
+    return Boolean(this._state.user && this._state.isAuthenticated);
+  },
+
+  isOnboarded() {
+    return Boolean(this._state.onboardingComplete);
+  },
+
+  login(email, password) {
+    const namePart = email ? email.split('@')[0].replace(/[._]/g, ' ') : 'User';
+    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    this._state.user = { email, name: formattedName };
+    this._state.isAuthenticated = true;
+    if (!this._state.profile.name || this._state.profile.name === 'User') {
+      this._state.profile.name = formattedName;
+    }
+    this._state.profile.email = email;
+    this._save();
+    this._notify();
+  },
+
+  loginWithGoogle() {
+    this._state.user = { email: 'rohan.sharma@bioverse.in', name: 'Rohan Sharma' };
+    this._state.isAuthenticated = true;
+    this._state.profile.name = 'Rohan Sharma';
+    this._state.profile.email = 'rohan.sharma@bioverse.in';
+    this._save();
+    this._notify();
+  },
+
+  register(name, email, password) {
+    this._state.user = { email, name };
+    this._state.isAuthenticated = true;
+    this._state.profile.name = name;
+    this._state.profile.email = email;
+    this._state.onboardingComplete = false;
+    this._save();
+    this._notify();
+  },
+
+  logout() {
+    this._state.user = null;
+    this._state.isAuthenticated = false;
+    this._save();
+    this._notify();
+  },
+
+  getInitials() {
+    const name = this._state.profile?.name || this._state.user?.name || 'RS';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  },
+
+  // ─── Career Job Applications ──────────────────────────────
+  addJobApplication(job) {
+    const newJ = {
+      id: 'j_' + Date.now(),
+      company: job.company || 'Company',
+      role: job.role || 'Role',
+      stage: job.stage || 'Applied',
+      salary: job.salary || 'Competitive',
+      appliedDate: new Date().toISOString().split('T')[0],
+      notes: job.notes || 'Tracked via BioVerse'
+    };
+    if (!this._state.career.jobApplications) {
+      this._state.career.jobApplications = [];
+    }
+    this._state.career.jobApplications.unshift(newJ);
+    this.recalculateScores();
+    this._save();
+    this._notify();
+    return newJ;
+  },
+
+  updateJobStage(id, stage) {
+    if (this._state.career && this._state.career.jobApplications) {
+      const j = this._state.career.jobApplications.find(x => x.id === id);
+      if (j) {
+        j.stage = stage;
+        this.recalculateScores();
+        this._save();
+        this._notify();
+      }
+    }
   }
 };
 

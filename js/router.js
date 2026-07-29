@@ -139,6 +139,10 @@ const Router = {
     `;
   },
 
+  _getHashPath() {
+    return window.location.hash.replace(/^#/, '') || '/';
+  },
+
   init() {
     // Reactive subscription: auto-render view on any Store state update
     Store.subscribe(() => {

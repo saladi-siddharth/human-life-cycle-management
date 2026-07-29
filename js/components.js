@@ -52,8 +52,8 @@ const UI = {
     return `
       <nav class="topbar" id="topbar">
         <a class="topbar-brand" onclick="Router.navigate('/')">
-          <span class="brand-icon">🧭</span>
-          <span class="brand-text">LifeGPS</span>
+          <span class="brand-icon">🧬</span>
+          <span class="brand-text">BioVerse</span>
         </a>
         <div class="topbar-nav" id="topbar-nav">
           <a class="topbar-link" onclick="Router.navigate('/')">Home</a>
@@ -83,8 +83,8 @@ const UI = {
           <i class="fas fa-bars"></i>
         </button>
         <a class="topbar-brand" onclick="Router.navigate('/dashboard')">
-          <span class="brand-icon">🧭</span>
-          <span class="brand-text">LifeGPS</span>
+          <span class="brand-icon">🧬</span>
+          <span class="brand-text">BioVerse</span>
         </a>
         <div class="topbar-nav" id="topbar-nav">
           <a class="topbar-link" onclick="Router.navigate('/dashboard')">Dashboard</a>
@@ -303,6 +303,46 @@ const UI = {
           </div>
         </div>
         ${actionLabel ? `<button class="btn btn-primary btn-sm" onclick="${actionHandler}">${actionLabel}</button>` : ''}
+      </div>
+    `;
+  },
+
+  // ─── Aceternity UI Aurora Background ────────────────
+  aurora() {
+    return `<div class="aurora-bg"></div>`;
+  },
+
+  // ─── Aceternity UI Meteor Effects ────────────────────
+  meteors(count = 15) {
+    let html = '<div class="meteors-container" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;">';
+    for (let i = 0; i < count; i++) {
+      const top = Math.floor(Math.random() * 80) - 20;
+      const left = Math.floor(Math.random() * 100) + 10;
+      const delay = (Math.random() * 5).toFixed(2);
+      const duration = (Math.random() * 4 + 3).toFixed(2);
+      const width = Math.floor(Math.random() * 80 + 40);
+      html += `<span class="meteor" style="top:${top}%;left:${left}%;animation-delay:${delay}s;animation-duration:${duration}s;width:${width}px;"></span>`;
+    }
+    html += '</div>';
+    return html;
+  },
+
+  // ─── Magic UI Marquee Loop Component ────────────────
+  marquee(items = []) {
+    const listHtml = items.map(item => `
+      <div class="card-glass hover-lift" style="padding:12px 24px;border-radius:9999px;white-space:nowrap;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+        <span style="font-size:18px;">${item.icon || '✨'}</span>
+        <span style="font-weight:600;font-size:14px;color:var(--text-primary);">${item.text}</span>
+        ${item.sub ? `<span style="font-size:12px;color:var(--indigo-light);background:rgba(99,102,241,0.15);padding:2px 8px;border-radius:12px;">${item.sub}</span>` : ''}
+      </div>
+    `).join('');
+
+    return `
+      <div class="marquee-container" style="margin:24px 0;">
+        <div class="marquee-track">
+          ${listHtml}
+          ${listHtml}
+        </div>
       </div>
     `;
   }

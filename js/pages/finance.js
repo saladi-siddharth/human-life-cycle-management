@@ -221,6 +221,7 @@ function saveTransactionForm(e) {
   const note = document.getElementById('t-note').value;
   
   Store.addTransaction({ type, amount, category, note });
+  EmailService.sendFinanceAlert('Financial Ledger Activity', `Logged ${type.toUpperCase()} of ₹${Number(amount).toLocaleString()} (${category} - ${note || 'General'})`);
   UI.closeModal();
   UI.toast('success', 'Transaction Recorded', `Saved ${type.toUpperCase()} of ₹${Number(amount).toLocaleString()}. Dashboard re-analyzed!`);
   Router.render();

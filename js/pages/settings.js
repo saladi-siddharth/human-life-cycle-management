@@ -1,16 +1,17 @@
 /* ═══════════════════════════════════════════════════════════════════
-   SETTINGS PAGE — Gemini API Config, Data Export/Import & Printable Audit
+   SETTINGS PAGE — Gemini API Config, Gmail SMTP Dispatcher & Audit
    ═══════════════════════════════════════════════════════════════════ */
 
 function SettingsPage() {
   const profile = Store.get('profile') || {};
   const apiKey = Store.get('apiSettings.geminiKey') || '';
+  const emailLogs = Store.get('emailLogs') || [];
 
   const content = `
     <div class="settings-page">
       ${UI.sectionHeader(
         'Account & System Preferences',
-        'Configure AI API integrations, export local JSON backups, and generate full PDF life reports.'
+        'Configure AI API integrations, Gmail SMTP email notifications, export local JSON backups, and generate full PDF reports.'
       )}
 
       <div class="grid grid-2" style="gap:24px;">
@@ -34,11 +35,38 @@ function SettingsPage() {
           </form>
         </div>
 
-        <!-- 2. Data Backup & Local Export/Import -->
+        <!-- 2. Gmail SMTP Notification Settings -->
+        <div class="card card-glass">
+          <h3 style="margin:0 0 16px 0;display:flex;align-items:center;gap:8px;"><i class="fas fa-envelope" style="color:var(--emerald);"></i> Gmail SMTP Email Alert Dispatcher</h3>
+          <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
+            Connected to Gmail SMTP relay for real-time notifications on security events, health targets, financial transactions & task priorities.
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg-tertiary);border-radius:6px;">
+              <span>SMTP Host:</span>
+              <strong style="font-family:var(--font-mono);color:var(--indigo-light);">smtp.gmail.com:465 (SSL)</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg-tertiary);border-radius:6px;">
+              <span>User Email:</span>
+              <strong style="font-family:var(--font-mono);color:var(--emerald);">mahisiddharth721@gmail.com</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg-tertiary);border-radius:6px;">
+              <span>SMTP App Password:</span>
+              <strong style="font-family:var(--font-mono);color:var(--cyan);">mqoqiqzpcfcqvnzp</strong>
+            </div>
+
+            <button class="btn btn-success btn-sm" style="margin-top:6px;" onclick="EmailService.sendTestEmail()">
+              <i class="fas fa-paper-plane"></i> Send Test Gmail Alert
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Data Backup & Local Export/Import -->
         <div class="card card-glass">
           <h3 style="margin:0 0 16px 0;display:flex;align-items:center;gap:8px;"><i class="fas fa-database" style="color:var(--cyan);"></i> Data Backup & Recovery</h3>
           <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
-            LifeGPS is local-first. You own your data. Download a JSON snapshot or restore from a previous backup file.
+            BioVerse is local-first. You own your data. Download a JSON snapshot or restore from a previous backup file.
           </p>
 
           <div style="display:flex;flex-direction:column;gap:10px;">
@@ -48,16 +76,51 @@ function SettingsPage() {
           </div>
         </div>
 
-        <!-- 3. Comprehensive Printable Life Audit Report -->
+        <!-- 4. Printable Audit Report -->
+        <div class="card card-glass">
+          <h3 style="margin:0 0 16px 0;display:flex;align-items:center;gap:8px;"><i class="fas fa-file-pdf" style="color:var(--purple);"></i> Life Audit & PDF Report</h3>
+          <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
+            Generate a print-ready document containing 5 domain scores, health logs, double-entry ledger, and goals.
+          </p>
+          <button class="btn btn-accent" style="width:100%;" onclick="window.print()"><i class="fas fa-print"></i> Print / Download PDF</button>
+        </div>
+
+        <!-- 5. Live Email Dispatch Activity Log -->
         <div class="card card-glass" style="grid-column: span 2;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div>
-              <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-file-pdf" style="color:var(--purple);"></i> Generate Full Life Audit & Action Plan</h3>
-              <p style="margin:4px 0 0 0;font-size:var(--text-xs);color:var(--text-secondary);">
-                Creates a beautiful, print-ready document containing your 5 domain scores, health logs, double-entry financial ledger, and active goals.
-              </p>
-            </div>
-            <button class="btn btn-accent" onclick="window.print()"><i class="fas fa-print"></i> Print / Download PDF Report</button>
+          <h3 style="margin:0 0 14px 0;display:flex;align-items:center;gap:8px;"><i class="fas fa-history" style="color:var(--warning);"></i> SMTP Dispatch Activity Log</h3>
+          <div style="overflow-x:auto;">
+            <table class="table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Recipient</th>
+                  <th>Subject</th>
+                  <th>Timestamp</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${emailLogs.length === 0 ? `
+                  <tr>
+                    <td colspan="5" style="text-align:center;color:var(--text-muted);padding:16px;">
+                      No email dispatches recorded yet. Try logging in, recording a transaction, or clicking 'Send Test Gmail Alert'!
+                    </td>
+                  </tr>
+                ` : emailLogs.slice(0, 10).map(l => `
+                  <tr>
+                    <td><span class="badge badge-primary">${l.category}</span></td>
+                    <td style="font-family:var(--font-mono);">${l.to}</td>
+                    <td><strong>${l.subject}</strong></td>
+                    <td style="color:var(--text-muted);">${l.timestamp}</td>
+                    <td>
+                      <span class="badge ${l.status === 'sent' ? 'badge-success' : 'badge-info'}">
+                        <i class="fas ${l.status === 'sent' ? 'fa-check-circle' : 'fa-paper-plane'}"></i> ${l.status.toUpperCase()}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -97,4 +160,5 @@ function handleJSONImport(e) {
 window.saveGeminiKey = saveGeminiKey;
 window.toggleKeyVisibility = toggleKeyVisibility;
 window.handleJSONImport = handleJSONImport;
+
 
