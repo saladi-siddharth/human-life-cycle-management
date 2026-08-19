@@ -1068,35 +1068,202 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Water Intake Bottle Gauge */
-.water-gauge-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--glass-border);
-}
-.water-bottle {
-  width: 90px;
-  height: 180px;
-  border: 3px solid var(--cyan);
-  border-radius: 12px 12px 24px 24px;
+/* ─── 3D Water Glass Tumbler & Fluid Dynamics ─── */
+.tumbler-3d-outer {
+  width: 130px;
+  height: 220px;
+  border-radius: 12px 12px 28px 28px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(6, 182, 212, 0.08) 100%);
+  backdrop-filter: blur(16px);
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset -6px 0 12px rgba(255, 255, 255, 0.15), inset 6px 0 16px rgba(0, 0, 0, 0.4), 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.25);
   position: relative;
   overflow: hidden;
   margin: 16px 0;
-  background: rgba(6, 182, 212, 0.05);
+  cursor: pointer;
+  perspective: 600px;
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.water-fill {
+
+.tumbler-3d-outer:hover {
+  transform: translateY(-4px) scale(1.03) rotate(-2deg);
+  box-shadow: inset -6px 0 14px rgba(255, 255, 255, 0.25), inset 6px 0 18px rgba(0, 0, 0, 0.5), 0 22px 42px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.4);
+}
+
+/* Glass Top Rim Ellipse Refraction */
+.glass-rim-3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Specular Light Highlights */
+.glass-glare {
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  width: 14px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9;
+}
+.glare-left { left: 8px; }
+.glare-right { right: 8px; background: linear-gradient(-90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); }
+
+/* Heavy Glass Bottom Base */
+.glass-base-3d {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(180deg, #06b6d4, #3b82f6);
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 -4px 12px rgba(6, 182, 212, 0.4);
+  height: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.3) 100%);
+  border-radius: 0 0 24px 24px;
+  box-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.4);
+  z-index: 8;
+  pointer-events: none;
 }
+
+/* Water Liquid Body */
+.water-liquid-3d {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.85) 0%, rgba(14, 165, 233, 0.9) 40%, rgba(2, 132, 199, 0.95) 100%);
+  box-shadow: inset 0 4px 12px rgba(255, 255, 255, 0.3), 0 -8px 24px rgba(56, 189, 248, 0.4);
+  transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Dynamic 3D Liquid Wave Surface */
+.water-surface-3d {
+  position: absolute;
+  top: -12px;
+  left: -20%;
+  right: -20%;
+  height: 24px;
+  pointer-events: none;
+}
+
+.wave-layer {
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 C150,90 350,-40 500,40 C650,120 900,-20 1200,30 L1200,120 L0,120 Z' fill='%2338bdf8' opacity='0.75'/%3E%3C/svg%3E") repeat-x;
+  background-size: 600px 24px;
+  animation: waveMove 3s linear infinite;
+}
+
+.wave-layer.wave-2 {
+  opacity: 0.4;
+  animation: waveMove 2.2s linear infinite reverse;
+  top: 4px;
+}
+
+@keyframes waveMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-600px); }
+}
+
+.surface-wave-active {
+  animation: surfaceSlosh 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes surfaceSlosh {
+  0%, 100% { transform: rotate(0deg) scaleY(1); }
+  25% { transform: rotate(-8deg) scaleY(1.4); }
+  75% { transform: rotate(6deg) scaleY(1.2); }
+}
+
+.glass-slosh-anim {
+  animation: glassShake 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes glassShake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-6deg) translateY(-2px); }
+  40% { transform: rotate(5deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(2deg); }
+}
+
+/* Floating 3D Translucent Ice Cubes */
+.ice-cube-3d {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  box-shadow: inset -2px -2px 6px rgba(0,0,0,0.2), inset 2px 2px 6px rgba(255,255,255,0.7), 0 4px 10px rgba(0,0,0,0.2);
+  backdrop-filter: blur(4px);
+  animation: iceBob 2.8s infinite alternate ease-in-out;
+}
+
+.ice-cube-3d.ice-1 {
+  top: 8px;
+  left: 20%;
+  transform: rotate(18deg);
+  animation-delay: 0s;
+}
+
+.ice-cube-3d.ice-2 {
+  top: 18px;
+  right: 22%;
+  transform: rotate(-25deg);
+  animation-delay: 1.2s;
+}
+
+@keyframes iceBob {
+  0% { transform: translateY(0px) rotate(15deg); }
+  100% { transform: translateY(10px) rotate(-15deg); }
+}
+
+/* Rising Air Bubbles */
+.bubble-3d {
+  position: absolute;
+  bottom: -10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  box-shadow: inset -1px -1px 2px rgba(0,0,0,0.3), 0 0 6px rgba(255,255,255,0.8);
+  animation: bubbleRise 3.5s infinite ease-in;
+}
+
+.bubble-3d.b1 { width: 8px; height: 8px; left: 25%; animation-duration: 3.2s; animation-delay: 0.2s; }
+.bubble-3d.b2 { width: 5px; height: 5px; left: 55%; animation-duration: 2.7s; animation-delay: 1.1s; }
+.bubble-3d.b3 { width: 10px; height: 10px; left: 70%; animation-duration: 4.1s; animation-delay: 0.5s; }
+.bubble-3d.b4 { width: 6px; height: 6px; left: 40%; animation-duration: 2.9s; animation-delay: 1.8s; }
+
+@keyframes bubbleRise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-180px) scale(1.2); opacity: 0; }
+}
+
+/* 3D Liquid Pour Stream */
+.liquid-pour-stream-3d {
+  position: fixed;
+  width: 8px;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 12px #38bdf8;
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
 
 /* Pomodoro Digital Timer */
 .pomodoro-display {

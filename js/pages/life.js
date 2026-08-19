@@ -73,7 +73,7 @@ function LifePage() {
 
         <div style="display:flex;flex-direction:column;gap:12px;">
           ${goals.map(g => `
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+            <div id="goal-row-${g.id}" style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);transition:all 0.2s ease;">
               <div style="display:flex;align-items:center;gap:12px;">
                 <input type="checkbox" ${g.completed ? 'checked' : ''} onchange="toggleGoalDone('${g.id}')">
                 <div>
@@ -83,7 +83,9 @@ function LifePage() {
               </div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <span class="badge ${g.completed ? 'badge-success' : 'badge-primary'}">${g.completed ? 'Achieved 🎉' : `${g.progress}% Done`}</span>
-                <button class="btn btn-ghost btn-sm" style="padding:2px 6px;" onclick="deleteGoalItem('${g.id}')">✕</button>
+                <button class="btn-delete-epic btn-delete-sm" onclick="deleteGoalItem('${g.id}', this.closest('#goal-row-${g.id}'))" data-tooltip="Crumple & Toss Goal">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
               </div>
             </div>
           `).join('') || '<p style="color:var(--text-muted);">No life goals created yet. Click "Add New Life Goal" above!</p>'}
@@ -101,9 +103,13 @@ function toggleGoalDone(id) {
   Router.render();
 }
 
-function deleteGoalItem(id) {
-  Store.deleteLifeGoal(id);
-  Router.render();
+function deleteGoalItem(id, element) {
+  const el = element || document.getElementById(`goal-row-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteLifeGoal(id);
+    UI.toast('info', 'Goal Tossed', 'Goal milestone crumpled and tossed to trash bin.');
+    Router.render();
+  });
 }
 
 function openLifeGoalModal() {
@@ -150,7 +156,8 @@ function saveLifeGoalForm(e) {
 
   Store.addLifeGoal({ title, category, targetYear, progress });
   UI.closeModal();
-  UI.toast('success', 'Life Goal Added!', `Saved "${title}" under ${category}.`);
+  ActionPhysics.slothCelebration(title);
+  UI.toast('success', 'Life Goal Added! 🦥🎉', `Saved "${title}" under ${category}. Cute sloth celebrated!`);
   Router.render();
 }
 

@@ -1261,12 +1261,821 @@
   font-weight: 500;
   margin-bottom: 2px;
 }
-.notification-text {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-}
 .notification-time {
   font-size: var(--text-xs);
   color: var(--text-dim);
   white-space: nowrap;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   SUPER LOGIN PAGE & OTP SLOT MACHINE CURSOR SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+.auth-page-super {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 20%, #111827 0%, #070913 70%, #030408 100%);
+}
+
+.auth-canvas-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.super-auth-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 40px 32px;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7),
+              0 18px 36px -18px rgba(99, 102, 241, 0.35),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.super-auth-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 29px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.4), rgba(121, 40, 202, 0.2), rgba(255, 255, 255, 0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.auth-tabs {
+  display: flex;
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-tab:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.auth-tab.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.8), rgba(124, 58, 237, 0.8));
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* ─── SLOT MACHINE OTP FIELD ──────────────────────────────────────── */
+.code__field {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0 16px;
+  user-select: none;
+}
+
+.slots__container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  position: relative;
+  padding: 6px;
+}
+
+.code_cursor, .code__cursor {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 52px;
+  height: 64px;
+  border-radius: 16px;
+  border: 2px solid #00f2fe;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.6), inset 0 0 12px rgba(0, 242, 254, 0.3);
+  pointer-events: none;
+  transition: transform 0.46s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+  opacity: 0;
+  animation: cursorBeamPulse 2s infinite alternate;
+}
+
+.code_cursor.active, .code__cursor.active {
+  opacity: 1;
+}
+
+.slot {
+  position: relative;
+  width: 52px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.slot input, .slot__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 24px;
+}
+
+.slot__win {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.slot:hover .slot__win {
+  border-color: rgba(0, 242, 254, 0.5);
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+}
+
+.slot__digit {
+  font-family: 'JetBrains Mono', monospace, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(0, 242, 254, 0.8);
+  display: inline-block;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slot__park {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.slot__arc {
+  stroke-dasharray: .13 .87;
+  stroke-dashoffset: 1;
+  fill: none;
+  stroke: url(#slotGradient);
+  stroke-width: 2.5;
+  transition: stroke-dashoffset 0.64s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slot.filled .slot__arc {
+  stroke-dashoffset: 0;
+}
+
+.slot.filled .slot__win {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.3);
+}
+
+/* Helper Buttons & Badges */
+.otp-helper-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.btn-auto-fill {
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #818cf8;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px auto 0;
+}
+
+.btn-auto-fill:hover {
+  background: rgba(99, 102, 241, 0.25);
+  color: #ffffff;
+  border-color: #818cf8;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.security-badge-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-size: 12px;
+  color: #64748b;
+  letter-spacing: 0.3px;
+}
+
+.security-badge-footer i {
+  color: #10b981;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   INTERACTIVE LAMP PHYSICS, CUTE PANDA & LIQUID GLASS UI
+   ══════════════════════════════════════════════════════════════════ */
+.room {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 40px;
+  background: #05070d;
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.room.is-on {
+  background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 55%, #070a14 100%);
+}
+
+/* ─── SIDE-BY-SIDE SPLIT STAGE ─────────────────────────────────────── */
+.lamp-room-stage {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 54px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 840px) {
+  .lamp-room-stage {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* ─── PULL LAMP LEFT COLUMN ──────────────────────────────────────── */
+.lamp-left-column {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  height: 480px;
+  z-index: 15;
+}
+
+.lamp-svg-container {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.lamp-svg-container svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lamp_light {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.room.is-on .lamp_light {
+  opacity: 0.9;
+}
+
+.lamp__head {
+  transform-origin: top center;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.room.is-on .lamp__head {
+  transform: rotate(0deg);
+  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.9));
+}
+
+.pull {
+  cursor: grab;
+  pointer-events: all;
+  outline: none;
+  transition: filter 0.2s ease;
+}
+
+.pull:hover {
+  filter: drop-shadow(0 0 14px #fbbf24);
+}
+
+.pull:active {
+  cursor: grabbing;
+}
+
+.rope {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.ropehit {
+  fill: transparent;
+  cursor: grab;
+}
+
+.bead {
+  fill: url(#beadGradient);
+  stroke: #fbbf24;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.8));
+  transition: transform 0.1s ease;
+}
+
+.lamp-hint-tag {
+  position: relative;
+  margin-top: 16px;
+  background: rgba(251, 191, 36, 0.18);
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 700;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.3);
+  z-index: 20;
+  transition: opacity 0.4s ease;
+}
+
+.room.is-on .lamp-hint-tag {
+  opacity: 0.85;
+}
+
+/* ─── CUTE PANDA AVATAR ───────────────────────────────────────────── */
+.panda-container {
+  width: 130px;
+  height: 120px;
+  margin: 0 auto -20px;
+  position: relative;
+  z-index: 20;
+}
+
+.panda-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.panda-hand-left, .panda-hand-right {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: bottom center;
+}
+
+/* Cover eyes pose when typing password */
+.panda-container.covering .panda-hand-left {
+  transform: translate(22px, -36px) rotate(22deg);
+}
+
+.panda-container.covering .panda-hand-right {
+  transform: translate(-22px, -36px) rotate(-22deg);
+}
+
+/* Peeking pose when password is toggled to text */
+.panda-container.peeking .panda-hand-left {
+  transform: translate(14px, -32px) rotate(10deg);
+}
+
+.panda-container.peeking .panda-hand-right {
+  transform: translate(-14px, -32px) rotate(-10deg);
+}
+
+/* ─── LIQUID GLASS UI CARD ────────────────────────────────────────── */
+.liquid-glass-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  z-index: 10;
+}
+
+.liquid-blob-1 {
+  position: absolute;
+  top: -40px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.35) 0%, rgba(124, 58, 237, 0.2) 70%, transparent 100%);
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  animation: liquidBlobFloat 14s ease-in-out infinite;
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.liquid-blob-2 {
+  position: absolute;
+  bottom: -40px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.35) 0%, rgba(79, 70, 229, 0.2) 70%, transparent 100%);
+  border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+  animation: liquidBlobFloat 18s ease-in-out infinite reverse;
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.liquid-glass-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 32px;
+  padding: 40px 32px 32px;
+  box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.75),
+              0 0 30px rgba(0, 242, 254, 0.15),
+              inset 0 1.5px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease, opacity 0.4s ease, filter 0.4s ease;
+}
+
+.room:not(.is-on) .liquid-glass-card {
+  opacity: 0.75;
+  filter: brightness(0.7);
+}
+
+.room.is-on .liquid-glass-card {
+  opacity: 1;
+  filter: brightness(1);
+  box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.8),
+              0 0 40px rgba(251, 191, 36, 0.2),
+              inset 0 1.5px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Phone Auth Input Group */
+.phone-input-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.phone-prefix-select {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(10px);
+}
+
+.phone-prefix-select option {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* ─── ULTRA-FUTURISTIC CYBER MICROCHIP VAULT ──────────────────────── */
+.lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 20px;
+  padding: 20px 18px;
+  background: rgba(4, 9, 24, 0.75);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  border-radius: 24px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f2fe, transparent);
+  animation: shimmer 3s infinite;
+}
+
+.chip {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid rgba(0, 242, 254, 0.3);
+  border-radius: 22px;
+  box-shadow: 0 0 24px rgba(0, 242, 254, 0.15), inset 0 0 12px rgba(0, 242, 254, 0.1);
+  transition: all 0.4s ease;
+}
+
+.chip-pins {
+  position: absolute;
+  inset: -6px;
+  pointer-events: none;
+}
+
+.chip-pins .pin {
+  position: absolute;
+  background: #00f2fe;
+  box-shadow: 0 0 8px #00f2fe;
+  opacity: 0.6;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.pin.p-top { top: 0; left: 20%; right: 20%; height: 3px; }
+.pin.p-right { right: 0; top: 20%; bottom: 20%; width: 3px; }
+.pin.p-bottom { bottom: 0; left: 20%; right: 20%; height: 3px; }
+.pin.p-left { left: 0; top: 20%; bottom: 20%; width: 3px; }
+
+.door {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease;
+}
+
+.door svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Titanium Locking Bolts */
+.bolt {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.4s ease, opacity 0.3s ease;
+  opacity: 0.35;
+}
+
+.bolt-top { transform: translateY(-8px); }
+.bolt-right { transform: translateX(8px); }
+.bolt-bottom { transform: translateY(8px); }
+.bolt-left { transform: translateX(-8px); }
+
+/* Tier 3 & Tier 4 Bolt Clamping */
+.door.tier-3 ~ .vault-bolts .bolt-top, .door.tier-4 ~ .vault-bolts .bolt-top { transform: translateY(5px); fill: #10b981; opacity: 1; filter: drop-shadow(0 0 8px #10b981); }
+.door.tier-3 ~ .vault-bolts .bolt-right, .door.tier-4 ~ .vault-bolts .bolt-right { transform: translateX(-5px); fill: #10b981; opacity: 1; filter: drop-shadow(0 0 8px #10b981); }
+.door.tier-3 ~ .vault-bolts .bolt-bottom, .door.tier-4 ~ .vault-bolts .bolt-bottom { transform: translateY(-5px); fill: #10b981; opacity: 1; filter: drop-shadow(0 0 8px #10b981); }
+.door.tier-3 ~ .vault-bolts .bolt-left, .door.tier-4 ~ .vault-bolts .bolt-left { transform: translateX(5px); fill: #10b981; opacity: 1; filter: drop-shadow(0 0 8px #10b981); }
+
+/* Shackle Motion */
+.vault-shackle {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.4s ease;
+}
+
+.door.tier-1 .vault-shackle { transform: translateY(-8px); stroke: #ef4444; }
+.door.tier-2 .vault-shackle { transform: translateY(-4px); stroke: #f59e0b; }
+.door.tier-3 .vault-shackle { transform: translateY(0px); stroke: #00f2fe; }
+.door.tier-4 .vault-shackle { transform: translateY(6px); stroke: #10b981; }
+
+/* Laser Scan Sweep */
+.laser-scan-line {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.door.tier-4 .laser-scan-line {
+  opacity: 1;
+  animation: laserScanSweep 1.4s ease-in-out infinite alternate;
+}
+
+.circuit-ring {
+  transform-origin: center;
+  animation: spin 16s linear infinite;
+}
+
+.door.tier-1 { transform: rotate(-35deg) scale(0.9); filter: drop-shadow(0 0 8px #ef4444); }
+.door.tier-2 { transform: rotate(-15deg) scale(0.98); filter: drop-shadow(0 0 10px #f59e0b); }
+.door.tier-3 { transform: rotate(0deg) scale(1.04); filter: drop-shadow(0 0 14px #00f2fe); }
+.door.tier-4 { animation: vaultMasterLockdown 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+
+.chip.tier-1 { border-color: rgba(239, 68, 68, 0.7); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+.chip.tier-2 { border-color: rgba(245, 158, 11, 0.7); box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+.chip.tier-3 { border-color: rgba(0, 242, 254, 0.7); box-shadow: 0 0 25px rgba(0, 242, 254, 0.5); }
+.chip.tier-4 { border-color: rgba(16, 185, 129, 0.9); box-shadow: 0 0 35px rgba(16, 185, 129, 0.7); }
+
+.meter {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.seg {
+  flex: 1;
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.seg-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: transparent;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.seg.active-1 .seg-fill { width: 100%; background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 12px #ef4444; }
+.seg.active-2 .seg-fill { width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 12px #f59e0b; }
+.seg.active-3 .seg-fill { width: 100%; background: linear-gradient(90deg, #00f2fe, #38bdf8); box-shadow: 0 0 14px #00f2fe; }
+.seg.active-4 .seg-fill { width: 100%; background: linear-gradient(90deg, #10b981, #34d399); box-shadow: 0 0 18px #10b981; }
+
+.entropy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 13px;
+  font-weight: 700;
+  color: #f8fafc;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Vault Lockdown Shockwave & Particles */
+.vault-shockwave-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  margin-left: -12px;
+  border-radius: 50%;
+  border: 4px solid #10b981;
+  box-shadow: 0 0 30px #10b981, inset 0 0 15px #10b981;
+  pointer-events: none;
+  animation: shockwaveExpand 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  z-index: 40;
+}
+
+.vault-spark-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #10b981, 0 0 24px #00f2fe;
+  pointer-events: none;
+  z-index: 45;
+  animation: sparkFly 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ─── MINI VAULT LOCKER PASSWORD FIELD CONTROL ─────────────────────── */
+.password-vault-container {
+  position: relative;
+  width: 100%;
+}
+
+.vault-locker-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  outline: none;
+  z-index: 10;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  perspective: 400px;
+}
+
+.vault-locker-btn:hover {
+  transform: translateY(-50%) scale(1.12);
+}
+
+.vault-locker-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.mini-vault-svg {
+  width: 34px;
+  height: 34px;
+  overflow: visible;
+}
+
+.dial-ticks {
+  transform-origin: 20px 20px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dial-needle {
+  transform-origin: 20px 20px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mini-vault-door {
+  transform-origin: 10px 20px;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.mini-shackle {
+  transition: transform 0.35s ease, stroke 0.35s ease;
+}
+
+/* Open Locker Door State when Password Text is Shown */
+.vault-locker-btn.unlocked .mini-vault-door {
+  transform: rotateY(-75deg) translateX(-3px);
+}
+
+.vault-locker-btn.unlocked .mini-shackle {
+  stroke: #10b981;
+  transform: translateY(-4px);
+}
+
+.vault-locker-btn.unlocked rect {
+  stroke: #10b981;
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.6));
+}
+
+
+
+
+
+

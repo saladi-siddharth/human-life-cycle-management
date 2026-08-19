@@ -120,9 +120,16 @@ function CareerPage() {
 function renderKanbanCards(apps) {
   if (!apps.length) return `<div style="font-size:var(--text-xs);color:var(--text-muted);padding:12px 0;">No applications</div>`;
   return apps.map(a => `
-    <div class="kanban-card">
-      <div style="font-weight:700;font-size:var(--text-sm);">${a.company}</div>
-      <div style="font-size:var(--text-xs);color:var(--indigo-light);">${a.role}</div>
+    <div id="job-card-${a.id}" class="kanban-card" style="position:relative;transition:all 0.2s ease;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <div style="font-weight:700;font-size:var(--text-sm);">${a.company}</div>
+          <div style="font-size:var(--text-xs);color:var(--indigo-light);">${a.role}</div>
+        </div>
+        <button class="btn-delete-epic btn-delete-sm" onclick="deleteJobItem('${a.id}', this.closest('#job-card-${a.id}'))" data-tooltip="Crumple & Toss Application">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
       <div style="font-size:11px;color:var(--emerald);margin-top:4px;font-weight:600;">$${Number(a.salary).toLocaleString()}</div>
       <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Applied: ${a.appliedDate}</div>
       <div style="margin-top:8px;display:flex;gap:4px;">
@@ -131,6 +138,15 @@ function renderKanbanCards(apps) {
       </div>
     </div>
   `).join('');
+}
+
+function deleteJobItem(id, element) {
+  const el = element || document.getElementById(`job-card-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteJobApplication(id);
+    UI.toast('info', 'Application Tossed', 'Job application crumpled into paper ball and tossed!');
+    Router.render();
+  });
 }
 
 // ─── Career Interactive Handlers ──────────────────────────
@@ -193,7 +209,8 @@ function saveJobForm(e) {
   const salary = document.getElementById('j-sal').value;
   Store.addJobApplication({ company, role, stage, salary });
   UI.closeModal();
-  UI.toast('success', 'Application Tracked', `Added ${role} at ${company} to Kanban.`);
+  ActionPhysics.rocketLaunch(company, role);
+  UI.toast('success', 'Application Tracked 🚀', `3D Rocket launched! Added ${role} at ${company} to Kanban.`);
   Router.render();
 }
 
@@ -208,4 +225,5 @@ window.saveJobForm = saveJobForm;
 window.shiftJobStage = shiftJobStage;
 window.runATSAnalysis = runATSAnalysis;
 window.scrollToATS = scrollToATS;
+window.deleteJobItem = deleteJobItem;
 

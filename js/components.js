@@ -39,6 +39,13 @@ const UI = {
     overlay.onclick = (e) => {
       if (e.target === overlay) UI.closeModal();
     };
+
+    // Attach Live Interactive Typing Audio & Particle Feedback to Form Inputs
+    setTimeout(() => {
+      if (typeof ActionPhysics !== 'undefined') {
+        ActionPhysics.attachTypingFeedback(contentEl);
+      }
+    }, 50);
   },
 
   closeModal() {
@@ -127,6 +134,7 @@ const UI = {
       { path: '/dashboard/finance', icon: 'fas fa-wallet', label: 'Finance' },
       { path: '/dashboard/work', icon: 'fas fa-briefcase', label: 'Work' },
       { path: '/dashboard/life', icon: 'fas fa-star', label: 'Life Success' },
+      { href: 'house.html', icon: 'fas fa-cube', label: '3D Residence ↗' },
     ];
 
     let identityLinks = [];
@@ -156,7 +164,12 @@ const UI = {
       { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
     ];
 
-    const renderLink = (l) => `
+    const renderLink = (l) => l.href ? `
+      <a class="sidebar-link" href="${l.href}" style="color: var(--gold, #ead9b8);">
+        <i class="link-icon ${l.icon}" style="color: var(--gold, #ead9b8);"></i>
+        <span>${l.label}</span>
+      </a>
+    ` : `
       <a class="sidebar-link ${activePath === l.path ? 'active' : ''}" onclick="Router.navigate('${l.path}')">
         <i class="link-icon ${l.icon}"></i>
         <span>${l.label}</span>
@@ -344,6 +357,15 @@ const UI = {
           ${listHtml}
         </div>
       </div>
+    `;
+  },
+
+  // ─── Epic Delete Button Helper ───────────────────────
+  deleteButton(id, clickHandler, label = '', isSm = true) {
+    return `
+      <button class="btn-delete-epic ${isSm ? 'btn-delete-sm' : ''}" onclick="${clickHandler}" data-tooltip="Crumple & Delete Item">
+        <i class="fas fa-trash-alt"></i> ${label}
+      </button>
     `;
   }
 };

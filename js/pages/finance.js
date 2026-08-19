@@ -101,13 +101,17 @@ function FinancePage() {
             </thead>
             <tbody>
               ${transactions.map(t => `
-                <tr>
+                <tr id="tx-row-${t.id}">
                   <td style="font-size:var(--text-xs);color:var(--text-muted);">${t.date}</td>
                   <td style="font-weight:600;">${t.category}</td>
                   <td style="font-size:var(--text-xs);color:var(--text-secondary);">${t.note || '—'}</td>
                   <td><span class="badge ${t.type === 'income' ? 'badge-success' : 'badge-danger'}">${t.type.toUpperCase()}</span></td>
                   <td style="font-weight:700;color:${t.type === 'income' ? 'var(--emerald)' : 'var(--red)'};">₹${Number(t.amount).toLocaleString()}</td>
-                  <td><button class="btn btn-ghost btn-sm" style="padding:4px 8px;" onclick="deleteTransaction('${t.id}')">🗑️</button></td>
+                  <td>
+                    <button class="btn-delete-epic btn-delete-sm" onclick="deleteTransaction('${t.id}', this.closest('#tx-row-${t.id}'))" data-tooltip="Crumple & Toss Transaction">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
                 </tr>
               `).join('')}
             </tbody>
@@ -223,14 +227,18 @@ function saveTransactionForm(e) {
   Store.addTransaction({ type, amount, category, note });
   EmailService.sendFinanceAlert('Financial Ledger Activity', `Logged ${type.toUpperCase()} of ₹${Number(amount).toLocaleString()} (${category} - ${note || 'General'})`);
   UI.closeModal();
-  UI.toast('success', 'Transaction Recorded', `Saved ${type.toUpperCase()} of ₹${Number(amount).toLocaleString()}. Dashboard re-analyzed!`);
+  DeleteEngine.dropCoins(10);
+  UI.toast('success', 'Transaction Recorded 🪙', `Saved ${type.toUpperCase()} of ₹${Number(amount).toLocaleString()}. 3D gold coins dropped into ledger!`);
   Router.render();
 }
 
-function deleteTransaction(id) {
-  Store.deleteTransaction(id);
-  UI.toast('info', 'Deleted', 'Transaction removed.');
-  Router.render();
+function deleteTransaction(id, element) {
+  const el = element || document.getElementById(`tx-row-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteTransaction(id);
+    UI.toast('info', 'Transaction Removed', 'Transaction crumpled into paper ball and tossed!');
+    Router.render();
+  });
 }
 
 function updateCompoundCalc() {

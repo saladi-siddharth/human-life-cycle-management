@@ -55,23 +55,9 @@ function HealthPage() {
       <!-- 4 Core Sub-Component Grid -->
       <div class="grid grid-2" style="gap:24px;">
         
-        <!-- 1. Hydration & Water Intake Tracker -->
-        <div class="card card-glass">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-glass-water" style="color:var(--cyan);"></i> Hydration Tracker</h3>
-            <span style="font-weight:700;color:var(--cyan);">${waterIntake} / ${waterTarget} ml (${fillPercent}%)</span>
-          </div>
-          
-          <div class="water-gauge-container">
-            <div class="water-bottle">
-              <div class="water-fill" style="height:${fillPercent}%;"></div>
-            </div>
-            <div style="display:flex;gap:10px;margin-top:10px;">
-              <button class="btn btn-outline btn-sm" onclick="quickAddWater(250)">+250ml 🥛</button>
-              <button class="btn btn-primary btn-sm" onclick="quickAddWater(500)">+500ml 🚰</button>
-              <button class="btn btn-outline btn-sm" onclick="quickAddWater(750)">+750ml 🍾</button>
-            </div>
-          </div>
+        <!-- 1. Hydration & Water Intake Tracker with 3D Fluid Physics -->
+        <div>
+          ${WaterPhysicsEngine.render3DWaterGlass()}
         </div>
 
         <!-- 2. Sleep & Recovery Analyzer -->
@@ -82,13 +68,18 @@ function HealthPage() {
           </div>
           
           <div style="display:flex;flex-direction:column;gap:12px;">
-            ${sleepLogs.slice(0, 3).map(s => `
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+            ${sleepLogs.slice(0, 3).map((s, idx) => `
+              <div id="sleep-row-${s.id || idx}" style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);transition:all 0.2s ease;">
                 <div>
                   <div style="font-weight:600;">${s.hours} Hours (${'⭐'.repeat(s.quality)})</div>
                   <div style="font-size:var(--text-xs);color:var(--text-muted);">${s.date} • Bedtime: ${s.bedtime}</div>
                 </div>
-                <span class="badge ${s.hours >= 7.5 ? 'badge-success' : 'badge-warning'}">${s.hours >= 7.5 ? 'Recovered' : 'Sleep Debt'}</span>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="badge ${s.hours >= 7.5 ? 'badge-success' : 'badge-warning'}">${s.hours >= 7.5 ? 'Recovered' : 'Sleep Debt'}</span>
+                  <button class="btn-delete-epic btn-delete-sm" onclick="deleteSleepLogItem('${s.id || idx}', this.closest('#sleep-row-${s.id || idx}'))" data-tooltip="Crumple & Toss Sleep Log">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
               </div>
             `).join('') || '<p style="color:var(--text-muted);">No sleep logs recorded yet.</p>'}
           </div>
@@ -102,13 +93,18 @@ function HealthPage() {
           </div>
 
           <div style="display:flex;flex-direction:column;gap:12px;">
-            ${workoutLogs.map(w => `
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);">
+            ${workoutLogs.map((w, idx) => `
+              <div id="workout-row-${w.id || idx}" style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-md);border:1px solid var(--glass-border);transition:all 0.2s ease;">
                 <div>
                   <div style="font-weight:600;">${w.type}</div>
                   <div style="font-size:var(--text-xs);color:var(--text-muted);">${w.duration} mins • ${w.calories} kcal burned</div>
                 </div>
-                <span class="badge badge-accent">${w.date}</span>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="badge badge-accent">${w.date}</span>
+                  <button class="btn-delete-epic btn-delete-sm" onclick="deleteWorkoutLogItem('${w.id || idx}', this.closest('#workout-row-${w.id || idx}'))" data-tooltip="Crumple & Toss Workout Log">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
               </div>
             `).join('') || '<p style="color:var(--text-muted);">No workout logs recorded yet.</p>'}
           </div>
@@ -138,7 +134,7 @@ function HealthPage() {
 
 // ─── Health Interactive Handlers ───────────────────────────
 function quickAddWater(amount) {
-  Store.logWater(amount);
+  WaterPhysicsEngine.pourWater(amount);
   const healthData = Store.get('health') || {};
   if (healthData.waterIntake >= (healthData.waterTarget || 2500)) {
     EmailService.sendHealthAlert('Hydration Goal Achieved! 🎉', `You hit your 2,500ml daily target (${healthData.waterIntake}ml logged).`);
@@ -181,7 +177,8 @@ function saveSleepForm(e) {
     EmailService.sendHealthAlert('Sleep Logged 😴', `Recorded ${hours} hours of sleep with quality rating ${quality}/5 stars.`);
   }
   UI.closeModal();
-  UI.toast('success', 'Sleep Recorded', 'Your sleep recovery metrics have been updated.');
+  ActionPhysics.moonSleep(hours);
+  UI.toast('success', 'Sleep Recorded 🌙', 'Floating moon and drifting Zzz recorded your sleep metrics.');
   Router.render();
 }
 
@@ -217,7 +214,8 @@ function saveWorkoutForm(e) {
   Store.logWorkout({ type, duration, calories });
   EmailService.sendHealthAlert('Workout Completed 💪', `Completed ${duration} mins of ${type} (${calories} kcal burned).`);
   UI.closeModal();
-  UI.toast('success', 'Workout Logged!', `Great job! Recorded ${duration} mins of ${type}.`);
+  ActionPhysics.dumbbellFlex(type);
+  UI.toast('success', 'Workout Logged! 🏋️‍♂️⚡', `Great job! Power flex recorded ${duration} mins of ${type}.`);
   Router.render();
 }
 
@@ -251,10 +249,30 @@ function toggleBreathingTimer() {
   }, 4000);
 }
 
+function deleteWorkoutLogItem(id, element) {
+  const el = element || document.getElementById(`workout-row-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteWorkoutLog(id);
+    UI.toast('info', 'Workout Tossed', 'Workout log crumpled into paper ball and tossed!');
+    Router.render();
+  });
+}
+
+function deleteSleepLogItem(id, element) {
+  const el = element || document.getElementById(`sleep-row-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteSleepLog(id);
+    UI.toast('info', 'Sleep Log Tossed', 'Sleep log crumpled into paper ball and tossed!');
+    Router.render();
+  });
+}
+
 window.quickAddWater = quickAddWater;
 window.openSleepModal = openSleepModal;
 window.saveSleepForm = saveSleepForm;
 window.openWorkoutModal = openWorkoutModal;
 window.saveWorkoutForm = saveWorkoutForm;
 window.toggleBreathingTimer = toggleBreathingTimer;
+window.deleteWorkoutLogItem = deleteWorkoutLogItem;
+window.deleteSleepLogItem = deleteSleepLogItem;
 

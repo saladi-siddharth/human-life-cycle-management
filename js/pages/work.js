@@ -114,12 +114,14 @@ function WorkPage() {
 function renderQuadrantTasks(taskList) {
   if (!taskList.length) return `<div style="font-size:var(--text-xs);color:var(--text-muted);padding:10px 0;">No tasks in quadrant</div>`;
   return taskList.map(t => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--glass-border);">
+    <div id="task-row-${t.id}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--glass-border);transition:all 0.2s ease;">
       <div style="display:flex;align-items:center;gap:8px;">
         <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')">
         <span style="font-size:var(--text-xs);${t.completed ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${t.title}</span>
       </div>
-      <button class="btn btn-ghost btn-sm" style="padding:2px 6px;" onclick="deleteTaskItem('${t.id}')">✕</button>
+      <button class="btn-delete-epic btn-delete-sm" onclick="deleteTaskItem('${t.id}', this.closest('#task-row-${t.id}'))" data-tooltip="Crumple & Toss Task">
+        <i class="fas fa-trash-alt"></i>
+      </button>
     </div>
   `).join('');
 }
@@ -130,9 +132,13 @@ function toggleTaskDone(id) {
   Router.render();
 }
 
-function deleteTaskItem(id) {
-  Store.deleteTask(id);
-  Router.render();
+function deleteTaskItem(id, element) {
+  const el = element || document.getElementById(`task-row-${id}`);
+  DeleteEngine.tossAndDelete(el, () => {
+    Store.deleteTask(id);
+    UI.toast('info', 'Task Tossed', 'Task crumpled into paper ball and tossed to trash bin!');
+    Router.render();
+  });
 }
 
 function openTaskModal() {
@@ -165,7 +171,8 @@ function saveTaskForm(e) {
   Store.addTask({ title, quadrant, domain: 'work' });
   EmailService.sendWorkAlert('Eisenhower Task Added', `New Task "${title}" assigned to Matrix ${quadrant.toUpperCase()}`);
   UI.closeModal();
-  UI.toast('success', 'Task Created', 'Added new task to your matrix.');
+  ActionPhysics.magicTask(title);
+  UI.toast('success', 'Task Created 🪄', 'Magic wand starburst added new task to your matrix.');
   Router.render();
 }
 

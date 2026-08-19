@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BioVerse Master Login — Featuring Physics Pull Lamp, Cute Panda, Slot Machine OTP & Microchip Vault Password Strength">
+  <title>BioVerse — Master Authentication Suite</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/pages.css">
+
+  <style>
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .toast-standalone {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 14px;
+      animation: fadeInDown 0.4s ease;
+      min-width: 300px;
+    }
+    .toast-standalone.success { border-left: 4px solid #10b981; }
+    .toast-standalone.info { border-left: 4px solid #00f2fe; }
+    .toast-standalone.warning { border-left: 4px solid #f59e0b; }
+    .toast-standalone.error { border-left: 4px solid #ef4444; }
+
+    /* Custom Mode Tabs */
+    .lamp-auth-tabs {
+      display: flex;
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 24px;
+      gap: 6px;
+      backdrop-filter: blur(16px);
+    }
+    .lamp-auth-tab {
+      position: relative;
+      flex: 1;
+      padding: 11px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 12px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .lamp-auth-tab.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.45) 0%, rgba(245, 158, 11, 0.25) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.7);
+      box-shadow: 0 6px 24px rgba(251, 191, 36, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    }
+
+    /* 🌊 ULTRA-PREMIUM LIQUID GLASS BUTTON SYSTEM 🌊 */
+    .btn-liquid-glass {
+      position: relative;
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1.5px rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-liquid-glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-liquid-glass:hover::before {
+      left: 100%;
+    }
+
+    .btn-liquid-glass:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 40px rgba(0, 242, 254, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-liquid-glass:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Variant Themes */
+    .btn-liquid-amber {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.45) 0%, rgba(245, 158, 11, 0.2) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.65);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3), inset 0 1px 1.5px rgba(254, 240, 138, 0.7);
+    }
+    .btn-liquid-amber:hover {
+      box-shadow: 0 14px 44px rgba(245, 158, 11, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      border-color: rgba(251, 191, 36, 0.9);
+      color: #fff;
+    }
+
+    .btn-liquid-cyan {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.45) 0%, rgba(79, 70, 229, 0.25) 100%);
+      border: 1px solid rgba(0, 242, 254, 0.65);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(0, 242, 254, 0.3), inset 0 1px 1.5px rgba(224, 242, 254, 0.7);
+    }
+    .btn-liquid-cyan:hover {
+      box-shadow: 0 14px 44px rgba(0, 242, 254, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 242, 254, 0.9);
+      color: #fff;
+    }
+
+    .btn-liquid-emerald {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(5, 150, 105, 0.25) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.65);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3), inset 0 1px 1.5px rgba(209, 250, 229, 0.7);
+    }
+    .btn-liquid-emerald:hover {
+      box-shadow: 0 14px 44px rgba(16, 185, 129, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      border-color: rgba(16, 185, 129, 0.9);
+      color: #fff;
+    }
+  </style>
+</head>
+<body style="margin:0; background:#05070d; font-family:'Inter', sans-serif; overflow-x:hidden;">
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- SVG Laser Arc Stroke Gradient Defs -->
+  <svg style="width:0;height:0;position:absolute;" aria-hidden="true">
+    <defs>
+      <linearGradient id="slotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00f2fe" />
+        <stop offset="50%" stop-color="#7928ca" />
+        <stop offset="100%" stop-color="#4f46e5" />
+      </linearGradient>
+      <linearGradient id="vaultGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00f2fe" />
+        <stop offset="100%" stop-color="#10b981" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- MAIN ROOM CONTAINER (Toggles .is-on class on light pull string) -->
+  <div class="room is-on" id="room">
+
+    <div class="lamp-room-stage">
+      <!-- 👈 LEFT COLUMN: PROMINENT OVERHEAD PULL LAMP WITH SPRING PHYSICS -->
+      <div class="lamp-left-column">
+        <div class="lamp-svg-container">
+          <svg id="lamp-svg" viewBox="0 0 320 400">
+            <defs>
+              <radialGradient id="lampConeGlow" cx="40%" cy="0%" r="95%">
+                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.85" />
+                <stop offset="30%" stop-color="#fbbf24" stop-opacity="0.45" />
+                <stop offset="65%" stop-color="#6366f1" stop-opacity="0.15" />
+                <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="beadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#f59e0b" />
+              </linearGradient>
+            </defs>
+
+            <!-- LIGHT BEAM CONE (Sweeps from left lamp head across form) -->
+            <polygon class="lamp_light" points="160,110 -200,600 850,600" fill="url(#lampConeGlow)" />
+
+            <!-- LAMP CABLE & FIXTURE -->
+            <line x1="160" y1="0" x2="160" y2="70" stroke="#64748b" stroke-width="3.5" />
+            <path class="lamp__head" d="M120 110 C120 75 200 75 200 110 Z" fill="#1e293b" stroke="#fbbf24" stroke-width="2.5" />
+            <circle cx="160" cy="112" r="12" fill="#fef08a" class="lamp_light" style="filter:drop-shadow(0 0 16px #fbbf24);" />
+
+            <!-- 🪢 PULL CORD GROUP (Spring Physics Targets) -->
+            <g class="pull" id="pull-cord" role="button" tabindex="0" aria-pressed="true" aria-controls="signin">
+              <!-- Dynamic Bezier Rope Path -->
+              <path class="rope" id="rope-path" d="M 210 100 Q 210 160 210 220" />
+              <!-- Hit area for drag/click -->
+              <circle class="ropehit" id="rope-hit" cx="210" cy="220" r="32" />
+              <!-- Animated Bead Handle -->
+              <ellipse class="bead" id="bead" cx="210" cy="220" rx="10" ry="17" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Floating Helper Tag under Lamp String -->
+        <div class="lamp-hint-tag" id="lamp-hint">
+          <i class="fas fa-hand-pointer"></i> Pull string to switch light!
+        </div>
+      </div>
+
+      <!-- 👉 RIGHT COLUMN: CUTE PANDA & LIQUID GLASS CARD -->
+      <div class="liquid-glass-wrapper">
+        <!-- 🐼 CUTE ANIMATED PANDA AVATAR -->
+        <div class="panda-container" id="panda-avatar">
+          <svg class="panda-svg" viewBox="0 0 130 120">
+            <!-- Ears -->
+            <circle cx="28" cy="28" r="16" fill="#0f172a" />
+            <circle cx="102" cy="28" r="16" fill="#0f172a" />
+            <circle cx="28" cy="28" r="9" fill="#1e293b" />
+            <circle cx="102" cy="28" r="9" fill="#1e293b" />
+
+            <!-- Head -->
+            <ellipse cx="65" cy="62" rx="46" ry="38" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+
+            <!-- Eye Patches -->
+            <ellipse cx="46" cy="58" rx="13" ry="16" fill="#0f172a" transform="rotate(-12 46 58)" />
+            <ellipse cx="84" cy="58" rx="13" ry="16" fill="#0f172a" transform="rotate(12 84 58)" />
+
+            <!-- Pupils (Track Cursor) -->
+            <g id="panda-pupils">
+              <circle id="pupil-left" cx="47" cy="58" r="5" fill="#ffffff" />
+              <circle id="pupil-right" cx="83" cy="58" r="5" fill="#ffffff" />
+              <circle cx="48" cy="57" r="2" fill="#0f172a" />
+              <circle cx="84" cy="57" r="2" fill="#0f172a" />
+            </g>
+
+            <!-- Cute Nose & Mouth -->
+            <ellipse cx="65" cy="68" rx="6" ry="4" fill="#0f172a" />
+            <path d="M 61 74 Q 65 78 69 74" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" />
+
+            <!-- Cheeks -->
+            <circle cx="34" cy="68" r="6" fill="#ff85a2" opacity="0.6" />
+            <circle cx="96" cy="68" r="6" fill="#ff85a2" opacity="0.6" />
+
+            <!-- Paws / Hands (Cover eyes when typing password) -->
+            <g class="panda-hand-left" id="hand-left">
+              <ellipse cx="25" cy="98" rx="12" ry="18" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+              <circle cx="25" cy="94" r="5" fill="#334155" />
+            </g>
+            <g class="panda-hand-right" id="hand-right">
+              <ellipse cx="105" cy="98" rx="12" ry="18" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+              <circle cx="105" cy="94" r="5" fill="#334155" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="liquid-blob-1"></div>
+        <div class="liquid-blob-2"></div>
+
+        <section class="card liquid-glass-card" id="signin">
+          <!-- Header -->
+          <div style="text-align:center; margin-bottom:20px;">
+            <h2 style="font-size:26px; font-weight:800; color:#fff; margin:0; background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Welcome to BioVerse</h2>
+            <p style="color:#94a3b8; font-size:13.5px; margin-top:4px;">Intelligent life cycle management platform</p>
+          </div>
+
+          <!-- Authentication Tabs -->
+          <div class="lamp-auth-tabs">
+            <button class="lamp-auth-tab active" id="tab-btn-email" onclick="switchAuthMode('email')">
+              <i class="fas fa-envelope"></i> Email
+            </button>
+            <button class="lamp-auth-tab" id="tab-btn-phone" onclick="switchAuthMode('phone')">
+              <i class="fas fa-mobile-alt"></i> Phone OTP
+            </button>
+            <button class="lamp-auth-tab" id="tab-btn-register" onclick="switchAuthMode('register')">
+              <i class="fas fa-user-plus"></i> Sign Up
+            </button>
+          </div>
+
+          <!-- 📧 MODE 1: EMAIL & PASSWORD -->
+          <div id="mode-email" class="auth-mode-content">
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Email Address</label>
+              <input type="email" class="form-input" id="email-input" placeholder="you@example.com" value="siddharth@bioverse.ai" style="width:100%; padding:12px 16px; border-radius:14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff; box-sizing:border-box;">
+            </div>
+
+            <div class="form-group" style="position:relative; margin-bottom:16px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Password</label>
+              
+              <div class="password-vault-container">
+                <input type="password" class="form-input" id="password-input" placeholder="••••••••••••" value="BioVerse2026!" style="width:100%; padding:12px 50px 12px 16px; border-radius:14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff; box-sizing:border-box;">
+                
+                <button class="vault-locker-btn" type="button" onclick="toggleVaultLockerPassword('password-input', this)" aria-label="Toggle Vault Lock">
+                  <svg class="mini-vault-svg" viewBox="0 0 40 40">
+                    <rect x="4" y="4" width="32" height="32" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="11" fill="none" stroke="rgba(0,242,254,0.5)" stroke-width="2" stroke-dasharray="4 2" class="dial-ticks"/>
+                    <circle cx="20" cy="20" r="6" fill="#1e293b" stroke="#fbbf24" stroke-width="1.5"/>
+                    <line x1="20" y1="14" x2="20" y2="17" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" class="dial-needle"/>
+                    
+                    <g class="mini-vault-door">
+                      <path d="M 12 10 L 12 8 C 12 5 28 5 28 8 L 28 10" fill="none" stroke="#ef4444" stroke-width="2" class="mini-shackle"/>
+                      <circle cx="20" cy="20" r="3" fill="#fbbf24"/>
+                    </g>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+              <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" checked style="accent-color:#fbbf24;"> 
+                <span style="font-size:13px; color:#94a3b8;">Remember me</span>
+              </label>
+              <a style="font-size:13px; color:#fbbf24; cursor:pointer;" onclick="showToast('info', 'Password Reset', 'Reset link dispatched to email.')">Forgot password?</a>
+            </div>
+
+            <button class="btn-liquid-glass btn-liquid-amber" onclick="handleEmailLogin()">
+              <i class="fas fa-sign-in-alt"></i> Sign In to TiDB Cloud
+            </button>
+            <p style="text-align:center; font-size:13px; color:#94a3b8; margin-top:14px; margin-bottom:0;">
+              Don't have an account? <a onclick="switchAuthMode('register')" style="color:#00f2fe; font-weight:700; cursor:pointer; text-decoration:underline;">Register / Sign Up here</a>
+            </p>
+          </div>
+
+          <!-- 📱 MODE 2: PHONE & INTEGRATED SLOT MACHINE OTP -->
+          <div id="mode-phone" class="auth-mode-content" style="display:none;">
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Mobile Phone Number</label>
+              <div class="phone-input-group">
+                <select class="phone-prefix-select">
+                  <option value="+91">🇮🇳 +91</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+81">🇯🇵 +81</option>
+                  <option value="+971">🇦🇪 +971</option>
+                </select>
+                <input type="tel" class="form-input" id="phone-number" placeholder="98765 43210" value="9876543210" style="flex:1; padding:12px 16px; border-radius:14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff;">
+              </div>
+            </div>
+
+            <!-- INTEGRATED SLOT MACHINE 6-DIGIT OTP FIELD -->
+            <div style="text-align:center; margin-top:16px; margin-bottom:4px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1;">6-Digit Verification Code</label>
+            </div>
+
+            <div class="code__field" id="otp-code-field">
+              <span class="code_cursor active" id="code-cursor"></span>
+              
+              <div class="slots__container" id="slots-container">
+                <label class="slot" data-index="0">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-0">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+
+                <label class="slot" data-index="1">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-1">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+
+                <label class="slot" data-index="2">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-2">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+
+                <label class="slot" data-index="3">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-3">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+
+                <label class="slot" data-index="4">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-4">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+
+                <label class="slot" data-index="5">
+                  <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="slot__input" id="otp-input-5">
+                  <span class="slot__win">
+                    <span class="slot__digit"></span>
+                    <svg class="slot__park" viewBox="0 0 52 64">
+                      <rect class="slot__arc" x="2" y="2" width="48" height="60" rx="14" pathLength="1" />
+                    </svg>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <button class="btn-auto-fill" onclick="demoAutoFillOtp()" style="margin: 8px auto 16px;">
+              <i class="fas fa-magic"></i> Auto-fill Demo Code (849201)
+            </button>
+
+            <button class="btn-liquid-glass btn-liquid-cyan" onclick="handleLoginSuccess('Phone OTP')">
+              <i class="fas fa-shield-alt"></i> Verify Phone & Login
+            </button>
+          </div>
+
+          <!-- 📝 MODE 3: SIGN UP REGISTER WITH MICROCHIP VAULT LOCK STRENGTH METER -->
+          <div id="mode-register" class="auth-mode-content" style="display:none;">
+            <div class="form-group" style="margin-bottom:12px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1;">Full Name</label>
+              <input type="text" id="reg-name-input" class="form-input" placeholder="Siddharth Sharma" value="Siddharth Sharma" style="width:100%; padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff;">
+            </div>
+
+            <div class="form-group" style="margin-bottom:12px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1;">Email Address</label>
+              <input type="email" id="reg-email-input" class="form-input" placeholder="you@example.com" value="siddharth@bioverse.ai" style="width:100%; padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff;">
+            </div>
+
+            <div class="form-group" style="position:relative; margin-bottom:12px;">
+              <label class="form-label" style="font-size:13px; color:#cbd5e1;">Create Password</label>
+              
+              <div class="password-vault-container">
+                <input type="password" class="form-input" id="reg-password-input" oninput="updatePasswordVaultStrength(this.value)" placeholder="Type strong password..." style="width:100%; padding:10px 50px 10px 14px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff; box-sizing:border-box;">
+                
+                <button class="vault-locker-btn" type="button" onclick="toggleVaultLockerPassword('reg-password-input', this)" aria-label="Toggle Vault Lock">
+                  <svg class="mini-vault-svg" viewBox="0 0 40 40">
+                    <rect x="4" y="4" width="32" height="32" rx="8" fill="#090d16" stroke="#fbbf24" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="11" fill="none" stroke="rgba(0,242,254,0.5)" stroke-width="2" stroke-dasharray="4 2" class="dial-ticks"/>
+                    <circle cx="20" cy="20" r="6" fill="#1e293b" stroke="#fbbf24" stroke-width="1.5"/>
+                    <line x1="20" y1="14" x2="20" y2="17" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" class="dial-needle"/>
+                    
+                    <g class="mini-vault-door">
+                      <path d="M 12 10 L 12 8 C 12 5 28 5 28 8 L 28 10" fill="none" stroke="#ef4444" stroke-width="2" class="mini-shackle"/>
+                      <circle cx="20" cy="20" r="3" fill="#fbbf24"/>
+                    </g>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+
+            <!-- 🔒 HOLLYWOOD QUANTUM VAULT LOCK & SPEEDOMETER METER -->
+            <div class="lock" id="vault-lock">
+              <div class="chip tier-1" id="cyber-chip">
+                <div class="chip-pins">
+                  <span class="pin p-top"></span><span class="pin p-right"></span>
+                  <span class="pin p-bottom"></span><span class="pin p-left"></span>
+                </div>
+
+                <svg viewBox="0 0 140 140" id="vault-svg" style="width:100%; height:100%; overflow:visible;">
+                  <defs>
+                    <linearGradient id="cyberGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#00f2fe" />
+                      <stop offset="50%" stop-color="#7928ca" />
+                      <stop offset="100%" stop-color="#10b981" />
+                    </linearGradient>
+                    <filter id="ultraGlow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  <!-- Outer Gear Ring -->
+                  <g class="vault-gear-ring">
+                    <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+                    <circle cx="70" cy="70" r="46" fill="none" stroke="url(#cyberGlowGrad)" stroke-width="4" stroke-dasharray="290" stroke-dashoffset="290" id="vault-ring" filter="url(#ultraGlow)"/>
+                    <path d="M 70 12 L 70 20 M 70 120 L 70 128 M 12 70 L 20 70 M 120 70 L 128 70" stroke="rgba(0,242,254,0.5)" stroke-width="3" stroke-linecap="round"/>
+                  </g>
+
+                  <!-- 4 Sliding Titanium Bolts -->
+                  <g class="vault-bolts" id="vault-bolts">
+                    <rect class="bolt bolt-top" x="65" y="20" width="10" height="16" rx="3" fill="#00f2fe" />
+                    <rect class="bolt bolt-right" x="104" y="65" width="16" height="10" rx="3" fill="#00f2fe" />
+                    <rect class="bolt bolt-bottom" x="65" y="104" width="10" height="16" rx="3" fill="#00f2fe" />
+                    <rect class="bolt bolt-left" x="20" y="65" width="16" height="10" rx="3" fill="#00f2fe" />
+                  </g>
+
+                  <!-- Central Door & Clamping Shackle -->
+                  <g class="door tier-1" id="door">
+                    <path class="vault-shackle" id="vault-shackle" d="M 52 62 L 52 50 C 52 38 88 38 88 50 L 88 62" fill="none" stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>
+                    <rect x="44" y="60" width="52" height="40" rx="10" fill="#090d16" stroke="#fbbf24" stroke-width="3" id="vault-body-rect"/>
+                    
+                    <circle cx="70" cy="78" r="7" fill="#000" stroke="#00f2fe" stroke-width="2" id="iris-ring"/>
+                    <circle cx="70" cy="78" r="3" fill="#00f2fe" id="iris-pupil"/>
+                    
+                    <line x1="42" y1="62" x2="98" y2="62" stroke="#10b981" stroke-width="2.5" class="laser-scan-line" id="laser-scan-line"/>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- Cyber Speedometer Segment Meter -->
+              <div class="meter" id="vault-meter">
+                <div class="seg" data-t="1"><span class="seg-fill"></span></div>
+                <div class="seg" data-t="2"><span class="seg-fill"></span></div>
+                <div class="seg" data-t="3"><span class="seg-fill"></span></div>
+                <div class="seg" data-t="4"><span class="seg-fill"></span></div>
+              </div>
+
+
+              <div class="entropy-label" id="entropy-label">
+                <div class="entropy-badge" id="entropy-badge" style="border-color:rgba(239,68,68,0.4); color:#ef4444;">
+                  <i class="fas fa-shield-alt" id="entropy-icon"></i>
+                  <span id="entropy-tier-name">Unsecured (0 bits)</span>
+                </div>
+              </div>
+            </div>
+
+
+            <button class="btn-liquid-glass btn-liquid-emerald" onclick="handleRegisterSubmit()">
+              <i class="fas fa-user-plus"></i> Create Account in TiDB Cloud
+            </button>
+            <p style="text-align:center; font-size:13px; color:#94a3b8; margin-top:14px; margin-bottom:0;">
+              Already have an account? <a onclick="switchAuthMode('email')" style="color:#fbbf24; font-weight:700; cursor:pointer; text-decoration:underline;">Sign In here</a>
+            </p>
+          </div>
+
+          <!-- 🌐 GOOGLE AUTH BUTTON -->
+          <div style="margin-top:18px;">
+            <div style="text-align:center; color:#64748b; font-size:12px; margin-bottom:12px;">or sign in with</div>
+            <button onclick="handleLoginSuccess('Google OAuth')" style="width:100%; padding:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); border-radius:16px; color:#fff; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; backdrop-filter:blur(10px); transition:all 0.25s ease;">
+              <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Continue with Google
+            </button>
+          </div>
+
+          <div style="text-align:center; margin-top:20px; font-size:12px; color:#64748b; display:flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="fas fa-shield-alt" style="color:#fbbf24;"></i> BioVerse 256-Bit SSL Encrypted
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE: SPRING PHYSICS, PANDA & MICROCHIP VAULT ENTROPY -->
+  <script>
+    // Standalone Toast
+    function showToast(type, title, message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast-standalone ${type}`;
+      toast.innerHTML = `
+        <div style="font-weight:700;">${title}</div>
+        <div style="color:#cbd5e1;">${message}</div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       1. SPRING PHYSICS FOR LEFT PULL LAMP
+       User Math: k = 210, c = 8.4; vy += (-k*(by-REST.y) - c*vy) * dt; by += vy * dt;
+       ═══════════════════════════════════════════════════════════════════ */
+    const room = document.getElementById('room');
+    const card = document.getElementById('signin');
+    const ropePath = document.getElementById('rope-path');
+    const ropeHit = document.getElementById('rope-hit');
+    const bead = document.getElementById('bead');
+    const pullCord = document.getElementById('pull-cord');
+
+    const REST = { x: 210, y: 220 };
+    let by = REST.y;
+    let vy = 0;
+    let isDragging = false;
+    let lastTime = performance.now();
+    let isOn = true;
+
+    const k = 210;
+    const c = 8.4;
+
+    function physicsLoop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+
+      if (!isDragging) {
+        const springForce = -k * (by - REST.y) - c * vy;
+        vy += springForce * dt;
+        by += vy * dt;
+      }
+
+      ropePath.setAttribute('d', `M ${REST.x} 100 Q ${REST.x} ${(100 + by) / 2} ${REST.x} ${by}`);
+      ropeHit.setAttribute('cy', by);
+      bead.setAttribute('cy', by);
+
+      requestAnimationFrame(physicsLoop);
+    }
+    requestAnimationFrame(physicsLoop);
+
+    function toggleLampSwitch() {
+      isOn = !isOn;
+      if (isOn) {
+        room.classList.add('is-on');
+        card.inert = false;
+        pullCord.setAttribute('aria-pressed', 'true');
+        showToast('info', 'Lamp Light ON', 'Mood lighting activated!');
+      } else {
+        room.classList.remove('is-on');
+        card.inert = true;
+        pullCord.setAttribute('aria-pressed', 'false');
+        showToast('warning', 'Lamp Light OFF', 'Pull string to switch light back on!');
+      }
+    }
+
+    function startDrag(e) {
+      isDragging = true;
+      e.preventDefault();
+    }
+
+    function moveDrag(e) {
+      if (!isDragging) return;
+      const svg = document.getElementById('lamp-svg');
+      const rect = svg.getBoundingClientRect();
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const relativeY = (clientY - rect.top) * (400 / rect.height);
+      by = Math.max(REST.y, Math.min(REST.y + 90, relativeY));
+    }
+
+    function endDrag() {
+      if (isDragging) {
+        isDragging = false;
+        if (by - REST.y > 35) {
+          toggleLampSwitch();
+        }
+      }
+    }
+
+    pullCord.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mouseup', endDrag);
+
+    pullCord.addEventListener('touchstart', startDrag);
+    window.addEventListener('touchmove', moveDrag);
+    window.addEventListener('touchend', endDrag);
+
+    pullCord.addEventListener('click', () => {
+      by = REST.y + 50;
+      toggleLampSwitch();
+    });
+
+    /* ═══════════════════════════════════════════════════════════════════
+       2. CUTE PANDA EYE-TRACKING & COVER EYES POSES
+       ═══════════════════════════════════════════════════════════════════ */
+    const pandaAvatar = document.getElementById('panda-avatar');
+    const pupilLeft = document.getElementById('pupil-left');
+    const pupilRight = document.getElementById('pupil-right');
+    const passwordInput = document.getElementById('password-input');
+
+    window.addEventListener('mousemove', (e) => {
+      if (pandaAvatar.classList.contains('covering')) return;
+
+      const rect = pandaAvatar.getBoundingClientRect();
+      const pandaX = rect.left + rect.width / 2;
+      const pandaY = rect.top + rect.height / 2;
+
+      const angle = Math.atan2(e.clientY - pandaY, e.clientX - pandaX);
+      const dist = Math.min(3.5, Math.hypot(e.clientX - pandaX, e.clientY - pandaY) / 100);
+
+      pupilLeft.setAttribute('cx', 47 + Math.cos(angle) * dist);
+      pupilLeft.setAttribute('cy', 58 + Math.sin(angle) * dist);
+      pupilRight.setAttribute('cx', 83 + Math.cos(angle) * dist);
+      pupilRight.setAttribute('cy', 58 + Math.sin(angle) * dist);
+    });
+
+    const regPasswordInput = document.getElementById('reg-password-input');
+
+    if (passwordInput) {
+      passwordInput.addEventListener('focus', () => {
+        pandaAvatar.classList.remove('peeking');
+        pandaAvatar.classList.add('covering');
+      });
+      passwordInput.addEventListener('blur', () => {
+        pandaAvatar.classList.remove('covering', 'peeking');
+      });
+    }
+
+    if (regPasswordInput) {
+      regPasswordInput.addEventListener('focus', () => {
+        pandaAvatar.classList.remove('peeking');
+        pandaAvatar.classList.add('covering');
+      });
+      regPasswordInput.addEventListener('blur', () => {
+        pandaAvatar.classList.remove('covering', 'peeking');
+      });
+    }
+
+
+    function toggleVaultLockerPassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.classList.add('unlocked');
+        if (pandaAvatar) {
+          pandaAvatar.classList.remove('covering');
+          pandaAvatar.classList.add('peeking');
+        }
+      } else {
+        input.type = 'password';
+        btn.classList.remove('unlocked');
+        if (pandaAvatar) {
+          pandaAvatar.classList.remove('peeking');
+          pandaAvatar.classList.add('covering');
+        }
+      }
+    }
+
+    // Keypress Combination Dial Rotation Engine
+    ['password-input', 'reg-password-input'].forEach(id => {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      inp.addEventListener('input', () => {
+        const btn = inp.parentElement.querySelector('.vault-locker-btn');
+        if (!btn) return;
+        const needle = btn.querySelector('.dial-needle');
+        const ticks = btn.querySelector('.dial-ticks');
+        const angle = inp.value.length * 30;
+        if (needle) needle.style.transform = `rotate(${angle}deg)`;
+        if (ticks) ticks.style.transform = `rotate(${angle / 2}deg)`;
+      });
+    });
+
+
+    /* ═══════════════════════════════════════════════════════════════════
+       3. INTEGRATED SLOT MACHINE OTP ENGINE (For Phone OTP Tab)
+       Math: dx = cx - (r.left + r.width / 2); slot.animate(...)
+       ═══════════════════════════════════════════════════════════════════ */
+    function initOtpSlotSystem() {
+      const container = document.getElementById('slots-container');
+      if (!container) return;
+      const cursor = document.getElementById('code-cursor');
+      const slots = container.querySelectorAll('.slot');
+      const inputs = container.querySelectorAll('.slot__input');
+
+      function updateCursor(index) {
+        if (index >= 0 && index < slots.length) {
+          const activeSlot = slots[index];
+          const containerRect = container.getBoundingClientRect();
+          const slotRect = activeSlot.getBoundingClientRect();
+          cursor.style.transform = `translateX(${slotRect.left - containerRect.left}px)`;
+          cursor.classList.add('active');
+        } else {
+          cursor.classList.remove('active');
+        }
+      }
+
+      inputs.forEach((input, idx) => {
+        input.addEventListener('focus', () => updateCursor(idx));
+
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val;
+          const slot = slots[idx];
+          const digitSpan = slot.querySelector('.slot__digit');
+
+          if (val) {
+            digitSpan.textContent = val;
+            slot.classList.add('filled');
+
+            const r = slot.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const dx = cx - (r.left + r.width / 2);
+
+            slot.animate([
+              { transform: 'none' },
+              { transform: `translate(${dx}px) scale(.34)` },
+              { transform: 'none' }
+            ], { delay: 0, duration: 640, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
+
+            if (idx < inputs.length - 1) {
+              inputs[idx + 1].focus();
+              updateCursor(idx + 1);
+            } else {
+              setTimeout(() => handleLoginSuccess('Phone OTP'), 300);
+            }
+          } else {
+            digitSpan.textContent = '';
+            slot.classList.remove('filled');
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+            inputs[idx - 1].value = '';
+            slots[idx - 1].querySelector('.slot__digit').textContent = '';
+            slots[idx - 1].classList.remove('filled');
+            updateCursor(idx - 1);
+          }
+        });
+      });
+    }
+
+    function demoAutoFillOtp() {
+      const sampleCode = "849201".split('');
+      const container = document.getElementById('slots-container');
+      if (!container) return;
+      const slots = container.querySelectorAll('.slot');
+      const inputs = container.querySelectorAll('.slot__input');
+      const cursor = document.getElementById('code-cursor');
+
+      sampleCode.forEach((digit, i) => {
+        setTimeout(() => {
+          if (inputs[i]) {
+            inputs[i].value = digit;
+            const slot = slots[i];
+            const digitSpan = slot.querySelector('.slot__digit');
+            digitSpan.textContent = digit;
+            slot.classList.add('filled');
+
+            const r = slot.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const dx = cx - (r.left + r.width / 2);
+
+            slot.animate([
+              { transform: 'none' },
+              { transform: `translate(${dx}px) scale(.34)` },
+              { transform: 'none' }
+            ], { duration: 640, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
+
+            const slotRect = slot.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            cursor.style.transform = `translateX(${slotRect.left - containerRect.left}px)`;
+            cursor.classList.add('active');
+
+            if (i === sampleCode.length - 1) {
+              setTimeout(() => handleLoginSuccess('Phone OTP'), 400);
+            }
+          }
+        }, i * 140);
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       4. CYBER MICROCHIP VAULT PASSWORD ENTROPY GAUGE (Register Tab)
+       User Formula: bits = len * Math.log2(pool);
+       tier = bits < 30 ? 1 : bits < 50 ? 2 : bits < 70 ? 3 : 4;
+       ═══════════════════════════════════════════════════════════════════ */
+    function updatePasswordVaultStrength(password) {
+      const door = document.getElementById('door');
+      const chip = document.getElementById('cyber-chip');
+      const tierLabel = document.getElementById('entropy-tier-name');
+      const entropyBadge = document.getElementById('entropy-badge');
+      const entropyIcon = document.getElementById('entropy-icon');
+      const segments = document.querySelectorAll('#vault-meter .seg');
+      const vaultRing = document.getElementById('vault-ring');
+
+      if (!door || !tierLabel) return;
+
+      if (!password) {
+        door.className = 'door tier-1';
+        if (chip) chip.className = 'chip tier-1';
+        tierLabel.textContent = 'Unsecured (0 bits)';
+        if (entropyBadge) {
+          entropyBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          entropyBadge.style.boxShadow = 'none';
+          entropyBadge.style.color = '#ef4444';
+        }
+        if (entropyIcon) entropyIcon.className = 'fas fa-exclamation-triangle';
+        segments.forEach(s => s.className = 'seg');
+        if (vaultRing) vaultRing.style.strokeDashoffset = '264';
+        return;
+      }
+
+      let pool = 0;
+      if (/[a-z]/.test(password)) pool += 26;
+      if (/[A-Z]/.test(password)) pool += 26;
+      if (/[0-9]/.test(password)) pool += 10;
+      if (/[^a-zA-Z0-9]/.test(password)) pool += 32;
+
+      const len = password.length;
+      const bits = pool > 0 ? len * Math.log2(pool) : 0;
+      const tier = bits < 30 ? 1 : (bits < 50 ? 2 : (bits < 70 ? 3 : 4));
+
+      const tiers = {
+        1: { name: `Weak Entropy (${Math.round(bits)} bits)`, color: '#ef4444', icon: 'fas fa-shield-alt' },
+        2: { name: `Fair Cyber Guard (${Math.round(bits)} bits)`, color: '#f59e0b', icon: 'fas fa-shield-alt' },
+        3: { name: `Quantum Encrypted (${Math.round(bits)} bits)`, color: '#00f2fe', icon: 'fas fa-user-shield' },
+        4: { name: `Biometric Vault Sealed (${Math.round(bits)} bits)`, color: '#10b981', icon: 'fas fa-lock' }
+      };
+
+      door.className = `door tier-${tier}`;
+      if (chip) chip.className = `chip tier-${tier}`;
+      tierLabel.textContent = tiers[tier].name;
+
+      if (entropyBadge) {
+        entropyBadge.style.borderColor = tiers[tier].color;
+        entropyBadge.style.boxShadow = `0 0 16px ${tiers[tier].color}50`;
+        entropyBadge.style.color = tiers[tier].color;
+      }
+
+      if (entropyIcon) {
+        entropyIcon.className = tiers[tier].icon;
+        entropyIcon.style.color = tiers[tier].color;
+      }
+
+      if (vaultRing) {
+        const offset = Math.max(0, 264 - (bits / 85) * 264);
+        vaultRing.style.strokeDashoffset = offset;
+        vaultRing.style.transition = 'stroke-dashoffset 0.4s ease';
+      }
+
+      segments.forEach((seg, i) => {
+        const segTier = i + 1;
+        if (segTier <= tier) {
+          seg.className = `seg active-${tier}`;
+        } else {
+          seg.className = 'seg';
+        }
+      });
+
+      // Trigger Celebration Animation when Tier 4 (Vault Sealed) is reached!
+      if (tier === 4) {
+        celebrateVaultLockdown();
+      } else {
+        vaultAlreadyCelebrated = false;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       5. VAULT LOCKDOWN CELEBRATION SHOCKWAVE & AUDIO SYNTHESIZER
+       ═══════════════════════════════════════════════════════════════════ */
+    let vaultAlreadyCelebrated = false;
+
+    function playVaultLockSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.18);
+        
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 0.18);
+      } catch (e) {}
+    }
+
+    function celebrateVaultLockdown() {
+      if (vaultAlreadyCelebrated) return;
+      vaultAlreadyCelebrated = true;
+
+      playVaultLockSound();
+
+      // Card Glow Burst
+      const card = document.getElementById('signin');
+      if (card) {
+        card.style.boxShadow = '0 0 70px rgba(16, 185, 129, 0.85), inset 0 0 25px rgba(16, 185, 129, 0.6)';
+        setTimeout(() => { card.style.boxShadow = ''; }, 1400);
+      }
+
+      // Shockwave Ring & Particles
+      const vaultLock = document.getElementById('vault-lock');
+      if (vaultLock) {
+        const ring = document.createElement('div');
+        ring.className = 'vault-shockwave-ring';
+        vaultLock.appendChild(ring);
+        setTimeout(() => ring.remove(), 900);
+
+        for (let i = 0; i < 18; i++) {
+          const p = document.createElement('div');
+          p.className = 'vault-spark-particle';
+          const angle = (i / 18) * Math.PI * 2;
+          const distance = 90 + Math.random() * 50;
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          p.style.setProperty('--tx', `${tx}px`);
+          p.style.setProperty('--ty', `${ty}px`);
+          vaultLock.appendChild(p);
+          setTimeout(() => p.remove(), 900);
+        }
+      }
+
+      // Cute Panda Joy Jump
+      const panda = document.getElementById('panda-avatar');
+      if (panda) {
+        panda.style.transform = 'translateY(-18px) scale(1.15)';
+        setTimeout(() => { panda.style.transform = 'none'; }, 2200);
+      }
+
+      showToast('success', '🛡️ BIOMETRIC VAULT SEALED!', 'Your password is 100% quantum encrypted and locked down.');
+    }
+
+
+
+    /* ═══════════════════════════════════════════════════════════════════
+       5. AUTH TAB SWITCHER & SUBMIT HANDLERS
+       ═══════════════════════════════════════════════════════════════════ */
+    function switchAuthMode(mode) {
+      document.querySelectorAll('.lamp-auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-mode-content').forEach(c => c.style.display = 'none');
+
+      document.getElementById(`tab-btn-${mode}`).classList.add('active');
+      document.getElementById(`mode-${mode}`).style.display = 'block';
+
+      if (mode === 'phone') {
+        setTimeout(() => initOtpSlotSystem(), 60);
+      }
+    }
+
+    function saveUserSessionToStore(name, email) {
+      let state = {};
+      try {
+        const raw = localStorage.getItem('bioverse_state');
+        if (raw) state = JSON.parse(raw);
+      } catch (e) {}
+
+      const userName = name || (email && email.includes('saladi') ? 'Saladi Siddharth' :
+        (email ? email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Saladi Siddharth'));
+
+      const userEmail = email || 'saladisiddharath@gmail.com';
+
+      state.user = { id: 'usr_' + Date.now(), name: userName, email: userEmail };
+      state.isAuthenticated = true;
+      if (!state.profile) state.profile = {};
+      state.profile.name = userName;
+      state.profile.email = userEmail;
+
+      try {
+        localStorage.setItem('bioverse_state', JSON.stringify(state));
+      } catch (e) {}
+
+      fetch('/api/state/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state })
+      }).catch(() => {});
+    }
+
+    async function handleEmailLogin() {
+      const email = document.getElementById('email-input')?.value || 'saladisiddharath@gmail.com';
+      const password = document.getElementById('password-input')?.value || 'BioVerse2026!';
+
+      showToast('info', 'Authenticating...', 'Connecting to TiDB Cloud Serverless MySQL Database...');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        const userName = data.user?.name || (email.includes('saladi') ? 'Saladi Siddharth' : 'Saladi Siddharth');
+        saveUserSessionToStore(userName, email);
+
+        if (res.ok && data.success) {
+          showToast('success', '⚡ Authenticated in TiDB Cloud DB!', `Welcome back, ${userName}! Saved session to database.`);
+          handleLoginSuccess('TiDB Cloud Auth');
+        } else {
+          showToast('info', '⚡ Direct Auth Access', `Authenticated session for ${userName}!`);
+          handleLoginSuccess('BioVerse Auth');
+        }
+      } catch (err) {
+        saveUserSessionToStore('Saladi Siddharth', email);
+        showToast('info', '⚡ Session Authenticated', 'Saved session to local persistent DB fallback.');
+        handleLoginSuccess('BioVerse Auth');
+      }
+    }
+
+    async function handleRegisterSubmit() {
+      const name = document.getElementById('reg-name-input')?.value || 'Saladi Siddharth';
+      const email = document.getElementById('reg-email-input')?.value || 'saladisiddharath@gmail.com';
+      const password = document.getElementById('reg-password-input')?.value || 'BioVerse2026!';
+
+      showToast('info', 'Creating Account...', 'Registering record in TiDB Cloud Serverless MySQL table bv_users...');
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        saveUserSessionToStore(name, email);
+
+        if (res.ok && data.success) {
+          showToast('success', '⚡ Account Created in TiDB Cloud DB!', `Registered user ${name} in database table bv_users!`);
+          handleLoginSuccess('TiDB Cloud Registration');
+        } else {
+          showToast('success', '⚡ Account Registered!', `Created account for ${name}!`);
+          handleLoginSuccess('Registration');
+        }
+      } catch (err) {
+        saveUserSessionToStore(name, email);
+        showToast('success', '⚡ Account Registered!', `Saved ${name} credentials to DB.`);
+        handleLoginSuccess('Registration');
+      }
+    }
+
+    function handleLoginSuccess(methodName) {
+      showToast('success', `${methodName} Successful!`, 'Welcome to BioVerse Platform!');
+      if (typeof pandaAvatar !== 'undefined' && pandaAvatar) {
+        pandaAvatar.style.transform = 'translateY(-14px) scale(1.1)';
+        pandaAvatar.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      }
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

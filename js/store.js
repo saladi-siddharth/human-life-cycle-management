@@ -4,14 +4,14 @@
 
 const Store = {
   _state: {
-    user: null,
-    isAuthenticated: false,
+    user: { id: 'usr_saladi_siddharth', name: 'Saladi Siddharth', email: 'saladisiddharath@gmail.com' },
+    isAuthenticated: true,
     identity: 'student',        // 'student' | 'employee' | 'business'
     onboardingStep: 0,
     onboardingComplete: true,
     profile: {
-      name: 'Rohan Sharma',
-      email: 'rohan.sharma@bioverse.in',
+      name: 'Saladi Siddharth',
+      email: 'saladisiddharath@gmail.com',
       avatar: '',
       lifeStage: 'Higher Education & Career Build',
       goalIntensity: 'ambitious',
@@ -87,42 +87,60 @@ const Store = {
     },
 
     // ─── Comprehensive Indian Colleges Database ──────────────
+    // ─── Comprehensive All-India Colleges Database (All Tiers & Streams) ──────────
     indianColleges: [
       // === TIER 1 ===
       { id: 'c1', name: 'IIT Bombay (Indian Institute of Technology)', field: 'Engineering & Tech', location: 'Mumbai, Maharashtra', nirfRank: '#1 Engineering (Tier 1)', tuition: '₹2.2 Lakh/yr', avgPlacement: '₹23.5 LPA', exam: 'JEE Advanced', link: 'https://www.iitb.ac.in', applyLink: 'https://www.iitb.ac.in/en/education/admissions' },
       { id: 'c2', name: 'IIT Delhi', field: 'Engineering & Tech', location: 'New Delhi', nirfRank: '#2 Engineering (Tier 1)', tuition: '₹2.2 Lakh/yr', avgPlacement: '₹25.8 LPA', exam: 'JEE Advanced', link: 'https://home.iitd.ac.in', applyLink: 'https://home.iitd.ac.in/admissions.php' },
-      { id: 'c3', name: 'AIIMS New Delhi', field: 'Medicine & Healthcare', location: 'New Delhi', nirfRank: '#1 Medical (Tier 1)', tuition: '₹1,628/yr', avgPlacement: 'Top Govt Hospitals', exam: 'NEET UG', link: 'https://www.aiims.edu', applyLink: 'https://www.aiimsexams.ac.in' },
-      { id: 'c4', name: 'IIM Ahmedabad (Indian Institute of Management)', field: 'Business & Management', location: 'Ahmedabad, Gujarat', nirfRank: '#1 Management (Tier 1)', tuition: '₹25 Lakh Total', avgPlacement: '₹34.3 LPA', exam: 'CAT', link: 'https://www.iima.ac.in', applyLink: 'https://www.iima.ac.in/academics/mba' },
-      { id: 'c5', name: 'IISc Bangalore (Indian Institute of Science)', field: 'Pure Sciences', location: 'Bengaluru, Karnataka', nirfRank: '#1 University (Tier 1)', tuition: '₹30,000/yr', avgPlacement: 'Global R&D Placements', exam: 'JEE / GATE', link: 'https://iisc.ac.in', applyLink: 'https://iisc.ac.in/admissions' },
-      { id: 'c6', name: 'NLSIU Bengaluru (National Law School)', field: 'Law', location: 'Bengaluru, Karnataka', nirfRank: '#1 Law (Tier 1)', tuition: '₹3.2 Lakh/yr', avgPlacement: '₹16.0 LPA', exam: 'CLAT', link: 'https://www.nls.ac.in', applyLink: 'https://www.nls.ac.in/admissions' },
+      { id: 'c3', name: 'IIT Madras', field: 'Engineering & Tech', location: 'Chennai, Tamil Nadu', nirfRank: '#1 Overall (Tier 1)', tuition: '₹2.1 Lakh/yr', avgPlacement: '₹21.4 LPA', exam: 'JEE Advanced', link: 'https://www.iitm.ac.in', applyLink: 'https://www.iitm.ac.in/academics/admissions' },
+      { id: 'c4', name: 'IIT Kharagpur', field: 'Engineering & Tech', location: 'Kharagpur, West Bengal', nirfRank: '#5 Engineering (Tier 1)', tuition: '₹2.2 Lakh/yr', avgPlacement: '₹19.5 LPA', exam: 'JEE Advanced', link: 'https://www.iitkgp.ac.in', applyLink: 'https://www.iitkgp.ac.in/admissions' },
+      { id: 'c5', name: 'AIIMS New Delhi', field: 'Medicine & Healthcare', location: 'New Delhi', nirfRank: '#1 Medical (Tier 1)', tuition: '₹1,628/yr', avgPlacement: 'Top Govt Hospitals', exam: 'NEET UG', link: 'https://www.aiims.edu', applyLink: 'https://www.aiimsexams.ac.in' },
+      { id: 'c6', name: 'PGIMER Chandigarh', field: 'Medicine & Healthcare', location: 'Chandigarh', nirfRank: '#2 Medical (Tier 1)', tuition: '₹2,400/yr', avgPlacement: 'Super-Specialty R&D', exam: 'NEET PG / INI-CET', link: 'https://pgimer.edu.in', applyLink: 'https://pgimer.edu.in' },
+      { id: 'c7', name: 'IIM Ahmedabad (Indian Institute of Management)', field: 'Business & Management', location: 'Ahmedabad, Gujarat', nirfRank: '#1 Management (Tier 1)', tuition: '₹25 Lakh Total', avgPlacement: '₹34.3 LPA', exam: 'CAT', link: 'https://www.iima.ac.in', applyLink: 'https://www.iima.ac.in/academics/mba' },
+      { id: 'c8', name: 'IIM Bangalore', field: 'Business & Management', location: 'Bengaluru, Karnataka', nirfRank: '#2 Management (Tier 1)', tuition: '₹24.5 Lakh Total', avgPlacement: '₹33.8 LPA', exam: 'CAT', link: 'https://www.iimb.ac.in', applyLink: 'https://www.iimb.ac.in/pgp-admissions' },
+      { id: 'c9', name: 'IISc Bangalore (Indian Institute of Science)', field: 'Pure Sciences', location: 'Bengaluru, Karnataka', nirfRank: '#1 University (Tier 1)', tuition: '₹30,000/yr', avgPlacement: 'Global R&D Placements', exam: 'JEE / GATE / KVPY', link: 'https://iisc.ac.in', applyLink: 'https://iisc.ac.in/admissions' },
+      { id: 'c10', name: 'NLSIU Bengaluru (National Law School)', field: 'Law', location: 'Bengaluru, Karnataka', nirfRank: '#1 Law (Tier 1)', tuition: '₹3.2 Lakh/yr', avgPlacement: '₹16.0 LPA', exam: 'CLAT', link: 'https://www.nls.ac.in', applyLink: 'https://www.nls.ac.in/admissions' },
+      { id: 'c11', name: 'NID Ahmedabad (National Institute of Design)', field: 'Design & Arts', location: 'Ahmedabad, Gujarat', nirfRank: '#1 Design (Tier 1)', tuition: '₹3.5 Lakh/yr', avgPlacement: '₹14.0 LPA', exam: 'NID DAT', link: 'https://www.nid.edu', applyLink: 'https://admissions.nid.edu' },
 
       // === TIER 2 ===
-      { id: 'c7', name: 'NIT Trichy (National Institute of Technology)', field: 'Engineering & Tech', location: 'Tiruchirappalli, Tamil Nadu', nirfRank: '#9 Engineering (Tier 2)', tuition: '₹1.5 Lakh/yr', avgPlacement: '₹15.2 LPA', exam: 'JEE Main', link: 'https://www.nitt.edu', applyLink: 'https://www.nitt.edu/home/academics/admissions' },
-      { id: 'c8', name: 'BITS Pilani', field: 'Engineering & Tech', location: 'Pilani, Rajasthan', nirfRank: '#25 Overall (Tier 2)', tuition: '₹5.4 Lakh/yr', avgPlacement: '₹18.5 LPA', exam: 'BITSAT', link: 'https://www.bits-pilani.ac.in', applyLink: 'https://www.bitsadmission.com' },
-      { id: 'c9', name: 'Manipal Academy of Higher Education', field: 'Medicine & Healthcare', location: 'Manipal, Karnataka', nirfRank: '#6 Medical (Tier 2)', tuition: '₹17.8 Lakh/yr', avgPlacement: '₹12.0 LPA', exam: 'MET', link: 'https://manipal.edu', applyLink: 'https://manipal.edu/mu/admission.html' },
-      { id: 'c10', name: 'Symbiosis Institute of Business Management', field: 'Business & Management', location: 'Pune, Maharashtra', nirfRank: '#17 Management (Tier 2)', tuition: '₹11.5 Lakh/yr', avgPlacement: '₹23.0 LPA', exam: 'SNAP', link: 'https://www.sibm.edu', applyLink: 'https://www.sibm.edu/welcome/mba' },
-      { id: 'c11', name: 'ILSU Pune (ILS Law College)', field: 'Law', location: 'Pune, Maharashtra', nirfRank: '#5 Law (Tier 2)', tuition: '₹42,000/yr', avgPlacement: '₹8.5 LPA', exam: 'MH CET Law', link: 'https://ilslaw.edu', applyLink: 'https://ilslaw.edu/admissions' },
+      { id: 'c12', name: 'NIT Trichy (National Institute of Technology)', field: 'Engineering & Tech', location: 'Tiruchirappalli, Tamil Nadu', nirfRank: '#9 Engineering (Tier 2)', tuition: '₹1.5 Lakh/yr', avgPlacement: '₹15.2 LPA', exam: 'JEE Main', link: 'https://www.nitt.edu', applyLink: 'https://www.nitt.edu/home/academics/admissions' },
+      { id: 'c13', name: 'BITS Pilani', field: 'Engineering & Tech', location: 'Pilani, Rajasthan', nirfRank: '#25 Overall (Tier 2)', tuition: '₹5.4 Lakh/yr', avgPlacement: '₹18.5 LPA', exam: 'BITSAT', link: 'https://www.bits-pilani.ac.in', applyLink: 'https://www.bitsadmission.com' },
+      { id: 'c14', name: 'DTU Delhi (Delhi Technological University)', field: 'Engineering & Tech', location: 'New Delhi', nirfRank: '#29 Engineering (Tier 2)', tuition: '₹1.9 Lakh/yr', avgPlacement: '₹15.5 LPA', exam: 'JEE Main / JAC Delhi', link: 'http://www.dtu.ac.in', applyLink: 'https://jacdelhi.admissions.nic.in' },
+      { id: 'c15', name: 'IIIT Hyderabad', field: 'Engineering & Tech', location: 'Hyderabad, Telangana', nirfRank: '#55 Engineering (Tier 2)', tuition: '₹3.6 Lakh/yr', avgPlacement: '₹30.0 LPA', exam: 'JEE Main / UGEE', link: 'https://www.iiit.ac.in', applyLink: 'https://ugadmissions.iiit.ac.in' },
+      { id: 'c16', name: 'KMC Manipal (Kasturba Medical College)', field: 'Medicine & Healthcare', location: 'Manipal, Karnataka', nirfRank: '#9 Medical (Tier 2)', tuition: '₹17.8 Lakh/yr', avgPlacement: '₹12.0 LPA', exam: 'NEET UG', link: 'https://manipal.edu/kmc-manipal.html', applyLink: 'https://manipal.edu/mu/admission.html' },
+      { id: 'c17', name: 'Symbiosis SIBM Pune', field: 'Business & Management', location: 'Pune, Maharashtra', nirfRank: '#17 Management (Tier 2)', tuition: '₹11.5 Lakh/yr', avgPlacement: '₹23.0 LPA', exam: 'SNAP', link: 'https://www.sibm.edu', applyLink: 'https://www.sibm.edu/welcome/mba' },
+      { id: 'c18', name: 'NALSAR University of Law', field: 'Law', location: 'Hyderabad, Telangana', nirfRank: '#3 Law (Tier 2)', tuition: '₹2.8 Lakh/yr', avgPlacement: '₹15.0 LPA', exam: 'CLAT', link: 'https://www.nalsar.ac.in', applyLink: 'https://www.nalsar.ac.in/admissions' },
+      { id: 'c19', name: 'IISER Pune', field: 'Pure Sciences', location: 'Pune, Maharashtra', nirfRank: '#34 University (Tier 2)', tuition: '₹45,000/yr', avgPlacement: 'Global PhD Fellowships', exam: 'IAT / JEE Advanced', link: 'https://www.iiserpune.ac.in', applyLink: 'https://www.iiseradmission.in' },
+      { id: 'c20', name: 'NIFT New Delhi', field: 'Design & Arts', location: 'New Delhi', nirfRank: '#1 Fashion (Tier 2)', tuition: '₹3.2 Lakh/yr', avgPlacement: '₹8.5 LPA', exam: 'NIFT Entrance', link: 'https://nift.ac.in', applyLink: 'https://nift.ac.in/admission' },
 
       // === TIER 3 ===
-      { id: 'c12', name: 'PSG College of Technology', field: 'Engineering & Tech', location: 'Coimbatore, Tamil Nadu', nirfRank: '#63 Engineering (Tier 3)', tuition: '₹85,000/yr', avgPlacement: '₹6.8 LPA', exam: 'TNEA / JEE Main', link: 'https://www.psgtech.edu', applyLink: 'https://www.psgtech.edu/admissions.php' },
-      { id: 'c13', name: 'Kalinga Institute of Industrial Technology', field: 'Engineering & Tech', location: 'Bhubaneswar, Odisha', nirfRank: '#39 Engineering (Tier 3)', tuition: '₹3.5 Lakh/yr', avgPlacement: '₹6.5 LPA', exam: 'KIITEE', link: 'https://kiit.ac.in', applyLink: 'https://kiit.ac.in/admission' },
-      { id: 'c14', name: 'Christ University', field: 'Business & Management', location: 'Bengaluru, Karnataka', nirfRank: '#60 Management (Tier 3)', tuition: '₹3.2 Lakh/yr', avgPlacement: '₹7.5 LPA', exam: 'CUET', link: 'https://christuniversity.in', applyLink: 'https://christuniversity.in/admissions' },
-      { id: 'c15', name: 'DY Patil Medical College', field: 'Medicine & Healthcare', location: 'Navi Mumbai, Maharashtra', nirfRank: '#35 Medical (Tier 3)', tuition: '₹22.0 Lakh/yr', avgPlacement: '₹9.0 LPA', exam: 'NEET UG', link: 'https://dypatil.edu', applyLink: 'https://dypatil.edu/admissions' },
+      { id: 'c21', name: 'PSG College of Technology', field: 'Engineering & Tech', location: 'Coimbatore, Tamil Nadu', nirfRank: '#63 Engineering (Tier 3)', tuition: '₹85,000/yr', avgPlacement: '₹6.8 LPA', exam: 'TNEA / JEE Main', link: 'https://www.psgtech.edu', applyLink: 'https://www.psgtech.edu/admissions.php' },
+      { id: 'c22', name: 'KIIT University', field: 'Engineering & Tech', location: 'Bhubaneswar, Odisha', nirfRank: '#39 Engineering (Tier 3)', tuition: '₹3.5 Lakh/yr', avgPlacement: '₹6.5 LPA', exam: 'KIITEE', link: 'https://kiit.ac.in', applyLink: 'https://kiit.ac.in/admission' },
+      { id: 'c23', name: 'VIT Vellore', field: 'Engineering & Tech', location: 'Vellore, Tamil Nadu', nirfRank: '#11 Engineering (Tier 3)', tuition: '₹1.98 Lakh/yr', avgPlacement: '₹9.2 LPA', exam: 'VITEEE', link: 'https://vit.ac.in', applyLink: 'https://viteee.vit.ac.in' },
+      { id: 'c24', name: 'SRM Institute of Science & Tech', field: 'Engineering & Tech', location: 'Chennai, Tamil Nadu', nirfRank: '#28 Engineering (Tier 3)', tuition: '₹2.5 Lakh/yr', avgPlacement: '₹7.5 LPA', exam: 'SRMJEEE', link: 'https://www.srmist.edu.in', applyLink: 'https://applications.srmist.edu.in' },
+      { id: 'c25', name: 'Christ University', field: 'Business & Management', location: 'Bengaluru, Karnataka', nirfRank: '#60 Management (Tier 3)', tuition: '₹3.2 Lakh/yr', avgPlacement: '₹7.5 LPA', exam: 'CUET', link: 'https://christuniversity.in', applyLink: 'https://christuniversity.in/admissions' },
+      { id: 'c26', name: 'DY Patil Medical College', field: 'Medicine & Healthcare', location: 'Navi Mumbai, Maharashtra', nirfRank: '#35 Medical (Tier 3)', tuition: '₹22.0 Lakh/yr', avgPlacement: '₹9.0 LPA', exam: 'NEET UG', link: 'https://dypatil.edu', applyLink: 'https://dypatil.edu/admissions' },
+      { id: 'c27', name: 'St. Xavier\'s College', field: 'Pure Sciences', location: 'Mumbai, Maharashtra', nirfRank: '#87 Overall (Tier 3)', tuition: '₹18,000/yr', avgPlacement: '₹6.0 LPA', exam: 'Merit List / XET', link: 'https://xaviers.ac', applyLink: 'https://xaviers.ac/admissions' },
 
       // === TIER 4 ===
-      { id: 'c16', name: 'Lovely Professional University (LPU)', field: 'Engineering & Tech', location: 'Jalandhar, Punjab', nirfRank: '#50 Engineering (Tier 4)', tuition: '₹2.4 Lakh/yr', avgPlacement: '₹5.5 LPA', exam: 'LPUNEST', link: 'https://www.lpu.in', applyLink: 'https://www.lpu.in/admission' },
-      { id: 'c17', name: 'Amity University Noida', field: 'Engineering & Tech', location: 'Noida, Uttar Pradesh', nirfRank: '#52 Engineering (Tier 4)', tuition: '₹3.1 Lakh/yr', avgPlacement: '₹5.2 LPA', exam: 'Amity JEE', link: 'https://amity.edu', applyLink: 'https://amity.edu/admission-procedure.aspx' },
-      { id: 'c18', name: 'Chitkara University', field: 'Engineering & Tech', location: 'Rajpura, Punjab', nirfRank: '#80 Engineering (Tier 4)', tuition: '₹1.8 Lakh/yr', avgPlacement: '₹5.0 LPA', exam: 'JEE Main', link: 'https://www.chitkara.edu.in', applyLink: 'https://www.chitkara.edu.in/admissions' }
+      { id: 'c28', name: 'Lovely Professional University (LPU)', field: 'Engineering & Tech', location: 'Jalandhar, Punjab', nirfRank: '#50 Engineering (Tier 4)', tuition: '₹2.4 Lakh/yr', avgPlacement: '₹5.5 LPA', exam: 'LPUNEST', link: 'https://www.lpu.in', applyLink: 'https://www.lpu.in/admission' },
+      { id: 'c29', name: 'Amity University Noida', field: 'Engineering & Tech', location: 'Noida, Uttar Pradesh', nirfRank: '#52 Engineering (Tier 4)', tuition: '₹3.1 Lakh/yr', avgPlacement: '₹5.2 LPA', exam: 'Amity JEE', link: 'https://amity.edu', applyLink: 'https://amity.edu/admission-procedure.aspx' },
+      { id: 'c30', name: 'Chitkara University', field: 'Engineering & Tech', location: 'Rajpura, Punjab', nirfRank: '#80 Engineering (Tier 4)', tuition: '₹1.8 Lakh/yr', avgPlacement: '₹5.0 LPA', exam: 'JEE Main', link: 'https://www.chitkara.edu.in', applyLink: 'https://www.chitkara.edu.in/admissions' },
+      { id: 'c31', name: 'Chandigarh University', field: 'Engineering & Tech', location: 'Mohali, Punjab', nirfRank: '#45 Engineering (Tier 4)', tuition: '₹1.6 Lakh/yr', avgPlacement: '₹6.0 LPA', exam: 'CUCET', link: 'https://www.cuchd.in', applyLink: 'https://cucet.cuchd.in' }
     ],
 
-    // ─── Real-Time Indian Scholarships (Govt & Private) ──────
+    // ─── Real-Time Indian Scholarships (Govt & Private CSR) ───
     indianScholarships: [
       { id: 'sch1', name: 'NSP Central Sector Scheme for College Students', type: 'Government', provider: 'Ministry of Education, Govt of India', amount: '₹20,000 / year', deadline: '31 October 2026', eligibility: 'Class 12th >80th percentile, Income <₹4.5 LPA', applyLink: 'https://scholarships.gov.in' },
       { id: 'sch2', name: 'PMSS (Prime Minister\'s Scholarship Scheme)', type: 'Government', provider: 'DESW, Ministry of Defence', amount: '₹36,000 / year', deadline: '30 November 2026', eligibility: 'Wards of Ex-Servicemen & Coast Guard', applyLink: 'https://ksb.gov.in/entry-pmss.htm' },
-      { id: 'sch3', name: 'Tata Building India & Education Trust Scholarship', type: 'Private CSR', provider: 'Tata Trusts', amount: 'Up to ₹1,00,000 / year', deadline: '15 September 2026', eligibility: 'Merit-cum-means for UG Tech/Med students', applyLink: 'https://www.tatatrusts.org/our-work/individual-grants-programme/education-grants' },
-      { id: 'sch4', name: 'Reliance Foundation Undergraduate Scholarship', type: 'Private CSR', provider: 'Reliance Foundation', amount: 'Up to ₹2,00,000 Total', deadline: '06 October 2026', eligibility: 'Undergraduate students, Household Income <₹15 LPA', applyLink: 'https://www.scholarships.reliancefoundation.org' },
-      { id: 'sch5', name: 'Aditya Birla Capital Scholarship Scheme', type: 'Private CSR', provider: 'Aditya Birla Foundation', amount: 'Up to ₹60,000 / year', deadline: '15 October 2026', eligibility: 'School & College students facing financial crisis', applyLink: 'https://www.buddy4study.com/page/aditya-birla-capital-scholarship' },
-      { id: 'sch6', name: 'DST INSPIRE Scholarship (SHE)', type: 'Government', provider: 'Dept of Science & Technology, Govt of India', amount: '₹80,000 / year', deadline: '31 December 2026', eligibility: 'Top 1% in Class 12th pursuing Basic & Natural Sciences', applyLink: 'https://online-inspire.gov.in' }
+      { id: 'sch3', name: 'AICTE Pragati Scholarship for Girls', type: 'Government', provider: 'AICTE, Govt of India', amount: '₹50,000 / year', deadline: '15 November 2026', eligibility: 'Girl students admitted to AICTE Diploma/Degree', applyLink: 'https://www.aicte-india.org/schemes/students-development-schemes/Pragathi' },
+      { id: 'sch4', name: 'Tata Building India & Education Trust Scholarship', type: 'Private CSR', provider: 'Tata Trusts', amount: 'Up to ₹1,00,000 / year', deadline: '15 September 2026', eligibility: 'Merit-cum-means for UG Tech/Med students', applyLink: 'https://www.tatatrusts.org/our-work/individual-grants-programme/education-grants' },
+      { id: 'sch5', name: 'Reliance Foundation Undergraduate Scholarship', type: 'Private CSR', provider: 'Reliance Foundation', amount: 'Up to ₹2,00,000 Total', deadline: '06 October 2026', eligibility: 'Undergraduate students, Household Income <₹15 LPA', applyLink: 'https://www.scholarships.reliancefoundation.org' },
+      { id: 'sch6', name: 'HDFC Bank Parivartan ECSS Scholarship', type: 'Private CSR', provider: 'HDFC Bank Parivartan', amount: 'Up to ₹75,000 / year', deadline: '30 October 2026', eligibility: 'Class 1 to College students facing financial crisis', applyLink: 'https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme' },
+      { id: 'sch7', name: 'Aditya Birla Capital Scholarship Scheme', type: 'Private CSR', provider: 'Aditya Birla Foundation', amount: 'Up to ₹60,000 / year', deadline: '15 October 2026', eligibility: 'School & College students facing financial crisis', applyLink: 'https://www.buddy4study.com/page/aditya-birla-capital-scholarship' },
+      { id: 'sch8', name: 'DST INSPIRE Scholarship (SHE)', type: 'Government', provider: 'Dept of Science & Technology, Govt of India', amount: '₹80,000 / year', deadline: '31 December 2026', eligibility: 'Top 1% in Class 12th pursuing Basic & Natural Sciences', applyLink: 'https://online-inspire.gov.in' },
+      { id: 'sch9', name: 'SBI Asha Scholarship Scheme', type: 'Private CSR', provider: 'SBI Foundation', amount: 'Up to ₹50,000 / year', deadline: '25 November 2026', eligibility: 'Meritorious students from low-income families', applyLink: 'https://www.sbifoundation.in' },
+      { id: 'sch10', name: 'Kotak Kanya Scholarship', type: 'Private CSR', provider: 'Kotak Education Foundation', amount: 'Up to ₹1,50,000 / year', deadline: '30 September 2026', eligibility: 'Meritorious girl students pursuing professional UG degrees', applyLink: 'https://kotakeducation.org/kotak-kanya-scholarship/' }
     ],
 
     // ─── Real-Time Student Internships (Govt & Companies) ───
@@ -130,9 +148,13 @@ const Store = {
       { id: 'int1', company: 'NITI Aayog, Govt of India', title: 'NITI Policy & Digital Transformation Intern', type: 'Government', location: 'New Delhi / Remote', stipend: 'Certificate + Policy Exposure', duration: '6 Weeks to 6 Months', applyLink: 'https://www.niti.gov.in/internship' },
       { id: 'int2', company: 'PM Internship Scheme 2026', title: 'National Industry Apprentice & Intern', type: 'Government', location: 'Pan-India Top 500 Companies', stipend: '₹5,000 / month + ₹6,000 Grant', duration: '12 Months', applyLink: 'https://pminternship.mca.gov.in' },
       { id: 'int3', company: 'ISRO (Indian Space Research Organisation)', title: 'Space Technology & Robotics Student Intern', type: 'Government', location: 'Bengaluru / Sriharikota', stipend: 'Govt Research Stipend', duration: '2 to 6 Months', applyLink: 'https://www.isro.gov.in/Internship.html' },
-      { id: 'int4', company: 'Google India', title: 'Software Engineering Intern (Summer 2026)', type: 'Corporate Tech', location: 'Bengaluru / Hyderabad', stipend: '₹1,10,000 / month', duration: '10 to 12 Weeks', applyLink: 'https://buildyourfuture.withgoogle.com/internships' },
-      { id: 'int5', company: 'Microsoft India', title: 'Research & Software Development Intern', type: 'Corporate Tech', location: 'Bengaluru / Hyderabad / Noida', stipend: '₹1,00,000 / month', duration: '8 to 12 Weeks', applyLink: 'https://careers.microsoft.com/students/us/en/indiascholarships' },
-      { id: 'int6', company: 'Razorpay', title: 'Product & Engineering Summer Intern', type: 'Fintech Unicorn', location: 'Bengaluru, Karnataka', stipend: '₹60,000 / month', duration: '3 Months', applyLink: 'https://razorpay.com/jobs' }
+      { id: 'int4', company: 'Reserve Bank of India (RBI)', title: 'RBI Summer Internship Program', type: 'Government', location: 'Mumbai / Regional Centers', stipend: '₹20,000 / month', duration: '3 Months', applyLink: 'https://opportunities.rbi.org.in' },
+      { id: 'int5', company: 'Google India', title: 'Software Engineering Intern (Summer 2026)', type: 'Corporate Tech', location: 'Bengaluru / Hyderabad', stipend: '₹1,10,000 / month', duration: '10 to 12 Weeks', applyLink: 'https://buildyourfuture.withgoogle.com/internships' },
+      { id: 'int6', company: 'Microsoft India', title: 'Research & Software Development Intern', type: 'Corporate Tech', location: 'Bengaluru / Hyderabad / Noida', stipend: '₹1,00,000 / month', duration: '8 to 12 Weeks', applyLink: 'https://careers.microsoft.com/students/us/en/indiascholarships' },
+      { id: 'int7', company: 'Amazon India', title: 'Software Development Engineer Intern', type: 'Corporate Tech', location: 'Bengaluru / Hyderabad', stipend: '₹95,000 / month', duration: '6 Months', applyLink: 'https://www.amazon.jobs/en/teams/internships-india' },
+      { id: 'int8', company: 'Razorpay', title: 'Product & Engineering Summer Intern', type: 'Fintech Unicorn', location: 'Bengaluru, Karnataka', stipend: '₹60,000 / month', duration: '3 Months', applyLink: 'https://razorpay.com/jobs' },
+      { id: 'int9', company: 'Flipkart', title: 'Runway SDE Female Intern Program', type: 'Corporate Tech', location: 'Bengaluru, Karnataka', stipend: '₹80,000 / month', duration: '2 Months', applyLink: 'https://www.flipkartcareers.com' },
+      { id: 'int10', company: 'Zerodha', title: 'Fintech Systems & UI/UX Intern', type: 'Fintech Unicorn', location: 'Bengaluru / Remote', stipend: '₹45,000 / month', duration: '3 to 6 Months', applyLink: 'https://zerodha.com/careers' }
     ],
 
     health: {
@@ -201,6 +223,7 @@ const Store = {
   _notify() { this._listeners.forEach(fn => fn(this._state)); },
   _save() {
     try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
+    this.syncWithBackend();
   },
   _load() {
     try {
@@ -208,6 +231,32 @@ const Store = {
       if (saved) {
         const data = JSON.parse(saved);
         Object.assign(this._state, data);
+      }
+    } catch (e) {}
+  },
+  async syncWithBackend() {
+    try {
+      fetch('/api/state/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: this._state })
+      }).then(res => res.json()).then(data => {
+        if (data.syncedToTiDB && typeof UI !== 'undefined' && UI.toast) {
+          UI.toast('success', '⚡ Saved to TiDB Cloud Database', 'State & form data persisted to TiDB Cloud Serverless MySQL.');
+        }
+      }).catch(() => {});
+    } catch (e) {}
+  },
+  async fetchFromBackend() {
+    try {
+      const res = await fetch('/api/state/get');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.state) {
+          Object.assign(this._state, data.state);
+          this.recalculateScores();
+          this._notify();
+        }
       }
     } catch (e) {}
   },
@@ -391,6 +440,7 @@ const Store = {
   },
   logSleep(sleep) {
     this._state.health.sleepLogs.unshift({
+      id: 's_' + Date.now(),
       date: sleep.date || new Date().toISOString().split('T')[0],
       hours: Number(sleep.hours) || 7.5,
       quality: Number(sleep.quality) || 4,
@@ -400,6 +450,22 @@ const Store = {
     this.recalculateScores();
     this._save();
     this._notify();
+  },
+  deleteWorkoutLog(id) {
+    if (this._state.health && this._state.health.workoutLogs) {
+      this._state.health.workoutLogs = this._state.health.workoutLogs.filter(w => w.id !== id);
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
+  },
+  deleteSleepLog(id) {
+    if (this._state.health && this._state.health.sleepLogs) {
+      this._state.health.sleepLogs = this._state.health.sleepLogs.filter(s => s.id !== id);
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
   },
 
   // ─── Backup Export / Import ──────────────────────────────
@@ -458,7 +524,7 @@ const Store = {
     return Boolean(this._state.onboardingComplete);
   },
 
-  login(email, password) {
+  async login(email, password) {
     const namePart = email ? email.split('@')[0].replace(/[._]/g, ' ') : 'User';
     const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
     this._state.user = { email, name: formattedName };
@@ -467,8 +533,23 @@ const Store = {
       this._state.profile.name = formattedName;
     }
     this._state.profile.email = email;
-    this._save();
     this._notify();
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        this._state.user = data.user;
+        this._state.profile.name = data.user.name;
+        this._notify();
+      }
+    } catch (e) {
+      console.warn('TiDB Auth Sync fallback to local state:', e.message);
+    }
   },
 
   loginWithGoogle() {
@@ -476,26 +557,34 @@ const Store = {
     this._state.isAuthenticated = true;
     this._state.profile.name = 'Rohan Sharma';
     this._state.profile.email = 'rohan.sharma@bioverse.in';
-    this._save();
     this._notify();
   },
 
-  register(name, email, password) {
+  async register(name, email, password) {
     this._state.user = { email, name };
     this._state.isAuthenticated = true;
     this._state.profile.name = name;
     this._state.profile.email = email;
     this._state.onboardingComplete = false;
-    this._save();
     this._notify();
+
+    try {
+      await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+    } catch (e) {
+      console.warn('TiDB Register Sync fallback to local state:', e.message);
+    }
   },
 
   logout() {
     this._state.user = null;
     this._state.isAuthenticated = false;
-    this._save();
     this._notify();
   },
+
 
   getInitials() {
     const name = this._state.profile?.name || this._state.user?.name || 'RS';
@@ -536,6 +625,98 @@ const Store = {
         this._save();
         this._notify();
       }
+    }
+  },
+
+  deleteJobApplication(id) {
+    if (this._state.career && this._state.career.jobApplications) {
+      this._state.career.jobApplications = this._state.career.jobApplications.filter(j => j.id !== id);
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Indian Colleges Portal Management ─────────────────────
+  addCollege(c) {
+    const newC = {
+      id: 'c_' + Date.now(),
+      name: c.name,
+      field: c.field || 'Engineering & Tech',
+      location: c.location || 'India',
+      nirfRank: c.nirfRank || 'Ranked Institute',
+      tuition: c.tuition || 'Competitive',
+      avgPlacement: c.avgPlacement || '₹8.0 LPA',
+      exam: c.exam || 'Entrance Exam',
+      link: c.link || 'https://www.education.gov.in',
+      applyLink: c.applyLink || 'https://www.education.gov.in'
+    };
+    if (!this._state.indianColleges) this._state.indianColleges = [];
+    this._state.indianColleges.unshift(newC);
+    this._save();
+    this._notify();
+    return newC;
+  },
+
+  deleteCollege(id) {
+    if (this._state.indianColleges) {
+      this._state.indianColleges = this._state.indianColleges.filter(x => x.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Indian Scholarships Portal Management ──────────────────
+  addScholarship(s) {
+    const newS = {
+      id: 'sch_' + Date.now(),
+      name: s.name,
+      type: s.type || 'Government',
+      provider: s.provider || 'Govt / CSR Trust',
+      amount: s.amount || '₹25,000 / year',
+      deadline: s.deadline || 'Ongoing 2026',
+      eligibility: s.eligibility || 'Merit-cum-means eligible',
+      applyLink: s.applyLink || 'https://scholarships.gov.in'
+    };
+    if (!this._state.indianScholarships) this._state.indianScholarships = [];
+    this._state.indianScholarships.unshift(newS);
+    this._save();
+    this._notify();
+    return newS;
+  },
+
+  deleteScholarship(id) {
+    if (this._state.indianScholarships) {
+      this._state.indianScholarships = this._state.indianScholarships.filter(x => x.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Indian Internships Portal Management ───────────────────
+  addInternship(i) {
+    const newI = {
+      id: 'int_' + Date.now(),
+      company: i.company || 'Company / Ministry',
+      title: i.title,
+      type: i.type || 'Corporate Tech',
+      location: i.location || 'Remote / Pan-India',
+      stipend: i.stipend || '₹25,000 / month',
+      duration: i.duration || '3 Months',
+      applyLink: i.applyLink || 'https://internshala.com'
+    };
+    if (!this._state.indianInternships) this._state.indianInternships = [];
+    this._state.indianInternships.unshift(newI);
+    this._save();
+    this._notify();
+    return newI;
+  },
+
+  deleteInternship(id) {
+    if (this._state.indianInternships) {
+      this._state.indianInternships = this._state.indianInternships.filter(x => x.id !== id);
+      this._save();
+      this._notify();
     }
   }
 };
