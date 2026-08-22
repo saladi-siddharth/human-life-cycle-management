@@ -49,25 +49,27 @@ Router.register('/business/team', BusinessTeamPage);
 // Admin
 Router.register('/admin', AdminPage);
 
-// Initialize Router & Global Micro-Interactions on DOM Content Loaded
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize Router & Global Micro-Interactions safely
+function initBioVerseApp() {
   // Hide loading screen
-  setTimeout(() => {
-    const loader = document.getElementById('loading-screen');
-    if (loader) {
-      loader.style.opacity = '0';
-      setTimeout(() => loader.remove(), 500);
-    }
-  }, 800);
+  const loader = document.getElementById('loading-screen');
+  if (loader) {
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      try { loader.remove(); } catch (e) {}
+    }, 500);
+  }
 
   // Cursify Custom Cursor Glow Overlay
-  const cursorGlow = document.createElement('div');
-  cursorGlow.id = 'cursor-glow';
-  document.body.appendChild(cursorGlow);
+  if (!document.getElementById('cursor-glow') && document.body) {
+    const cursorGlow = document.createElement('div');
+    cursorGlow.id = 'cursor-glow';
+    document.body.appendChild(cursorGlow);
 
-  window.addEventListener('mousemove', (e) => {
-    cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-  });
+    window.addEventListener('mousemove', (e) => {
+      cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    });
+  }
 
   // Aceternity UI 3D Card Tilt Interaction & Spotlight
   document.addEventListener('mousemove', (e) => {
@@ -94,4 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   Router.init();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBioVerseApp);
+} else {
+  initBioVerseApp();
+}
+
