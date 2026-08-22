@@ -16,8 +16,12 @@ const ActionPhysics = {
     return this._audioCtx;
   },
 
+  _ambientSource: null,
+  _ambientGain: null,
+
   playSound(type = 'sloth') {
     try {
+      if (typeof Store !== 'undefined' && Store.get('soundEnabled') === false) return;
       const ctx = this.getAudioContext();
       if (!ctx) return;
       const now = ctx.currentTime;
@@ -115,10 +119,122 @@ const ActionPhysics = {
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.2);
+      } else if (type === 'waterSplash') {
+        // Liquid water pour and splash sound
+        [440, 580, 720, 880, 1100].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq + Math.random() * 80, now + idx * 0.04);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + idx * 0.04 + 0.08);
+
+          gain.gain.setValueAtTime(0.18, now + idx * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.09);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.04);
+          osc.stop(now + idx * 0.04 + 0.09);
+        });
+      } else if (type === 'coinDrop') {
+        // Metallic coin clink audio chime
+        [3200, 4800, 2400].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.6, now + idx * 0.05 + 0.12);
+
+          gain.gain.setValueAtTime(0.22, now + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.12);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.05);
+          osc.stop(now + idx * 0.05 + 0.12);
+        });
+      } else if (type === 'pomodoroBell') {
+        // Harmonic Tibetan singing bowl gong
+        [432, 864, 1296].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = idx === 0 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(freq, now);
+
+          gain.gain.setValueAtTime(0.3 / (idx + 1), now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 2.5);
+        });
       }
     } catch (e) {
       // Silent fallback
     }
+  },
+
+  // ─── Continuous Ambient Focus Soundscapes ─────────────────
+  startAmbientNoise(mode = 'pink') {
+    try {
+      if (this._ambientSource) this.stopAmbientNoise();
+      const ctx = this.getAudioContext();
+      if (!ctx) return;
+
+      const bufferSize = ctx.sampleRate * 3;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        if (mode === 'pink') {
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+          b6 = white * 0.115926;
+        } else {
+          // Soft rain / white noise
+          data[i] = white * 0.035;
+        }
+      }
+
+      this._ambientSource = ctx.createBufferSource();
+      this._ambientSource.buffer = buffer;
+      this._ambientSource.loop = true;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(mode === 'pink' ? 800 : 1800, ctx.currentTime);
+
+      this._ambientGain = ctx.createGain();
+      this._ambientGain.gain.setValueAtTime(0.01, ctx.currentTime);
+      this._ambientGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 1.5);
+
+      this._ambientSource.connect(filter);
+      filter.connect(this._ambientGain);
+      this._ambientGain.connect(ctx.destination);
+      this._ambientSource.start(0);
+    } catch (e) {}
+  },
+
+  stopAmbientNoise() {
+    try {
+      if (this._ambientGain && this._audioCtx) {
+        this._ambientGain.gain.linearRampToValueAtTime(0.001, this._audioCtx.currentTime + 0.8);
+      }
+      setTimeout(() => {
+        if (this._ambientSource) {
+          try { this._ambientSource.stop(); } catch (e) {}
+          this._ambientSource = null;
+        }
+      }, 900);
+    } catch (e) {}
   },
 
   // ─── 1. CUTE SLOTH "HURRAY!" GOAL CELEBRATION ───────────────

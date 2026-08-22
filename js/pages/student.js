@@ -33,8 +33,14 @@ function StudentCollegesPage() {
       ${UI.sectionHeader(
         '🇮🇳 All-India Top Universities & Institutes Directory',
         'Explore NIRF-ranked Indian colleges with real-time placement statistics, entrance exams, tuition, and direct admission portals.',
-        `<button class="btn btn-primary btn-sm" onclick="openAddCollegeModal()"><i class="fas fa-plus"></i> Add College</button>`
+        `<div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="openCollegeCompareModal()"><i class="fas fa-columns"></i> Compare Institutes</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddCollegeModal()"><i class="fas fa-plus"></i> Add College</button>
+        </div>`
       )}
+
+      <!-- 🏆 Competitive Exam Countdowns & Syllabus Roadmap Banner 🏆 -->
+      ${renderExamsTracker()}
 
       <!-- Search & Filters Bar -->
       <div class="card card-glass" style="margin-bottom:var(--space-xl);padding:16px;">
@@ -44,6 +50,7 @@ function StudentCollegesPage() {
             <input type="text" class="chat-input" style="padding-left:40px;height:42px;" placeholder="Search Indian colleges by name, city, or entrance exam (e.g. JEE, NEET, CAT, CLAT)..." value="${collegeSearchQuery}" oninput="onCollegeSearch(this.value)">
           </div>
           <button class="btn btn-outline btn-sm" onclick="searchWebColleges(collegeSearchQuery)" data-tooltip="Search live NIRF / JoSAA counseling portals"><i class="fas fa-globe"></i> Search Web Sources</button>
+          <button class="btn btn-secondary btn-sm" onclick="openCollegeCompareModal()"><i class="fas fa-balance-scale"></i> Compare</button>
           <button class="btn btn-primary btn-sm" onclick="openAddCollegeModal()"><i class="fas fa-graduation-cap"></i> Add Institute</button>
         </div>
 
@@ -180,7 +187,7 @@ function openAddCollegeModal() {
           <input type="text" id="c-tuit" class="chat-input" value="₹3.0 Lakh/yr">
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Save College Entry</button>
+      ${UI.pillButton({ text: 'Save College Entry', icon: '<i class="fas fa-graduation-cap"></i>', theme: 'cyan', type: 'submit' })}
     </form>
   `;
   UI.modal(html);
@@ -328,7 +335,7 @@ function openAddScholarshipModal() {
         <label style="font-size:12px;color:var(--text-muted);">Eligibility Requirements</label>
         <input type="text" id="sch-elig" class="chat-input" value="Class 12th / UG Students, Income <₹6.0 LPA">
       </div>
-      <button type="submit" class="btn btn-success">Save Scholarship</button>
+      ${UI.pillButton({ text: 'Save Scholarship Program', icon: '<i class="fas fa-trophy"></i>', theme: 'emerald', type: 'submit' })}
     </form>
   `;
   UI.modal(html);
@@ -486,7 +493,7 @@ function openAddInternshipModal() {
         <label style="font-size:12px;color:var(--text-muted);">Location</label>
         <input type="text" id="int-loc" class="chat-input" value="Bengaluru / Remote">
       </div>
-      <button type="submit" class="btn btn-primary">Track Internship</button>
+      ${UI.pillButton({ text: 'Track Internship Opportunity', icon: '<i class="fas fa-rocket"></i>', theme: 'cyan', type: 'submit' })}
     </form>
   `;
   UI.modal(html);
@@ -506,6 +513,163 @@ function saveInternshipForm(e) {
   ActionPhysics.rocketLaunch(company, title);
   UI.toast('success', 'Internship Tracked! 🚀🔥', `3D Rocket launched for ${title} at ${company}!`);
   Router.render();
+}
+
+// ─── Exam Countdown & Syllabus Roadmap Engine ─────────────
+function renderExamsTracker() {
+  const exams = Store.get('exams') || [];
+  if (!exams.length) return '';
+
+  return `
+    <div class="card card-glass" style="margin-bottom:var(--space-xl);padding:20px;background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));border:1px solid rgba(0,242,254,0.3);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:16px;">
+          <i class="fas fa-bullseye" style="color:var(--cyan);"></i> Competitive Exams Countdown & Syllabus Tracker
+        </h3>
+        <button class="btn btn-ghost btn-sm" onclick="openAddExamModal()"><i class="fas fa-plus"></i> Track New Exam</button>
+      </div>
+
+      <div class="grid grid-3" style="gap:16px;">
+        ${exams.map(e => {
+          const target = new Date(e.targetDate);
+          const now = new Date();
+          const diffDays = Math.max(0, Math.ceil((target - now) / (1000 * 60 * 60 * 24)));
+          return `
+            <div style="padding:14px;background:rgba(15,23,42,0.85);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <span style="font-weight:700;font-size:13px;color:#fff;">${e.name}</span>
+                <span class="badge badge-primary" style="font-size:10px;font-family:var(--font-mono);">${diffDays} Days Left</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Target: ${e.targetScore} • Date: ${e.targetDate}</div>
+              
+              <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;">
+                <span style="color:var(--text-secondary);">Syllabus Covered</span>
+                <span style="color:var(--cyan);font-weight:700;">${e.syllabusProgress}%</span>
+              </div>
+              <div class="progress-bar" style="margin-bottom:8px;">
+                <div class="progress-fill" style="width:${e.syllabusProgress}%;background:var(--gradient-accent);"></div>
+              </div>
+              <input type="range" class="bio-slider" min="0" max="100" value="${e.syllabusProgress}" oninput="updateExamProgressVal('${e.id}', this.value)" data-tooltip="Drag to update syllabus %">
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function updateExamProgressVal(id, val) {
+  Store.updateExamProgress(id, val);
+  Router.render();
+}
+
+function openAddExamModal() {
+  const html = `
+    <h3>🎯 Track Competitive Exam or Certification</h3>
+    <form onsubmit="saveExamForm(event)" style="display:flex;flex-direction:column;gap:14px;margin-top:16px;">
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);">Exam / Certification Name</label>
+        <input type="text" id="ex-name" class="chat-input" placeholder="e.g. GATE CSE 2027 or CAT 2026 or AWS Pro" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);">Exam Target Date</label>
+          <input type="date" id="ex-date" class="chat-input" value="2027-02-01" required>
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);">Current Syllabus %</label>
+          <input type="number" id="ex-prog" class="chat-input" value="35" min="0" max="100" required>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text-muted);">Target Score / Rank</label>
+        <input type="text" id="ex-score" class="chat-input" value="AIR < 100" required>
+      </div>
+      ${UI.pillButton({ text: 'Track Exam Roadmap', icon: '<i class="fas fa-bullseye"></i>', theme: 'purple', type: 'submit' })}
+    </form>
+  `;
+  UI.modal(html);
+}
+
+function saveExamForm(e) {
+  e.preventDefault();
+  const name = document.getElementById('ex-name').value;
+  const targetDate = document.getElementById('ex-date').value;
+  const syllabusProgress = document.getElementById('ex-prog').value;
+  const targetScore = document.getElementById('ex-score').value;
+
+  Store.addExam({ name, targetDate, syllabusProgress, targetScore });
+  UI.closeModal();
+  if (typeof ActionPhysics !== 'undefined') ActionPhysics.playSound('wand');
+  UI.toast('success', 'Exam Tracked! 🎯', `Roadmap milestone set for ${name}.`);
+  Router.render();
+}
+
+// ─── Side-by-Side College Comparison Tool ─────────────────
+function openCollegeCompareModal() {
+  const colleges = Store.get('indianColleges') || [];
+  const c1 = colleges[0] || {};
+  const c2 = colleges[1] || {};
+  const c3 = colleges[14] || {}; // IIIT Hyderabad
+
+  const html = `
+    <div style="max-width:760px;">
+      <h3 style="margin-bottom:6px;"><i class="fas fa-balance-scale" style="color:var(--cyan);"></i> All-India College Comparison Matrix</h3>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:16px;">Side-by-side benchmark of top NIRF ranked institutes, avg placements, fees, and entrance cutoff routes.</p>
+      
+      <div style="overflow-x:auto;">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>${c1.name || 'IIT Bombay'}</th>
+              <th>${c2.name || 'IIT Delhi'}</th>
+              <th>${c3.name || 'IIIT Hyderabad'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>NIRF Ranking</strong></td>
+              <td><span class="badge badge-primary">${c1.nirfRank}</span></td>
+              <td><span class="badge badge-primary">${c2.nirfRank}</span></td>
+              <td><span class="badge badge-info">${c3.nirfRank}</span></td>
+            </tr>
+            <tr>
+              <td><strong>Avg Placement</strong></td>
+              <td style="color:var(--emerald);font-weight:700;">${c1.avgPlacement}</td>
+              <td style="color:var(--emerald);font-weight:700;">${c2.avgPlacement}</td>
+              <td style="color:var(--emerald);font-weight:700;">${c3.avgPlacement}</td>
+            </tr>
+            <tr>
+              <td><strong>Tuition / Year</strong></td>
+              <td>${c1.tuition}</td>
+              <td>${c2.tuition}</td>
+              <td>${c3.tuition}</td>
+            </tr>
+            <tr>
+              <td><strong>Entrance Exam</strong></td>
+              <td><span class="badge badge-purple">${c1.exam}</span></td>
+              <td><span class="badge badge-purple">${c2.exam}</span></td>
+              <td><span class="badge badge-purple">${c3.exam}</span></td>
+            </tr>
+            <tr>
+              <td><strong>Location</strong></td>
+              <td>${c1.location}</td>
+              <td>${c2.location}</td>
+              <td>${c3.location}</td>
+            </tr>
+            <tr>
+              <td><strong>Action</strong></td>
+              <td><button class="btn btn-outline btn-sm" onclick="window.open('${c1.applyLink}', '_blank')">Apply</button></td>
+              <td><button class="btn btn-outline btn-sm" onclick="window.open('${c2.applyLink}', '_blank')">Apply</button></td>
+              <td><button class="btn btn-outline btn-sm" onclick="window.open('${c3.applyLink}', '_blank')">Apply</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  UI.modal(html);
 }
 
 function searchWebColleges(query) {
@@ -530,6 +694,10 @@ window.deleteCollegeItem = deleteCollegeItem;
 window.openAddCollegeModal = openAddCollegeModal;
 window.saveCollegeForm = saveCollegeForm;
 window.searchWebColleges = searchWebColleges;
+window.openCollegeCompareModal = openCollegeCompareModal;
+window.openAddExamModal = openAddExamModal;
+window.saveExamForm = saveExamForm;
+window.updateExamProgressVal = updateExamProgressVal;
 
 window.onScholarshipSearch = onScholarshipSearch;
 window.setScholarshipTypeFilter = setScholarshipTypeFilter;
@@ -544,3 +712,4 @@ window.deleteInternshipItem = deleteInternshipItem;
 window.openAddInternshipModal = openAddInternshipModal;
 window.saveInternshipForm = saveInternshipForm;
 window.searchWebInternships = searchWebInternships;
+

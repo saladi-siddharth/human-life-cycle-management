@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="BioVerse Continuum Pavilion — An immersive 3D cinematic journey through the architecture of a life. Interactive spatial telemetry, audio synthesis, and life milestones across four acts.">
+  <title>BioVerse — The Continuum Pavilion | 3D Life Journey</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Three.js & TWEEN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       CONTINUUM PAVILION — LUXURY SPATIAL DESIGN SYSTEM
+       ═══════════════════════════════════════════════════════════════ */
+    :root {
+      --bg-void: #030508;
+      --glass-bg: rgba(12, 16, 28, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-highlight: rgba(255, 255, 255, 0.2);
+      --emerald: #10b981;
+      --cobalt: #3b82f6;
+      --amber: #f59e0b;
+      --gold: #c5a572;
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ─── WebGL Canvas ────────────────────────────────────────── */
+    #continuum-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      display: block;
+      cursor: grab;
+    }
+    #continuum-canvas:active { cursor: grabbing; }
+    #continuum-canvas.interactive-hover { cursor: pointer; }
+
+    /* ─── HUD Layer ───────────────────────────────────────────── */
+    .hud {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hud * { pointer-events: auto; }
+
+    /* ─── Liquid Glass Panel Base ─────────────────────────────── */
+    .glass-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px) saturate(1.6);
+      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      border-radius: 18px;
+      color: var(--text-primary);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-highlight);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── Top Navigation Bar ──────────────────────────────────── */
+    .hud-topbar {
+      position: absolute;
+      top: 24px; left: 28px; right: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .hud-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 9999px;
+    }
+    .hud-logo-icon { font-size: 22px; }
+    .hud-logo-text {
+      font-size: 18px; font-weight: 800;
+      background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+      font-family: var(--font-serif);
+      font-size: 22px;
+    }
+
+    .hud-top-right {
+      display: flex; align-items: center; gap: 12px;
+      pointer-events: auto;
+    }
+
+    /* ─── Audio Toggle Button ─────────────────────────────────── */
+    .hud-sound-btn {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: var(--text-muted);
+      font-size: 15px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    .hud-sound-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(197, 165, 114, 0.3);
+      transform: scale(1.05);
+    }
+    .hud-sound-btn.active {
+      color: var(--emerald);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+    }
+
+    /* ─── Life Sync Score ─────────────────────────────────────── */
+    .hud-sync-score {
+      padding: 10px 20px;
+      display: flex; align-items: center; gap: 14px;
+      border-radius: 9999px;
+    }
+    .sync-ring {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .sync-ring svg {
+      position: absolute; inset: -2px;
+      width: 48px; height: 48px;
+      transform: rotate(-90deg);
+    }
+    .sync-ring svg circle {
+      fill: none; stroke-width: 3.5; stroke-linecap: round;
+    }
+    .sync-ring .track { stroke: rgba(255,255,255,0.08); }
+    .sync-ring .fill { stroke: url(#syncGrad); transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .sync-value { font-size: 13px; font-weight: 800; font-family: var(--font-mono); }
+    .sync-label { font-size: 10px; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .sync-number { font-size: 19px; font-weight: 900; font-family: var(--font-mono); }
+
+    /* ─── Story Narration (Center Left) ───────────────────────── */
+    .hud-story {
+      position: absolute;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 420px;
+      padding: 30px 34px;
+      opacity: 0;
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(-50%) translateX(-24px);
+    }
+    .hud-story.visible {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+    .story-act-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-family: var(--font-mono);
+    }
+    .story-title {
+      font-size: 32px;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+    .story-body {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .story-pillars {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .story-pillar {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12.5px; font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .pillar-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ─── Hotspot Inspect Badge ───────────────────────────────── */
+    .story-inspect-hint {
+      margin-top: 18px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      font-size: 11.5px;
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .story-inspect-hint i { color: var(--gold); }
+
+    /* ─── Bottom HUD Bar (Unified Persona + Scrubber + CTA) ───── */
+    .hud-bottom-bar {
+      position: absolute;
+      bottom: 24px; left: 28px; right: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      pointer-events: none;
+    }
+
+    /* ─── Persona Switcher ────────────────────────────────────── */
+    .hud-persona {
+      padding: 6px;
+      display: flex; gap: 4px;
+      border-radius: 14px;
+      pointer-events: auto;
+    }
+    .persona-pill {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .persona-pill:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .persona-pill.active {
+      background: rgba(197, 165, 114, 0.18);
+      color: #ffffff;
+      border: 1px solid rgba(197, 165, 114, 0.4);
+      box-shadow: 0 0 20px rgba(197, 165, 114, 0.2);
+    }
+
+    /* ─── Interactive Track Scrubber (Bottom Center) ──────────── */
+    .hud-scrubber-container {
+      flex: 1;
+      max-width: 440px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      pointer-events: auto;
+    }
+    .hud-scrubber-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      cursor: pointer;
+      overflow: visible;
+      transition: height 0.2s ease;
+    }
+    .hud-scrubber-track:hover { height: 12px; }
+    .hud-scrubber-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--emerald), var(--cobalt), var(--gold), #e0e7ff);
+      position: relative;
+      pointer-events: none;
+    }
+    .hud-scrubber-thumb {
+      position: absolute;
+      right: -6px; top: 50%;
+      transform: translateY(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 2px 6px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+    .hud-scrubber-labels {
+      width: 100%;
+      display: flex; justify-content: space-between;
+      font-size: 10px; font-family: var(--font-mono); color: var(--text-dim);
+      padding: 0 2px;
+    }
+
+    /* ─── CTA Buttons ─────────────────────────────────────────── */
+    .hud-cta {
+      display: flex; gap: 10px; align-items: center;
+      pointer-events: auto;
+    }
+    .cta-btn {
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: inherit;
+    }
+    .cta-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    }
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.5);
+    }
+    .cta-ghost {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+    }
+    .cta-ghost:hover {
+      background: rgba(255,255,255,0.12);
+      color: var(--text-primary);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    /* ─── Scroll Hint ─────────────────────────────────────────── */
+    .hud-scroll-hint {
+      position: absolute;
+      bottom: 84px;
+      left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+    .hud-scroll-hint.hidden { opacity: 0; }
+    .scroll-hint-text {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 2.5px; color: var(--gold);
+    }
+    .scroll-hint-arrow {
+      width: 18px; height: 18px;
+      border-right: 2px solid var(--gold);
+      border-bottom: 2px solid var(--gold);
+      transform: rotate(45deg);
+      animation: scrollBounce 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: 0.6; }
+      50% { transform: rotate(45deg) translate(4px, 4px); opacity: 1; }
+    }
+
+    /* ─── 3D Hotspot Hover Tooltip ────────────────────────────── */
+    #hotspot-tooltip {
+      position: fixed;
+      pointer-events: none;
+      z-index: 50;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: rgba(10, 14, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffffff;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transform: translate(-50%, -130%);
+      transition: opacity 0.2s ease;
+    }
+    #hotspot-tooltip .tooltip-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    /* ─── 3D Object Deep-Dive Inspection Modal ─────────────────── */
+    .inspect-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(3, 5, 8, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .inspect-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .inspect-card {
+      max-width: 540px;
+      width: 100%;
+      padding: 36px;
+      position: relative;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .inspect-modal-overlay.open .inspect-card {
+      transform: scale(1) translateY(0);
+    }
+    .inspect-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .inspect-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      transform: rotate(90deg);
+    }
+    .inspect-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .inspect-title {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .inspect-desc {
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .inspect-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .inspect-stat-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .inspect-stat-label {
+      font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+    }
+    .inspect-stat-val {
+      font-size: 18px; font-weight: 800; font-family: var(--font-mono); color: #ffffff;
+    }
+    .inspect-actions {
+      display: flex; gap: 12px;
+    }
+
+    /* ─── Loading Overlay ─────────────────────────────────────── */
+    .continuum-loader {
+      position: fixed; inset: 0;
+      z-index: 200;
+      background: var(--bg-void);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      transition: opacity 0.8s ease;
+    }
+    .continuum-loader.done { opacity: 0; pointer-events: none; }
+    .loader-ring {
+      width: 68px; height: 68px;
+      border: 3px solid rgba(255,255,255,0.06);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: loaderSpin 0.9s linear infinite;
+    }
+    @keyframes loaderSpin { to { transform: rotate(360deg); } }
+    .loader-text { font-family: var(--font-serif); font-size: 20px; color: #ffffff; }
+    .loader-sub { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+
+    /* ─── Mobile Viewport Responsiveness ──────────────────────── */
+    @media (max-width: 900px) {
+      .hud-topbar { top: 16px; left: 16px; right: 16px; }
+      .hud-bottom-bar {
+        bottom: 16px; left: 16px; right: 16px;
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
+      .hud-scrubber-container { width: 100%; max-width: 100%; }
+      .hud-persona { width: 100%; justify-content: space-between; overflow-x: auto; padding: 4px; }
+      .persona-pill { padding: 8px 12px; font-size: 11.5px; }
+      .hud-cta { width: 100%; justify-content: space-between; }
+      .cta-btn { flex: 1; justify-content: center; padding: 10px 14px; font-size: 12px; }
+
+      .hud-story {
+        max-width: calc(100% - 32px);
+        left: 16px;
+        top: 80px;
+        transform: none;
+        padding: 20px 22px;
+        border-radius: 14px;
+      }
+      .hud-story.visible { transform: none; }
+      .story-title { font-size: 22px; margin-bottom: 8px; }
+      .story-body { font-size: 12.5px; margin-bottom: 12px; line-height: 1.5; }
+      .story-pillar { font-size: 11.5px; }
+      .story-inspect-hint { display: none; }
+      .hud-scroll-hint { bottom: 180px; }
+    }
+
+    @media (max-width: 480px) {
+      .hud-logo-text { font-size: 18px; }
+      .hud-sync-score { padding: 6px 12px; }
+      .sync-number { font-size: 15px; }
+      .sync-ring { width: 34px; height: 34px; }
+      .sync-ring svg { width: 38px; height: 38px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="continuum-loader" id="continuum-loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">Constructing the Continuum Pavilion</div>
+    <div class="loader-sub">Generating High-Fidelity Architectural Textures</div>
+  </div>
+
+  <!-- WebGL Canvas -->
+  <canvas id="continuum-canvas"></canvas>
+
+  <!-- SVG Gradient Defs -->
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <linearGradient id="syncGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#10b981"/>
+        <stop offset="50%" stop-color="#3b82f6"/>
+        <stop offset="100%" stop-color="#c5a572"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- 3D Hotspot Hover Tooltip -->
+  <div id="hotspot-tooltip">
+    <div class="tooltip-dot"></div>
+    <span id="tooltip-text">Click to Inspect Telemetry</span>
+  </div>
+
+  <!-- 3D Object Deep-Dive Inspection Modal -->
+  <div class="inspect-modal-overlay" id="inspect-modal">
+    <div class="inspect-card glass-panel">
+      <button class="inspect-close" id="inspect-close" aria-label="Close modal">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="inspect-badge" id="inspect-badge">
+        <i class="fas fa-cube"></i> <span id="inspect-category">Health & Vitality</span>
+      </div>
+      <h2 class="inspect-title" id="inspect-title">Circadian Telemetry Engine</h2>
+      <p class="inspect-desc" id="inspect-desc">
+        Real-time biometrics tracking cognitive load, sleep recovery stages, and metabolic endurance. Integrated with AI scheduling to align deep work with peak neurological windows.
+      </p>
+      <div class="inspect-stats" id="inspect-stats">
+        <div class="inspect-stat-box">
+          <div class="inspect-stat-label">Telemetry Accuracy</div>
+          <div class="inspect-stat-val">99.4%</div>
+        </div>
+        <div class="inspect-stat-box">
+          <div class="inspect-stat-label">Life Sync Impact</div>
+          <div class="inspect-stat-val">+14.2 pts</div>
+        </div>
+      </div>
+      <div class="inspect-actions">
+        <a class="cta-btn cta-primary" href="index.html#/dashboard" style="flex:1;justify-content:center;">
+          <i class="fas fa-bolt"></i> Activate in Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD Layer -->
+  <div class="hud" id="hud">
+
+    <!-- Top Navigation Bar -->
+    <div class="hud-topbar">
+      <!-- Logo -->
+      <a class="hud-logo glass-panel" href="index.html">
+        <span class="hud-logo-icon">🧬</span>
+        <span class="hud-logo-text">BioVerse Continuum</span>
+      </a>
+
+      <div class="hud-top-right">
+        <!-- Sound Toggle -->
+        <button class="hud-sound-btn" id="sound-btn" title="Toggle Ambient Audio Experience" aria-label="Toggle sound">
+          <i class="fas fa-volume-mute" id="sound-icon"></i>
+        </button>
+
+        <!-- Life Sync Score -->
+        <div class="hud-sync-score glass-panel" id="hud-sync">
+          <div class="sync-ring">
+            <svg viewBox="0 0 48 48">
+              <circle class="track" cx="24" cy="24" r="20"/>
+              <circle class="fill" id="sync-circle" cx="24" cy="24" r="20"
+                      stroke-dasharray="125.66" stroke-dashoffset="43.98"/>
+            </svg>
+            <span class="sync-value" id="sync-value">65</span>
+          </div>
+          <div>
+            <div class="sync-label">Life Sync</div>
+            <div class="sync-number" id="sync-display">65<span style="font-size:13px;opacity:0.6;">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story Narration (Center Left) -->
+    <div class="hud-story glass-panel" id="hud-story">
+      <div class="story-act-label" id="story-act-label">Act I — Ages 18–25</div>
+      <h1 class="story-title" id="story-title">The Foundation</h1>
+      <p class="story-body" id="story-body">
+        A high-ceiling atrium flooded with sunrise light. Open notebooks, holographic skill trees, and the first seeds of financial discipline.
+      </p>
+      <div class="story-pillars" id="story-pillars"></div>
+      <div class="story-inspect-hint">
+        <i class="fas fa-hand-pointer"></i> Click 3D objects to inspect architectural telemetry
+      </div>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="hud-scroll-hint" id="scroll-hint">
+      <span class="scroll-hint-text">Scroll or Drag Scrubber</span>
+      <div class="scroll-hint-arrow"></div>
+    </div>
+
+    <!-- Bottom Unified Controls -->
+    <div class="hud-bottom-bar">
+      <!-- Persona Switcher (Interactive Jumping) -->
+      <div class="hud-persona glass-panel" id="hud-persona">
+        <button class="persona-pill active" data-act="0"><i class="fas fa-graduation-cap"></i> Student</button>
+        <button class="persona-pill" data-act="1"><i class="fas fa-briefcase"></i> Employee</button>
+        <button class="persona-pill" data-act="2"><i class="fas fa-building"></i> Founder</button>
+        <button class="persona-pill" data-act="3"><i class="fas fa-crown"></i> Legacy</button>
+      </div>
+
+      <!-- Scrubber Bar -->
+      <div class="hud-scrubber-container">
+        <div class="hud-scrubber-track" id="scrubber-track">
+          <div class="hud-scrubber-fill" id="hud-progress-fill">
+            <div class="hud-scrubber-thumb"></div>
+          </div>
+        </div>
+        <div class="hud-scrubber-labels">
+          <span>ACT I (18)</span>
+          <span>ACT II (26)</span>
+          <span>ACT III (39)</span>
+          <span>ACT IV (55+)</span>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="hud-cta">
+        <a class="cta-btn cta-primary" href="index.html#/auth/register">
+          <i class="fas fa-rocket"></i> Map Life
+        </a>
+        <a class="cta-btn cta-ghost" href="index.html#/dashboard">
+          <i class="fas fa-th-large"></i> Command Center
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       JAVASCRIPT ENGINE: AUDIO SYNTHESIS, PROCEDURAL TEXTURES,
+       3D RAYCASTING HOTSPOTS, AND CAMERA RIG
+       ═══════════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    'use strict';
+
+    // ═══════════════════════════════════════════════════════════════
+    // 1. PROCEDURAL ARCHITECTURAL TEXTURE ENGINE
+    // Creates rich micro-surface normals, grain, and specular maps
+    // ═══════════════════════════════════════════════════════════════
+    const Textures = {
+      createOakGrain() {
+        const c = document.createElement('canvas');
+        c.width = 512; c.height = 512;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#bfa175';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Wood grain rings & striations
+        ctx.fillStyle = 'rgba(120, 85, 45, 0.15)';
+        for (let i = 0; i < 500; i++) {
+          const y = Math.random() * 512;
+          const h = 1 + Math.random() * 4;
+          ctx.fillRect(0, y, 512, h);
+        }
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(4, 16);
+        return tex;
+      },
+
+      createTerrazzoFlakes() {
+        const c = document.createElement('canvas');
+        c.width = 512; c.height = 512;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#dcd5cc';
+        ctx.fillRect(0, 0, 512, 512);
+
+        const colors = ['#2b2b2b', '#8c7d70', '#e5ded6', '#b09b88', '#6366f1'];
+        for (let i = 0; i < 1200; i++) {
+          ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+          ctx.beginPath();
+          const x = Math.random() * 512, y = Math.random() * 512, r = 1 + Math.random() * 5;
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(6, 18);
+        return tex;
+      },
+
+      createCalacattaMarble() {
+        const c = document.createElement('canvas');
+        c.width = 512; c.height = 512;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#f5f3ef';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Soft veins
+        ctx.strokeStyle = 'rgba(160, 150, 140, 0.25)';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 8; i++) {
+          ctx.beginPath();
+          let x = Math.random() * 512, y = 0;
+          ctx.moveTo(x, y);
+          while (y < 512) {
+            x += (Math.random() - 0.5) * 40;
+            y += Math.random() * 30;
+            ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(4, 12);
+        return tex;
+      },
+
+      createConcreteBump() {
+        const c = document.createElement('canvas');
+        c.width = 256; c.height = 256;
+        const ctx = c.getContext('2d');
+        const img = ctx.createImageData(256, 256);
+        for (let i = 0; i < img.data.length; i += 4) {
+          const noise = 128 + (Math.random() - 0.5) * 40;
+          img.data[i] = noise;
+          img.data[i + 1] = noise;
+          img.data[i + 2] = noise;
+          img.data[i + 3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        const tex = new THREE.CanvasTexture(c);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(10, 30);
+        return tex;
+      }
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    // 2. GENERATIVE WEB AUDIO ENGINE (Zero Assets / Instant)
+    // ═══════════════════════════════════════════════════════════════
+    const AudioEngine = {
+      ctx: null,
+      isMuted: true,
+      masterGain: null,
+      droneOsc1: null,
+      droneOsc2: null,
+      filter: null,
+
+      init() {
+        if (this.ctx) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.masterGain.connect(this.ctx.destination);
+
+        // Lowpass resonance filter for warm tape sound
+        this.filter = this.ctx.createBiquadFilter();
+        this.filter.type = 'lowpass';
+        this.filter.frequency.setValueAtTime(320, this.ctx.currentTime);
+        this.filter.connect(this.masterGain);
+
+        // Generative binaural drone (C2 + G2 tuned to 432Hz harmonic)
+        this.droneOsc1 = this.ctx.createOscillator();
+        this.droneOsc1.type = 'sine';
+        this.droneOsc1.frequency.setValueAtTime(64.8, this.ctx.currentTime);
+
+        this.droneOsc2 = this.ctx.createOscillator();
+        this.droneOsc2.type = 'triangle';
+        this.droneOsc2.frequency.setValueAtTime(97.2, this.ctx.currentTime);
+
+        const droneGain = this.ctx.createGain();
+        droneGain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+
+        this.droneOsc1.connect(this.filter);
+        this.droneOsc2.connect(this.filter);
+
+        this.droneOsc1.start();
+        this.droneOsc2.start();
+      },
+
+      toggle() {
+        this.init();
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.isMuted = !this.isMuted;
+        const targetGain = this.isMuted ? 0 : 0.4;
+        this.masterGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.3);
+
+        const soundBtn = document.getElementById('sound-btn');
+        const soundIcon = document.getElementById('sound-icon');
+        if (this.isMuted) {
+          soundBtn.classList.remove('active');
+          soundIcon.className = 'fas fa-volume-mute';
+        } else {
+          soundBtn.classList.add('active');
+          soundIcon.className = 'fas fa-volume-up';
+          this.playChime(440); // Welcome bell
+        }
+      },
+
+      playChime(freq = 528) {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        // Exponential decay envelope
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(now);
+        osc.stop(now + 1.8);
+      },
+
+      playActTransition(actIdx) {
+        // Pentatonic scale chime progression for each act
+        const notes = [392.0, 440.0, 523.25, 659.25]; // G4, A4, C5, E5
+        this.playChime(notes[actIdx % notes.length]);
+      }
+    };
+
+    document.getElementById('sound-btn').addEventListener('click', () => {
+      AudioEngine.toggle();
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 3. SCROLL STATE & STORY DATABASE
+    // ═══════════════════════════════════════════════════════════════
+    const TOTAL_TRACK_LENGTH = 300; // meters of virtual architectural track
+    let scrollProgress = 0;        // 0.0 to 1.0
+    let targetProgress = 0;
+    let currentAct = -1;
+
+    const ACTS = [
+      {
+        label: 'Act I — Ages 18–25',
+        title: 'The Foundation',
+        body: 'A sunlit morning atrium in pale Nordic oak and limestone. Open study desks, holographic skill crystals, and seed capital tokens form the bedrock of cognitive mastery and physical resilience.',
+        pillars: [
+          { color: '#10b981', text: 'Health: Circadian rhythms, metabolic foundation, hydration' },
+          { color: '#3b82f6', text: 'Career: Skill tree mastery, NIRF tier-1 tracks, internships' },
+          { color: '#c5a572', text: 'Finance: Seed micro-SIPs, zero-debt architecture' }
+        ],
+        persona: 0,
+        syncScore: 65
+      },
+      {
+        label: 'Act II — Ages 26–38',
+        title: 'The Engine Room',
+        body: 'A polished terrazzo executive loft overlooking a metropolis at high noon. Triple-display workstation arrays, cellular hydration docks, and interlocking asset growth cubes sharpen output into precision.',
+        pillars: [
+          { color: '#10b981', text: 'Health: Stress resilience, recovery metrics, endurance' },
+          { color: '#3b82f6', text: 'Career: Executive promotions, engineering leadership' },
+          { color: '#c5a572', text: 'Finance: Nifty 50 compounding, EPF & 80C tax optimization' }
+        ],
+        persona: 1,
+        syncScore: 78
+      },
+      {
+        label: 'Act III — Ages 39–54',
+        title: 'The Scale Hub',
+        body: 'An expansive open-air pavilion in Calacatta marble with hydroponic living walls and an infinity reflection pool. Enterprise dashboards pulse alongside advanced longevity regeneration pods.',
+        pillars: [
+          { color: '#10b981', text: 'Health: Biomarker optimization, cellular longevity' },
+          { color: '#3b82f6', text: 'Career: Scalable ventures, cap tables, board governance' },
+          { color: '#c5a572', text: 'Finance: Cash-flow automation, generational wealth' }
+        ],
+        persona: 2,
+        syncScore: 88
+      },
+      {
+        label: 'Act IV — Ages 55+',
+        title: 'The Pinnacle',
+        body: 'A serene celestial pavilion open to the stars. Monolithic glass archive pillars illuminate life wisdom as the three lifelong energy streams converge into a singular, harmonic ringsphere.',
+        pillars: [
+          { color: '#10b981', text: 'Health: Sustained vitality, cognitive clarity, mobility' },
+          { color: '#3b82f6', text: 'Career: Generational mentorship, endowments, philosophy' },
+          { color: '#c5a572', text: 'Finance: Estate architectures, family trusts, impact' }
+        ],
+        persona: 3,
+        syncScore: 98
+      }
+    ];
+
+    // ═══════════════════════════════════════════════════════════════
+    // 4. THREE.JS INITIALIZATION & MODERN COLOR SPACE
+    // ═══════════════════════════════════════════════════════════════
+    const canvas = document.getElementById('continuum-canvas');
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+
+    // Modern color space (fixes Three.js deprecation warning)
+    if (THREE.SRGBColorSpace) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    } else {
+      renderer.outputEncoding = THREE.sRGBEncoding;
+    }
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x030508, 0.0075);
+
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
+    camera.position.set(0, 2.2, 2);
+
+    // Camera Rig & Parallax State
+    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    window.addEventListener('mousemove', (e) => {
+      mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouse.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 5. LIGHTING SYSTEM (Atmospheric Time-of-Day Progression)
+    // ═══════════════════════════════════════════════════════════════
+    const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.35);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xffdfba, 0.9);
+    sunLight.position.set(12, 16, 6);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.set(1024, 1024);
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 120;
+    scene.add(sunLight);
+
+    const fillLight = new THREE.DirectionalLight(0x4060a0, 0.3);
+    fillLight.position.set(-10, 12, -6);
+    scene.add(fillLight);
+
+    const lightKeyframes = [
+      { ambient: new THREE.Color(0x2a1a10), sun: new THREE.Color(0xffd4a0), sunInt: 0.85, ambInt: 0.3, fog: new THREE.Color(0x080605), exp: 0.95 },
+      { ambient: new THREE.Color(0x181e28), sun: new THREE.Color(0xffffff), sunInt: 1.15, ambInt: 0.45, fog: new THREE.Color(0x04070e), exp: 1.05 },
+      { ambient: new THREE.Color(0x2a1a08), sun: new THREE.Color(0xffaa50), sunInt: 0.95, ambInt: 0.35, fog: new THREE.Color(0x090604), exp: 1.0 },
+      { ambient: new THREE.Color(0x080a1c), sun: new THREE.Color(0x7090d0), sunInt: 0.45, ambInt: 0.2, fog: new THREE.Color(0x020308), exp: 0.8 }
+    ];
+
+    function updateLighting(progress) {
+      const p = progress * 3;
+      const idx = Math.min(Math.floor(p), 2);
+      const t = p - idx;
+      const a = lightKeyframes[idx];
+      const b = lightKeyframes[idx + 1];
+
+      ambientLight.color.lerpColors(a.ambient, b.ambient, t);
+      ambientLight.intensity = a.ambInt + (b.ambInt - a.ambInt) * t;
+      sunLight.color.lerpColors(a.sun, b.sun, t);
+      sunLight.intensity = a.sunInt + (b.sunInt - a.sunInt) * t;
+      scene.fog.color.lerpColors(a.fog, b.fog, t);
+      renderer.toneMappingExposure = a.exp + (b.exp - a.exp) * t;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // 6. MATERIAL LIBRARY WITH TEXTURE MAPS
+    // ═══════════════════════════════════════════════════════════════
+    const oakTexture = Textures.createOakGrain();
+    const terrazzoTexture = Textures.createTerrazzoFlakes();
+    const marbleTexture = Textures.createCalacattaMarble();
+    const concreteBump = Textures.createConcreteBump();
+
+    const mats = {
+      oak: new THREE.MeshStandardMaterial({ map: oakTexture, roughness: 0.5, metalness: 0.05 }),
+      terrazzo: new THREE.MeshStandardMaterial({ map: terrazzoTexture, roughness: 0.25, metalness: 0.1 }),
+      marble: new THREE.MeshStandardMaterial({ map: marbleTexture, roughness: 0.15, metalness: 0.05 }),
+      concrete: new THREE.MeshStandardMaterial({ color: 0x3e4046, bumpMap: concreteBump, bumpScale: 0.02, roughness: 0.85, metalness: 0.05 }),
+      limestone: new THREE.MeshStandardMaterial({ color: 0xded2c0, bumpMap: concreteBump, bumpScale: 0.015, roughness: 0.75 }),
+      darkMetal: new THREE.MeshStandardMaterial({ color: 0x16181f, roughness: 0.2, metalness: 0.9 }),
+      goldMetal: new THREE.MeshStandardMaterial({ color: 0xc5a572, roughness: 0.3, metalness: 0.85 }),
+      glass: new THREE.MeshStandardMaterial({ color: 0x88b0d8, roughness: 0.05, metalness: 0.15, transparent: true, opacity: 0.3 }),
+      water: new THREE.MeshStandardMaterial({ color: 0x0c2440, roughness: 0.05, metalness: 0.4, transparent: true, opacity: 0.7 }),
+      greenWall: new THREE.MeshStandardMaterial({ color: 0x1b5e3a, bumpMap: concreteBump, bumpScale: 0.05, roughness: 0.85 })
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    // 7. ENERGY CONDUIT RIBBON SYSTEM (3 Shimmering Tubes)
+    // ═══════════════════════════════════════════════════════════════
+    const conduitShaderVert = `
+      varying vec2 vUv;
+      varying vec3 vWorldPos;
+      void main() {
+        vUv = uv;
+        vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+    const conduitShaderFrag = `
+      uniform float uTime;
+      uniform vec3 uColor;
+      uniform float uPulseFreq;
+      uniform float uFlowSpeed;
+      varying vec2 vUv;
+      varying vec3 vWorldPos;
+      void main() {
+        float flow = fract(vUv.x * 4.0 - uTime * uFlowSpeed);
+        float pulse = 0.65 + 0.35 * sin(uTime * uPulseFreq * 6.2832);
+        float edge = smoothstep(0.0, 0.15, vUv.y) * smoothstep(1.0, 0.85, vUv.y);
+        float intensity = (0.5 + 0.5 * flow) * pulse * edge;
+        vec3 core = uColor * intensity * 2.8;
+        vec3 glow = uColor * 0.2;
+        gl_FragColor = vec4(core + glow, 0.9);
+      }
+    `;
+
+    function createConduit(pathPoints, color, pulseFreq, flowSpeed) {
+      const curve = new THREE.CatmullRomCurve3(pathPoints);
+      const tubeGeo = new THREE.TubeGeometry(curve, 240, 0.04, 8, false);
+      const mat = new THREE.ShaderMaterial({
+        vertexShader: conduitShaderVert,
+        fragmentShader: conduitShaderFrag,
+        uniforms: {
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color(color) },
+          uPulseFreq: { value: pulseFreq },
+          uFlowSpeed: { value: flowSpeed }
+        },
+        transparent: true,
+        side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(tubeGeo, mat);
+      scene.add(mesh);
+      return mat;
+    }
+
+    const zStart = 0, zEnd = -TOTAL_TRACK_LENGTH;
+    const emeraldPts = [], cobaltPts = [], amberPts = [];
+    for (let i = 0; i <= 40; i++) {
+      const t = i / 40;
+      const z = zStart + (zEnd - zStart) * t;
+
+      const ex = -2.6 + Math.sin(t * Math.PI * 3) * 1.2;
+      const ey = 0.06 + Math.sin(t * Math.PI * 2) * 0.3;
+      emeraldPts.push(new THREE.Vector3(ex, ey, z));
+
+      const cx = 2.6 - Math.sin(t * Math.PI * 3.5) * 1.0;
+      const cy = 0.06 + Math.cos(t * Math.PI * 2.5) * 0.4;
+      cobaltPts.push(new THREE.Vector3(cx, cy, z));
+
+      const ax = Math.sin(t * Math.PI * 2) * 0.8;
+      const ay = 0.06 + t * t * 2.2;
+      amberPts.push(new THREE.Vector3(ax, ay, z));
+    }
+
+    // Act III-IV convergence
+    for (let i = 30; i <= 40; i++) {
+      const blend = (i - 30) / 10;
+      const centerX = 0, centerY = 1.6 + blend * 1.4;
+      emeraldPts[i].x += (centerX - emeraldPts[i].x) * blend * 0.75;
+      emeraldPts[i].y += (centerY - emeraldPts[i].y) * blend * 0.5;
+      cobaltPts[i].x += (centerX - cobaltPts[i].x) * blend * 0.75;
+      cobaltPts[i].y += (centerY - cobaltPts[i].y) * blend * 0.5;
+      amberPts[i].x += (centerX - amberPts[i].x) * blend * 0.5;
+    }
+
+    const emeraldMat = createConduit(emeraldPts, '#10b981', 0.8, 0.3);
+    const cobaltMat = createConduit(cobaltPts, '#3b82f6', 2.2, 0.75);
+    const amberMat = createConduit(amberPts, '#c5a572', 0.5, 0.2);
+    const conduitMaterials = [emeraldMat, cobaltMat, amberMat];
+
+    // ═══════════════════════════════════════════════════════════════
+    // 8. INTERACTIVE 3D HOTSPOT REGISTRY
+    // ═══════════════════════════════════════════════════════════════
+    const inspectables = [];
+
+    function makeInspectable(mesh, info) {
+      mesh.userData.inspectable = true;
+      mesh.userData.info = info;
+      mesh.userData.origEmissive = mesh.material.emissive ? mesh.material.emissive.clone() : new THREE.Color(0x000000);
+      mesh.userData.origEmissiveIntensity = mesh.material.emissiveIntensity || 0;
+      inspectables.push(mesh);
+
+      // Add a subtle hovering 3D marker diamond above object
+      const marker = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.1, 0),
+        new THREE.MeshBasicMaterial({ color: info.pillarColor || 0xc5a572, wireframe: true })
+      );
+      marker.position.set(0, 0.45, 0);
+      marker.userData.rotate = true;
+      mesh.add(marker);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // 9. ARCHITECTURAL GEOMETRY BUILDER WITH SEAMLESS TRANSITIONS
+    // ═══════════════════════════════════════════════════════════════
+
+    // Architectural Threshold Portal between Acts (Smooth Continuity)
+    function buildTransitionPortal(zPos, name) {
+      const group = new THREE.Group();
+      const frame = new THREE.Mesh(
+        new THREE.BoxGeometry(16.5, 9, 1.2),
+        mats.darkMetal
+      );
+      frame.position.set(0, 4.5, zPos);
+      group.add(frame);
+
+      // Portal inner opening cutout trim
+      const trim = new THREE.Mesh(
+        new THREE.BoxGeometry(12, 7.5, 1.3),
+        mats.goldMetal
+      );
+      trim.position.set(0, 3.75, zPos);
+      group.add(trim);
+
+      // LED floor guide strip
+      const strip = new THREE.Mesh(
+        new THREE.PlaneGeometry(12, 0.2),
+        new THREE.MeshBasicMaterial({ color: 0xc5a572 })
+      );
+      strip.rotation.x = -Math.PI / 2;
+      strip.position.set(0, 0.02, zPos);
+      group.add(strip);
+
+      scene.add(group);
+    }
+
+    // ─── ACT I (Foundation Atrium) ───────────────────────────────
+    function buildActI() {
+      const group = new THREE.Group();
+      const zOff = 0;
+
+      // Floor & Ceiling
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 78), mats.oak);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(0, 0, zOff - 39);
+      floor.receiveShadow = true;
+      group.add(floor);
+
+      const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(16, 78), mats.concrete);
+      ceiling.rotation.x = Math.PI / 2;
+      ceiling.position.set(0, 8, zOff - 39);
+      group.add(ceiling);
+
+      // Limestone Walls
+      for (const side of [-1, 1]) {
+        const wall = new THREE.Mesh(new THREE.PlaneGeometry(78, 8), mats.limestone);
+        wall.rotation.y = -side * Math.PI / 2;
+        wall.position.set(side * 8, 4, zOff - 39);
+        group.add(wall);
+      }
+
+      // Concrete Columns
+      for (let i = 0; i < 7; i++) {
+        for (const side of [-1, 1]) {
+          const col = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.4, 8, 16), mats.concrete);
+          col.position.set(side * 6, 4, zOff - 6 - i * 10.5);
+          col.castShadow = true;
+          group.add(col);
+        }
+      }
+
+      // Study Desk
+      const desk = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.08, 1.2), mats.glass);
+      desk.position.set(-3.2, 1.0, -8);
+      group.add(desk);
+
+      // Skill Tree Crystal (INSPECTABLE)
+      const crystal = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.3, 0),
+        new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 0.8, metalness: 0.6, roughness: 0.1 })
+      );
+      crystal.position.set(-3.2, 1.55, -8);
+      crystal.userData.rotate = true;
+      crystal.userData.initialY = 1.55;
+      crystal.userData.float = { speed: 1.2, offset: 0, amplitude: 0.08 };
+      makeInspectable(crystal, {
+        category: 'Career & Mind',
+        title: 'Holographic Skill Engine',
+        desc: 'Dynamic skill tree mapping Tier-1 Indian engineering curricula, competitive GATE/CAT milestones, and off-campus placements at Google India & Razorpay.',
+        pillarColor: '#3b82f6',
+        stats: [
+          { label: 'Milestone Velocity', val: '4.8x faster' },
+          { label: 'Placement Edge', val: '₹24 LPA avg' }
+        ]
+      });
+      group.add(crystal);
+
+      // Biometric Wearable (INSPECTABLE)
+      const wearable = new THREE.Mesh(
+        new THREE.TorusGeometry(0.18, 0.04, 12, 24),
+        new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.9 })
+      );
+      wearable.position.set(3.5, 0.65, -12);
+      wearable.rotation.x = Math.PI / 2;
+      wearable.userData.initialY = 0.65;
+      wearable.userData.float = { speed: 1.0, offset: 1.5, amplitude: 0.04 };
+      makeInspectable(wearable, {
+        category: 'Health & Vitality',
+        title: 'Circadian Biometric Dock',
+        desc: 'High-frequency telemetry tracking cognitive focus duration, REM recovery cycles, hydration intervals, and stress-adaptation baselines.',
+        pillarColor: '#10b981',
+        stats: [
+          { label: 'Deep Sleep Optimization', val: '+38%' },
+          { label: 'Cognitive Window', val: '9:00 - 13:00' }
+        ]
+      });
+      group.add(wearable);
+
+      // Seed Capital Tokens (INSPECTABLE)
+      for (let i = 0; i < 4; i++) {
+        const token = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.1, 0.1, 0.03, 20),
+          new THREE.MeshStandardMaterial({ color: 0xc5a572, emissive: 0xc5a572, emissiveIntensity: 0.6, metalness: 0.9 })
+        );
+        const yPos = 1.3 + Math.sin(i * 0.9) * 0.25;
+        token.position.set(Math.sin(i * 1.4) * 1.8, yPos, -16 - i * 3.5);
+        token.userData.initialY = yPos;
+        token.userData.float = { speed: 1.2, offset: i * 0.8, amplitude: 0.1 };
+        token.userData.rotate = true;
+        if (i === 0) {
+          makeInspectable(token, {
+            category: 'Wealth & Longevity',
+            title: 'Micro-SIP Accumulator',
+            desc: 'Algorithmic micro-investment compounding engine directing student savings into high-growth Nifty 50 index baskets with zero friction.',
+            pillarColor: '#c5a572',
+            stats: [
+              { label: 'Compounding Horizon', val: '15 Years' },
+              { label: 'Projected Corpus', val: '₹48.6 Lakh' }
+            ]
+          });
+        }
+        group.add(token);
+      }
+
+      scene.add(group);
+    }
+
+    // ─── ACT II (Engine Room) ────────────────────────────────────
+    function buildActII() {
+      const group = new THREE.Group();
+      const zOff = -75;
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 78), mats.terrazzo);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(0, 0, zOff - 39);
+      floor.receiveShadow = true;
+      group.add(floor);
+
+      // Steel Ceiling Beams
+      for (let i = 0; i < 9; i++) {
+        const beam = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 0.5), mats.darkMetal);
+        beam.position.set(0, 6.5, zOff - 4 - i * 8.5);
+        group.add(beam);
+      }
+
+      // Triple Hologram Display (INSPECTABLE)
+      const workstation = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6, 0.8, 0.05),
+        new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 0.4, transparent: true, opacity: 0.7 })
+      );
+      workstation.position.set(-3.5, 1.8, zOff - 14);
+      workstation.userData.initialY = 1.8;
+      workstation.userData.float = { speed: 0.8, offset: 0, amplitude: 0.05 };
+      makeInspectable(workstation, {
+        category: 'Career & Mind',
+        title: 'Executive Telemetry Terminal',
+        desc: 'Real-time Indian corporate salary mobility indices, promotion prediction modeling, and ATS keyword dominance for engineering leadership roles.',
+        pillarColor: '#3b82f6',
+        stats: [
+          { label: 'Promotion Timeline', val: '14 Months' },
+          { label: 'Negotiation Power', val: 'Top 5% Tier' }
+        ]
+      });
+      group.add(workstation);
+
+      // Hydration Dock (INSPECTABLE)
+      const dock = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.18, 0.6, 16),
+        new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.7, metalness: 0.8 })
+      );
+      dock.position.set(4.2, 0.85, zOff - 18);
+      dock.userData.initialY = 0.85;
+      dock.userData.float = { speed: 1.1, offset: 0.5, amplitude: 0.04 };
+      makeInspectable(dock, {
+        category: 'Health & Vitality',
+        title: 'Cellular Hydration Station',
+        desc: 'Smart bio-dock tracking electrolyte levels, executive cortisol mitigation, and recovery scheduling during high-intensity sprint quarters.',
+        pillarColor: '#10b981',
+        stats: [
+          { label: 'Daily Hydration Goal', val: '3.4 Liters' },
+          { label: 'Burnout Resistance', val: '94% Optimal' }
+        ]
+      });
+      group.add(dock);
+
+      // Asset Nodes (INSPECTABLE)
+      for (let i = 0; i < 6; i++) {
+        const node = new THREE.Mesh(
+          new THREE.BoxGeometry(0.16, 0.16, 0.16),
+          new THREE.MeshStandardMaterial({
+            color: i % 2 === 0 ? 0xc5a572 : 0x3b82f6,
+            emissive: i % 2 === 0 ? 0xc5a572 : 0x3b82f6,
+            emissiveIntensity: 0.6, metalness: 0.9
+          })
+        );
+        const yPos = 1.6 + Math.sin(i * 1.1) * 0.4;
+        node.position.set(Math.cos(i * Math.PI / 3) * 1.5, yPos, zOff - 26 - i * 3);
+        node.userData.initialY = yPos;
+        node.userData.float = { speed: 1.4, offset: i * 0.6, amplitude: 0.12 };
+        node.userData.rotate = true;
+        if (i === 0) {
+          makeInspectable(node, {
+            category: 'Wealth & Longevity',
+            title: 'Multi-Asset Yield Engine',
+            desc: 'Automated EPF tracking, Section 80C tax mitigation, health insurance top-ups, and portfolio rebalancing across large-cap and gold assets.',
+            pillarColor: '#c5a572',
+            stats: [
+              { label: 'Tax Saved / FY', val: '₹1.85 Lakh' },
+              { label: 'Portfolio CAGR', val: '16.4%' }
+            ]
+          });
+        }
+        group.add(node);
+      }
+
+      scene.add(group);
+    }
+
+    // ─── ACT III (Scale Hub) ─────────────────────────────────────
+    function buildActIII() {
+      const group = new THREE.Group();
+      const zOff = -150;
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 78), mats.marble);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(0, 0, zOff - 39);
+      floor.receiveShadow = true;
+      group.add(floor);
+
+      // Living Botanical Walls (INSPECTABLE)
+      const greenWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 4.5, 6), mats.greenWall);
+      greenWall.position.set(-8.2, 3.2, zOff - 15);
+      makeInspectable(greenWall, {
+        category: 'Health & Vitality',
+        title: 'Biophilic Oxygenation Array',
+        desc: 'Vertical botanical architecture providing natural air ionization, acoustic isolation, and circadian daylight compensation for executive clarity.',
+        pillarColor: '#10b981',
+        stats: [
+          { label: 'Air Purity Index', val: 'AQI 12 (Pristine)' },
+          { label: 'Cognitive Fatigue', val: '-42%' }
+        ]
+      });
+      group.add(greenWall);
+
+      // Longevity Recovery Pod (INSPECTABLE)
+      const pod = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.6, 2.0, 12, 16),
+        new THREE.MeshStandardMaterial({ color: 0x182236, roughness: 0.15, metalness: 0.85 })
+      );
+      pod.position.set(3.5, 0.85, zOff - 22);
+      pod.rotation.z = Math.PI / 2;
+      pod.userData.initialY = 0.85;
+      pod.userData.float = { speed: 0.9, offset: 0, amplitude: 0.03 };
+      makeInspectable(pod, {
+        category: 'Health & Vitality',
+        title: 'Photobiomodulation Pod',
+        desc: 'Advanced cellular regeneration chamber for telomere preservation, deep fascia decompression, and mitochondrial ATP recharge.',
+        pillarColor: '#10b981',
+        stats: [
+          { label: 'Biological Age Offset', val: '-6.4 Years' },
+          { label: 'Cellular Vitality', val: '98.2%' }
+        ]
+      });
+      group.add(pod);
+
+      // Enterprise Desk (INSPECTABLE)
+      const enterpriseDesk = new THREE.Mesh(
+        new THREE.BoxGeometry(2.8, 0.08, 1.4),
+        mats.darkMetal
+      );
+      enterpriseDesk.position.set(-3.2, 0.9, zOff - 28);
+      makeInspectable(enterpriseDesk, {
+        category: 'Career & Mind',
+        title: 'Venture Intelligence Hub',
+        desc: 'Cap table architecture, Startup India compliance filing automation, and venture syndication intelligence for visionary founders.',
+        pillarColor: '#3b82f6',
+        stats: [
+          { label: 'Enterprise Valuation', val: 'Series A Ready' },
+          { label: 'Runway Runway', val: '36 Months' }
+        ]
+      });
+      group.add(enterpriseDesk);
+
+      scene.add(group);
+    }
+
+    // ─── ACT IV (The Pinnacle) ───────────────────────────────────
+    function buildActIV() {
+      const group = new THREE.Group();
+      const zOff = -225;
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(22, 78), mats.marble);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(0, 0, zOff - 39);
+      floor.receiveShadow = true;
+      group.add(floor);
+
+      // Celestial Archive Pillars (INSPECTABLE)
+      const archivePillar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.4, 0.4, 6.5, 20),
+        mats.glass
+      );
+      archivePillar.position.set(-5.5, 3.25, zOff - 20);
+      makeInspectable(archivePillar, {
+        category: 'Career & Mind',
+        title: 'Living Knowledge Monolith',
+        desc: 'Decentralized archive preserving life frameworks, mentorship curricula, leadership doctrine, and family governance models for future generations.',
+        pillarColor: '#3b82f6',
+        stats: [
+          { label: 'Mentees Guided', val: '1,400+ Achievers' },
+          { label: 'Endowment Status', val: 'Fully Funded' }
+        ]
+      });
+      group.add(archivePillar);
+
+      // Harmonic Convergence Ringsphere (INSPECTABLE)
+      const ringSphere = new THREE.Group();
+      const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 12, 48), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 1.2 }));
+      const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 12, 48), new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 1.2 }));
+      ring2.rotation.x = Math.PI / 3;
+      const ring3 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 12, 48), new THREE.MeshStandardMaterial({ color: 0xc5a572, emissive: 0xc5a572, emissiveIntensity: 1.2 }));
+      ring3.rotation.x = -Math.PI / 3;
+
+      const core = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 32, 32),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xc5a572, emissiveIntensity: 0.8, roughness: 0.1 })
+      );
+
+      ringSphere.add(ring1, ring2, ring3, core);
+      ringSphere.position.set(0, 3.2, zOff - 58);
+      ringSphere.userData.isRingSphere = true;
+
+      makeInspectable(core, {
+        category: 'Harmonic Convergence',
+        title: 'The Harmonic Life Singularity',
+        desc: 'The mathematical unity of health, career mastery, and generational wealth — achieving lifelong fulfillment and enduring impact across a 60-year horizon.',
+        pillarColor: '#c5a572',
+        stats: [
+          { label: 'Life Sync Score', val: '98/100 (Optimal)' },
+          { label: 'Total Legacy Impact', val: 'Generational' }
+        ]
+      });
+      group.add(ringSphere);
+
+      scene.add(group);
+    }
+
+    // Build all transition thresholds and scenes
+    buildTransitionPortal(-75, 'Act I to II');
+    buildTransitionPortal(-150, 'Act II to III');
+    buildTransitionPortal(-225, 'Act III to IV');
+
+    buildActI();
+    buildActII();
+    buildActIII();
+    buildActIV();
+
+    // ═══════════════════════════════════════════════════════════════
+    // 10. 3D RAYCASTING & INSPECT MODAL INTERACTION
+    // ═══════════════════════════════════════════════════════════════
+    const raycaster = new THREE.Raycaster();
+    const mouseVec = new THREE.Vector2();
+    let hoveredObject = null;
+
+    const tooltip = document.getElementById('hotspot-tooltip');
+    const tooltipText = document.getElementById('tooltip-text');
+
+    const inspectModal = document.getElementById('inspect-modal');
+    const inspectBadge = document.getElementById('inspect-badge');
+    const inspectCategory = document.getElementById('inspect-category');
+    const inspectTitle = document.getElementById('inspect-title');
+    const inspectDesc = document.getElementById('inspect-desc');
+    const inspectStats = document.getElementById('inspect-stats');
+
+    function openInspectModal(info) {
+      AudioEngine.playChime(659.25);
+      inspectBadge.style.color = info.pillarColor || '#c5a572';
+      inspectBadge.style.borderColor = info.pillarColor || '#c5a572';
+      inspectCategory.textContent = info.category || 'Telemetry';
+      inspectTitle.textContent = info.title;
+      inspectDesc.textContent = info.desc;
+
+      if (info.stats) {
+        inspectStats.innerHTML = info.stats.map(s => `
+          <div class="inspect-stat-box">
+            <div class="inspect-stat-label">${s.label}</div>
+            <div class="inspect-stat-val" style="color:${info.pillarColor || '#fff'}">${s.val}</div>
+          </div>
+        `).join('');
+      }
+      inspectModal.classList.add('open');
+    }
+
+    document.getElementById('inspect-close').addEventListener('click', () => {
+      inspectModal.classList.remove('open');
+    });
+
+    inspectModal.addEventListener('click', (e) => {
+      if (e.target === inspectModal) inspectModal.classList.remove('open');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouseVec, camera);
+      const hits = raycaster.intersectObjects(inspectables, true);
+
+      if (hits.length > 0) {
+        let hitObj = hits[0].object;
+        while (hitObj && !hitObj.userData.inspectable && hitObj.parent) {
+          hitObj = hitObj.parent;
+        }
+
+        if (hitObj && hitObj.userData.inspectable) {
+          canvas.classList.add('interactive-hover');
+          hoveredObject = hitObj;
+          tooltip.style.display = 'flex';
+          tooltip.style.left = e.clientX + 'px';
+          tooltip.style.top = e.clientY + 'px';
+          tooltipText.textContent = `Inspect ${hitObj.userData.info.title}`;
+          return;
+        }
+      }
+
+      canvas.classList.remove('interactive-hover');
+      hoveredObject = null;
+      tooltip.style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      // Ignore clicks on HUD controls
+      if (e.target.closest('.hud') || e.target.closest('.inspect-modal-overlay')) return;
+
+      if (hoveredObject && hoveredObject.userData.info) {
+        openInspectModal(hoveredObject.userData.info);
+      }
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 11. HUD UPDATE ENGINE & INTERACTIVE PERSONA SWITCHER
+    // ═══════════════════════════════════════════════════════════════
+    const hudStory = document.getElementById('hud-story');
+    const storyActLabel = document.getElementById('story-act-label');
+    const storyTitle = document.getElementById('story-title');
+    const storyBody = document.getElementById('story-body');
+    const storyPillars = document.getElementById('story-pillars');
+    const progressFill = document.getElementById('hud-progress-fill');
+    const syncCircle = document.getElementById('sync-circle');
+    const syncValue = document.getElementById('sync-value');
+    const syncDisplay = document.getElementById('sync-display');
+    const scrollHint = document.getElementById('scroll-hint');
+    const personaPills = document.querySelectorAll('.persona-pill');
+
+    const circumference = 2 * Math.PI * 20; // r=20 for 48px SVG
+
+    function updateHUD(progress) {
+      // Scrubber fill
+      progressFill.style.width = (progress * 100) + '%';
+
+      // Current Act (0-3)
+      const act = Math.min(Math.floor(progress * 4), 3);
+
+      // Sync score interpolation
+      const actP = (progress * 4) - act;
+      const score0 = ACTS[act].syncScore;
+      const score1 = act < 3 ? ACTS[act + 1].syncScore : 98;
+      const liveScore = Math.round(score0 + (score1 - score0) * actP);
+      syncValue.textContent = liveScore;
+      syncDisplay.innerHTML = liveScore + '<span style="font-size:13px;opacity:0.6;">%</span>';
+
+      const dashOffset = circumference * (1 - liveScore / 100);
+      syncCircle.style.strokeDashoffset = dashOffset;
+
+      if (progress > 0.02) scrollHint.classList.add('hidden');
+      else scrollHint.classList.remove('hidden');
+
+      if (act !== currentAct) {
+        currentAct = act;
+        const data = ACTS[act];
+
+        AudioEngine.playActTransition(act);
+
+        hudStory.classList.remove('visible');
+        setTimeout(() => {
+          storyActLabel.textContent = data.label;
+          storyTitle.textContent = data.title;
+          storyBody.textContent = data.body;
+          storyPillars.innerHTML = data.pillars.map(p => `
+            <div class="story-pillar">
+              <div class="pillar-dot" style="background:${p.color};color:${p.color};"></div>
+              <span>${p.text}</span>
+            </div>
+          `).join('');
+          hudStory.classList.add('visible');
+        }, 180);
+
+        personaPills.forEach((pill, i) => {
+          pill.classList.toggle('active', i === data.persona);
+        });
+      }
+    }
+
+    // Persona Pills Click-to-Jump Navigation (TWEEN-Powered)
+    personaPills.forEach((pill) => {
+      pill.addEventListener('click', (e) => {
+        const actIdx = parseInt(e.currentTarget.dataset.act, 10);
+        const targetScroll = actIdx * 0.25 + 0.02;
+
+        new TWEEN.Tween({ p: targetProgress })
+          .to({ p: targetScroll }, 1000)
+          .easing(TWEEN.Easing.Cubic.Out)
+          .onUpdate((obj) => { targetProgress = obj.p; })
+          .start();
+      });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 12. DRAG-TO-SCRUB PROGRESS BAR
+    // ═══════════════════════════════════════════════════════════════
+    const scrubberTrack = document.getElementById('scrubber-track');
+    let isScrubbing = false;
+
+    function handleScrubber(e) {
+      const rect = scrubberTrack.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const progress = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      targetProgress = progress;
+    }
+
+    scrubberTrack.addEventListener('mousedown', (e) => {
+      isScrubbing = true;
+      handleScrubber(e);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isScrubbing) handleScrubber(e);
+    });
+
+    window.addEventListener('mouseup', () => { isScrubbing = false; });
+
+    scrubberTrack.addEventListener('touchstart', (e) => {
+      isScrubbing = true;
+      handleScrubber(e);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isScrubbing) handleScrubber(e);
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { isScrubbing = false; });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 13. SCROLL & INPUT BINDINGS
+    // ═══════════════════════════════════════════════════════════════
+    const scrollSensitivity = 0.0008;
+
+    window.addEventListener('wheel', (e) => {
+      if (inspectModal.classList.contains('open')) return;
+      e.preventDefault();
+      targetProgress = Math.max(0, Math.min(1, targetProgress + e.deltaY * scrollSensitivity));
+    }, { passive: false });
+
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (inspectModal.classList.contains('open')) return;
+      if (e.touches.length > 0) {
+        const delta = touchStartY - e.touches[0].clientY;
+        touchStartY = e.touches[0].clientY;
+        targetProgress = Math.max(0, Math.min(1, targetProgress + delta * 0.0025));
+      }
+    }, { passive: true });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        targetProgress = Math.min(1, targetProgress + 0.03);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        targetProgress = Math.max(0, targetProgress - 0.03);
+      }
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // 14. ANIMATION LOOP & MOUSE PARALLAX RIG
+    // ═══════════════════════════════════════════════════════════════
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      // Smooth scroll lerp
+      scrollProgress += (targetProgress - scrollProgress) * 0.065;
+
+      // Smooth mouse parallax damping
+      mouse.x += (mouse.targetX - mouse.x) * 0.05;
+      mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+      // Camera position: forward Z track + mouse parallax offset
+      const camZ = 2 - scrollProgress * TOTAL_TRACK_LENGTH;
+      camera.position.z = camZ;
+      camera.position.x = mouse.x * 0.45;
+      camera.position.y = 2.2 + Math.sin(scrollProgress * Math.PI) * 0.25 - mouse.y * 0.2;
+
+      // Camera look sway
+      camera.rotation.y = -mouse.x * 0.05;
+      camera.rotation.x = -mouse.y * 0.035;
+
+      // Lighting progression
+      updateLighting(scrollProgress);
+
+      // Conduit shaders
+      conduitMaterials.forEach(mat => {
+        mat.uniforms.uTime.value = elapsed;
+      });
+
+      // Bounded Floating & Rotating Objects (NO DRIFT)
+      scene.traverse((obj) => {
+        if (obj.userData.rotate) {
+          obj.rotation.y = elapsed * 0.75;
+          obj.rotation.x = Math.sin(elapsed * 0.5) * 0.25;
+        }
+        if (obj.userData.float && obj.userData.initialY !== undefined) {
+          const f = obj.userData.float;
+          obj.position.y = obj.userData.initialY + Math.sin(elapsed * f.speed + f.offset) * f.amplitude;
+        }
+        if (obj.userData.isRingSphere) {
+          obj.rotation.y = elapsed * 0.25;
+          obj.rotation.x = Math.sin(elapsed * 0.18) * 0.25;
+        }
+      });
+
+      // Update HUD
+      updateHUD(scrollProgress);
+
+      // Update TWEEN
+      TWEEN.update();
+
+      // Render WebGL
+      renderer.render(scene, camera);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // 15. RESIZE & BOOTSTRAP
+    // ═══════════════════════════════════════════════════════════════
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    updateHUD(0);
+    hudStory.classList.add('visible');
+    animate();
+
+    function dismissLoader() {
+      const loader = document.getElementById('continuum-loader');
+      if (loader) {
+        loader.classList.add('done');
+        setTimeout(() => { try { loader.remove(); } catch(e) {} }, 600);
+      }
+    }
+
+    // Dismiss loader after first frame and fallback
+    setTimeout(dismissLoader, 400);
+    window.addEventListener('load', dismissLoader);
+    document.addEventListener('click', dismissLoader, { once: true });
+
+  })();
+  </script>
+</body>
+</html>

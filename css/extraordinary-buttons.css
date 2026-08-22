@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BIOVERSE EXTRAORDINARY BUTTON ENGINE
+   Magnetic 3D Tilt, Holographic Specular Rays, Shockwaves & Stardust Particles
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --btn-glow-cyan: rgba(0, 242, 254, 0.45);
+  --btn-glow-emerald: rgba(16, 185, 129, 0.45);
+  --btn-glow-gold: rgba(251, 191, 36, 0.45);
+  --btn-glow-purple: rgba(192, 132, 252, 0.45);
+  --btn-glow-indigo: rgba(99, 102, 241, 0.45);
+}
+
+/* ─── 1. Universal Magnetic 3D Interactive Container ───────────── */
+.btn,
+.pill,
+.chat-send-btn,
+.btn-liquid-glass {
+  --cursor-x: 50%;
+  --cursor-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --mag-x: 0px;
+  --mag-y: 0px;
+  
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  will-change: transform;
+  transform: translate3d(var(--mag-x), var(--mag-y), 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 0.16s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* ─── 2. Holographic Specular Ray Glare Layer ──────────────────── */
+.btn::before,
+.pill__plate::after,
+.btn-liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 90px at var(--cursor-x) var(--cursor-y),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.35s ease;
+  mix-blend-mode: overlay;
+}
+
+.btn:hover::before,
+.pill:hover .pill__plate::after,
+.btn-liquid-glass:hover::before {
+  opacity: 1;
+}
+
+/* ─── 3. Parallax Floating Content Layer ───────────────────────── */
+.btn > *,
+.pill__label,
+.pill__icon {
+  transform: translateZ(12px);
+  transform-style: preserve-3d;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+/* ─── 4. Chromatic Laser Perimeter Rim ─────────────────────────── */
+.btn-primary,
+.btn-accent,
+.pill,
+.btn-liquid-glass {
+  border-image-slice: 1;
+}
+
+.btn-primary:hover,
+.btn-accent:hover {
+  box-shadow: 
+    0 12px 32px var(--btn-glow-indigo),
+    0 0 20px rgba(0, 242, 254, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.btn-success:hover,
+.pill--emerald:hover {
+  box-shadow: 
+    0 12px 32px var(--btn-glow-emerald),
+    0 0 20px rgba(52, 211, 153, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ─── 5. Dynamic Click Shockwave Ripple ────────────────────────── */
+.quantum-shockwave {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(0, 242, 254, 0.5) 45%, transparent 75%);
+  animation: shockwaveBurst 0.65s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes shockwaveBurst {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    width: 320px;
+    height: 320px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+}
+
+/* ─── 6. Exploding Kinetic Stardust Sparkles ───────────────────── */
+.stardust-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* Star Shape SVG Sparkle */
+.stardust-star {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ─── 7. Kinetic Energy Pulse Indicator ────────────────────────── */
+@keyframes energyOrbit {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.pill:hover .pill__cta::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0%, var(--coil-color) 25%, transparent 50%, var(--coil-color) 75%, transparent 100%);
+  z-index: 0;
+  opacity: 0.7;
+  animation: energyOrbit 3s linear infinite;
+  filter: blur(4px);
+}

@@ -454,16 +454,25 @@ const DeleteEngine = {
       UI.toast('info', 'Storage Cleared', `${catId.toUpperCase()} data cleared with paper toss animation.`);
       Router.render();
     });
+  },
+
+  updateVisibility(currentRoute) {
+    const bin = document.getElementById('global-trash-bin');
+    if (!bin) return;
+    const isDashboard = currentRoute && currentRoute.startsWith('/dashboard');
+    bin.style.display = isDashboard ? 'block' : 'none';
   }
 };
 
-// Global Floating Trash Bin Widget
+// Global Floating Trash Bin Widget (Strictly scoped to Dashboard)
 if (typeof window !== 'undefined') {
   window.addEventListener('DOMContentLoaded', () => {
-    if (!document.getElementById('global-trash-bin')) {
-      const globalBin = document.createElement('div');
+    let globalBin = document.getElementById('global-trash-bin');
+    if (!globalBin) {
+      globalBin = document.createElement('div');
       globalBin.id = 'global-trash-bin';
       globalBin.className = 'global-trash-widget';
+      globalBin.style.display = 'none'; // Initially hidden
       globalBin.innerHTML = `
         <div class="bin-widget-inner" data-tooltip="Drop Zone / Trash Bin">
           <i class="fas fa-trash-alt bin-icon"></i>
@@ -472,5 +481,7 @@ if (typeof window !== 'undefined') {
       `;
       document.body.appendChild(globalBin);
     }
+    const currentHash = window.location.hash.replace(/^#/, '') || '/';
+    DeleteEngine.updateVisibility(currentHash);
   });
 }

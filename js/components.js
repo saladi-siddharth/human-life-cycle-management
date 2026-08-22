@@ -48,6 +48,42 @@ const UI = {
     }, 50);
   },
 
+  // ─── Quantum Coil Pill Submit Button Generator ────────
+  pillButton({
+    text = 'Submit Details',
+    icon = '<i class="fas fa-arrow-right"></i>',
+    theme = 'cyan', // cyan | emerald | amber | purple
+    type = 'button',
+    fullWidth = true,
+    onClick = '',
+    id = '',
+    extraClass = ''
+  } = {}) {
+    if (typeof PillButton !== 'undefined' && PillButton.create) {
+      return PillButton.create({ text, icon, theme, type, fullWidth, onClick, id, extraClass });
+    }
+    const fullClass = fullWidth ? 'pill-full' : '';
+    const idAttr = id ? `id="${id}"` : '';
+    const clickAttr = onClick ? `onclick="${onClick}"` : '';
+
+    return `
+      <div class="pill pill--${theme} ${fullClass} ${extraClass}" ${idAttr} data-state="idle" ${clickAttr}>
+        <span class="pill__cta">
+          <svg class="pill__coil"></svg>
+          <span class="pill__plate">
+            <span class="pill__label">${text}</span>
+            ${icon ? `<span class="pill__icon">${icon}</span>` : ''}
+          </span>
+          <span class="pill__status">
+            <span class="pill__spinner"></span>
+            <span class="pill__success-text"><i class="fas fa-check"></i> Success!</span>
+          </span>
+          <button type="${type}" aria-label="${text}"></button>
+        </span>
+      </div>
+    `;
+  },
+
   closeModal() {
     const overlay = document.getElementById('modal-overlay');
     if (overlay) overlay.classList.add('hidden');
@@ -83,32 +119,63 @@ const UI = {
   authTopbar() {
     const state = Store.getState();
     const initials = Store.getInitials();
+    const identity = Store.get('identity') || 'student';
+    const soundEnabled = state.soundEnabled !== false;
     const unread = state.notifications.filter(n => n.unread).length;
+
     return `
       <nav class="topbar" id="topbar">
-        <button class="btn btn-ghost btn-icon btn-sm" onclick="Store.set('sidebarOpen', !Store.get('sidebarOpen')); document.getElementById('sidebar')?.classList.toggle('open')" style="margin-right:8px;">
-          <i class="fas fa-bars"></i>
-        </button>
-        <a class="topbar-brand" onclick="Router.navigate('/dashboard')">
-          <span class="brand-icon">🧬</span>
-          <span class="brand-text">BioVerse</span>
-        </a>
-        <div class="topbar-nav" id="topbar-nav">
-          <a class="topbar-link" onclick="Router.navigate('/dashboard')">Dashboard</a>
-          <a class="topbar-link" onclick="Router.navigate('/dashboard/coach')">AI Coach</a>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="Store.set('sidebarOpen', !Store.get('sidebarOpen')); document.getElementById('sidebar')?.classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <a class="topbar-brand" onclick="Router.navigate('/dashboard')">
+            <span class="brand-icon">🧬</span>
+            <span class="brand-text">BioVerse</span>
+          </a>
         </div>
+
+        <!-- 🌟 Dynamic Persona Switcher Bar 🌟 -->
+        <div class="persona-switcher-pill">
+          <button class="persona-pill-btn ${identity === 'student' ? 'active' : ''}" onclick="switchPersonaMode('student')">
+            🎓 Student
+          </button>
+          <button class="persona-pill-btn ${identity === 'employee' ? 'active' : ''}" onclick="switchPersonaMode('employee')">
+            💼 Employee
+          </button>
+          <button class="persona-pill-btn ${identity === 'business' ? 'active' : ''}" onclick="switchPersonaMode('business')">
+            🏢 Business
+          </button>
+        </div>
+
         <div class="topbar-actions">
+          <!-- Public Home Page Link -->
+          <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/')" data-tooltip="View Home Page" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-home"></i> <span>Home</span>
+          </button>
+
+          <!-- Guided Tour Trigger -->
+          <button class="btn btn-ghost btn-sm" onclick="TourEngine.start(true)" data-tooltip="Replay Guided Tour" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;color:#00f2fe;">
+            <i class="fas fa-magic"></i> <span>Tour</span>
+          </button>
+
+          <!-- Notifications -->
           <button class="btn btn-ghost btn-icon btn-sm" onclick="Router.navigate('/dashboard/notifications')" data-tooltip="Notifications" style="position:relative;">
             <i class="fas fa-bell"></i>
             ${unread > 0 ? `<span style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--rose);"></span>` : ''}
           </button>
+
+          <!-- User Avatar Menu -->
           <div class="dropdown">
             <div class="avatar" style="cursor:pointer;" onclick="this.parentElement.querySelector('.dropdown-menu').classList.toggle('hidden')">${initials}</div>
             <div class="dropdown-menu hidden">
               <div style="padding:10px 14px;border-bottom:1px solid var(--glass-border);margin-bottom:4px;">
                 <div style="font-weight:600;font-size:14px;">${state.profile.name || 'User'}</div>
                 <div style="font-size:12px;color:var(--text-muted);">${state.profile.email || ''}</div>
+                <span class="badge badge-primary" style="font-size:10px;margin-top:4px;">Role: ${identity.toUpperCase()}</span>
               </div>
+              <button class="dropdown-item" onclick="Router.navigate('/')"><i class="fas fa-home"></i> Home Page</button>
+              <button class="dropdown-item" onclick="TourEngine.start(true)"><i class="fas fa-magic"></i> Replay Guided Tour</button>
               <button class="dropdown-item" onclick="Router.navigate('/dashboard/settings')"><i class="fas fa-cog"></i> Settings</button>
               <button class="dropdown-item" onclick="Router.navigate('/dashboard/billing')"><i class="fas fa-credit-card"></i> Billing</button>
               <div class="dropdown-divider"></div>
@@ -124,17 +191,17 @@ const UI = {
 
   // ─── Sidebar ──────────────────────────────────────────
   sidebar(activePath) {
-    const identity = Store.get('identity');
+    const identity = Store.get('identity') || 'student';
     const unread = Store.getState().notifications.filter(n => n.unread).length;
 
     const mainLinks = [
+      { path: '/', icon: 'fas fa-home', label: 'Home' },
       { path: '/dashboard', icon: 'fas fa-th-large', label: 'Overview' },
       { path: '/dashboard/career', icon: 'fas fa-rocket', label: 'Career' },
       { path: '/dashboard/health', icon: 'fas fa-heartbeat', label: 'Health' },
       { path: '/dashboard/finance', icon: 'fas fa-wallet', label: 'Finance' },
       { path: '/dashboard/work', icon: 'fas fa-briefcase', label: 'Work' },
       { path: '/dashboard/life', icon: 'fas fa-star', label: 'Life Success' },
-      { href: 'house.html', icon: 'fas fa-cube', label: '3D Residence ↗' },
     ];
 
     let identityLinks = [];
@@ -367,6 +434,33 @@ const UI = {
         <i class="fas fa-trash-alt"></i> ${label}
       </button>
     `;
+  },
+
+  // ─── Lottie Submit Button Helper ──────────────────────
+  lottieSubmitButton(opts = {}) {
+    if (typeof LottieSubmit !== 'undefined') {
+      return LottieSubmit.create(opts);
+    }
+    return `<button type="submit" class="btn btn-primary btn-lg">Submit</button>`;
   }
 };
+
+// ─── Global Topbar Interactive Handlers ──────────────────
+function switchPersonaMode(mode) {
+  Store.setIdentity(mode);
+  if (typeof ActionPhysics !== 'undefined') ActionPhysics.playSound('wand');
+  UI.toast('info', `Persona: ${mode.toUpperCase()} Active`, `Nav links, domain tools & AI coach prompt library updated.`);
+  Router.render();
+}
+
+function toggleAppSound() {
+  const enabled = Store.toggleSound();
+  if (enabled && typeof ActionPhysics !== 'undefined') ActionPhysics.playSound('wand');
+  UI.toast('info', enabled ? '🔊 Sound FX Enabled' : '🔇 Sound FX Muted', enabled ? 'Audio micro-interactions active.' : 'Audio muted.');
+  Router.render();
+}
+
+window.switchPersonaMode = switchPersonaMode;
+window.toggleAppSound = toggleAppSound;
+
 

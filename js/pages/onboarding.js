@@ -55,13 +55,24 @@ function IdentityPage() {
           </div>
         </div>
 
-        <div class="onboarding-nav">
+        <div class="onboarding-nav" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
           <button class="btn btn-ghost" onclick="Store.logout(); Router.navigate('/');">
             <i class="fas fa-arrow-left"></i> Back
           </button>
-          <button class="btn btn-primary btn-lg" onclick="goToProfile()" id="identity-next-btn" ${!selected ? 'disabled style="opacity:0.5;pointer-events:none;"' : ''}>
-            Continue <i class="fas fa-arrow-right"></i>
-          </button>
+          <div class="pill pill--cyan" data-state="idle" onclick="goToProfile()" id="identity-next-btn" style="min-width:180px; ${!selected ? 'opacity:0.5;pointer-events:none;' : ''}">
+            <span class="pill__cta">
+              <svg class="pill__coil"></svg>
+              <span class="pill__plate">
+                <span class="pill__label">Continue to Profile</span>
+                <span class="pill__icon"><i class="fas fa-arrow-right"></i></span>
+              </span>
+              <span class="pill__status">
+                <span class="pill__spinner"></span>
+                <span class="pill__success-text"><i class="fas fa-check"></i> Saving...</span>
+              </span>
+              <button type="button" aria-label="Continue to Profile"></button>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -230,13 +241,24 @@ function ProfilePage() {
           </div>
         </div>
 
-        <div class="onboarding-nav">
+        <div class="onboarding-nav" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
           <button class="btn btn-ghost" onclick="Router.navigate('/onboarding/identity')">
             <i class="fas fa-arrow-left"></i> Back
           </button>
-          <button class="btn btn-primary btn-lg" onclick="Router.navigate('/onboarding/goals')">
-            Continue <i class="fas fa-arrow-right"></i>
-          </button>
+          <div class="pill pill--cyan" data-state="idle" onclick="Router.navigate('/onboarding/goals')" style="min-width:180px;">
+            <span class="pill__cta">
+              <svg class="pill__coil"></svg>
+              <span class="pill__plate">
+                <span class="pill__label">Continue to Goals</span>
+                <span class="pill__icon"><i class="fas fa-arrow-right"></i></span>
+              </span>
+              <span class="pill__status">
+                <span class="pill__spinner"></span>
+                <span class="pill__success-text"><i class="fas fa-check"></i> Next</span>
+              </span>
+              <button type="button" aria-label="Continue to Goals"></button>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -323,13 +345,24 @@ function GoalsPage() {
           </div>
         </div>
 
-        <div class="onboarding-nav">
+        <div class="onboarding-nav" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
           <button class="btn btn-ghost" onclick="Router.navigate('/onboarding/profile')">
             <i class="fas fa-arrow-left"></i> Back
           </button>
-          <button class="btn btn-primary btn-lg" onclick="completeOnboarding()">
-            Complete Setup <i class="fas fa-check"></i>
-          </button>
+          <div class="pill pill--emerald" data-state="idle" onclick="completeOnboarding()" style="min-width:240px;">
+            <span class="pill__cta">
+              <svg class="pill__coil"></svg>
+              <span class="pill__plate">
+                <span class="pill__label">Complete Setup & Launch GPS</span>
+                <span class="pill__icon"><i class="fas fa-check"></i></span>
+              </span>
+              <span class="pill__status">
+                <span class="pill__spinner"></span>
+                <span class="pill__success-text"><i class="fas fa-check"></i> Launching...</span>
+              </span>
+              <button type="submit" aria-label="Complete Setup & Launch GPS"></button>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -343,7 +376,7 @@ function selectGoalIntensity(el, value) {
 }
 
 function completeOnboarding() {
-  Store.set('onboardingComplete', true);
+  Store.completeOnboarding();
   Router.navigate('/onboarding/complete');
 }
 
@@ -386,9 +419,22 @@ function OnboardingCompletePage() {
           `).join('')}
         </div>
 
-        <button class="btn btn-primary btn-xl animate-glow" onclick="Router.navigate('/dashboard')">
-          <i class="fas fa-th-large"></i> Go to My Dashboard
-        </button>
+        <div style="display:flex;justify-content:center;">
+          <div class="pill pill--cyan" data-state="idle" onclick="Router.navigate('/dashboard')" style="min-width:260px;">
+            <span class="pill__cta">
+              <svg class="pill__coil"></svg>
+              <span class="pill__plate">
+                <span class="pill__label">Go to My Dashboard</span>
+                <span class="pill__icon"><i class="fas fa-th-large"></i></span>
+              </span>
+              <span class="pill__status">
+                <span class="pill__spinner"></span>
+                <span class="pill__success-text"><i class="fas fa-check"></i> Launching...</span>
+              </span>
+              <button type="button" aria-label="Go to My Dashboard"></button>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   `;

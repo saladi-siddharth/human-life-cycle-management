@@ -91,6 +91,10 @@ const Router = {
   },
 
   _initPage(path) {
+    if (typeof DeleteEngine !== 'undefined' && DeleteEngine.updateVisibility) {
+      DeleteEngine.updateVisibility(path);
+    }
+
     // Intersection observer for reveal animations
     setTimeout(() => {
       document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {

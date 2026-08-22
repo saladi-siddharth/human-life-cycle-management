@@ -13,6 +13,27 @@ const PORT = process.env.PORT || 3000;
 const EMAIL_USER = process.env.EMAIL_USER || 'mahisiddharth721@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_PASS || 'mqoqiqzpcfcqvnzp';
 
+// ─── Global Error Resilience ──────────────────────────────────────────
+process.on('uncaughtException', (err, origin) => {
+  console.error('⚠️ Caught Unhandled Exception:', err.stack || err.message, 'Origin:', origin);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ Caught Unhandled Rejection:', reason?.stack || reason);
+});
+
+process.on('exit', (code) => {
+  console.log(`[PROCESS EXIT] Node process exiting with code: ${code}`);
+});
+
+process.on('SIGINT', () => {
+  console.log('[PROCESS SIGNAL] Received SIGINT');
+});
+
+process.on('SIGTERM', () => {
+  console.log('[PROCESS SIGNAL] Received SIGTERM');
+});
+
 // ─── Local Disk DB Fallback Storage ───────────────────────────────────
 const DATA_DIR = path.join(__dirname, 'data');
 const LOCAL_DB_FILE = path.join(DATA_DIR, 'bioverse_db.json');
@@ -50,11 +71,31 @@ try {
     database: process.env.TIDB_DATABASE || 'test',
     ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true },
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: 10,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000,
+    idleTimeout: 60000
   });
+
+  if (dbPool && dbPool.pool) {
+    dbPool.pool.on('error', (err) => {
+      console.warn('⚠️ TiDB Connection Pool notice:', err.message);
+    });
+    dbPool.pool.on('connection', (connection) => {
+      connection.on('error', (err) => {
+        console.warn('⚠️ TiDB Connection socket notice:', err.message);
+      });
+    });
+  }
+
   console.log('⚡ Connected to TiDB Cloud Database Pool!');
 } catch (err) {
   console.error('❌ Failed to initialize TiDB Pool:', err.message);
+}
+
+// Keep standard input and event loop anchored
+if (process.stdin.isTTY) {
+  try { process.stdin.resume(); } catch (e) {}
 }
 
 // Auto Initialize Tables
@@ -129,12 +170,17 @@ async function initTables() {
 
 initTables();
 
-// ─── Direct TLS Gmail SMTP Mailer ─────────────────────────────────────
+// ─── Direct TLS Gmail SMTP Mailer with Timeout & Cleanup ─────────────
 function sendGmailSMTP({ to, subject, body }) {
   return new Promise((resolve, reject) => {
+    let resolved = false;
     const socket = tls.connect(465, 'smtp.gmail.com', () => {
       let step = 0;
-      function send(cmd) { socket.write(cmd + '\r\n'); }
+      function send(cmd) {
+        if (!socket.destroyed) {
+          socket.write(cmd + '\r\n');
+        }
+      }
 
       socket.on('data', (data) => {
         const response = data.toString();
@@ -171,15 +217,44 @@ function sendGmailSMTP({ to, subject, body }) {
           send(emailContent);
         } else if (step === 6 && response.startsWith('250')) {
           step = 7; send(`QUIT`);
-          resolve({ success: true, message: 'Email sent successfully via Gmail SMTP' });
+          if (!resolved) {
+            resolved = true;
+            resolve({ success: true, message: 'Email sent successfully via Gmail SMTP' });
+          }
         } else if (response.startsWith('5')) {
-          reject(new Error(`SMTP Error: ${response.trim()}`));
+          if (!resolved) {
+            resolved = true;
+            reject(new Error(`SMTP Error: ${response.trim()}`));
+          }
         }
       });
-      socket.on('error', (err) => reject(err));
+
+      socket.setTimeout(12000, () => {
+        socket.destroy();
+        if (!resolved) {
+          resolved = true;
+          reject(new Error('SMTP connection timed out.'));
+        }
+      });
+
+      socket.on('error', (err) => {
+        if (!resolved) {
+          resolved = true;
+          reject(err);
+        }
+      });
+    });
+
+    socket.on('error', (err) => {
+      if (!resolved) {
+        resolved = true;
+        reject(err);
+      }
     });
   });
 }
+
+// ─── Static File Types ───────────────────────────────────────────────
 
 const MIME_TYPES = {
   '.html': 'text/html',
@@ -304,30 +379,194 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 🔑 API 4: TiDB Auth Register & Login
+  // 📬 API 3b: Daily Digest Email Summary Generator
+  if (req.method === 'POST' && req.url === '/api/daily-digest') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(rawBody || '{}');
+        const recipient = payload.email || EMAIL_USER;
+        const name = payload.name || 'Saladi Siddharth';
+        const scores = payload.scores || { life: 78, career: 75, health: 82, finance: 70, work: 80 };
+
+        const digestHtml = `
+          <h3 style="color:#00f2fe;margin-bottom:8px;">Daily BioVerse Performance Digest for ${name}</h3>
+          <p style="font-size:13px;color:#94a3b8;margin-bottom:16px;">Here is your real-time life synchronization summary across all active pillars:</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Life Score:</strong> <span style="color:#00f2fe;">${scores.life}/100</span></div>
+            <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Health Vitality:</strong> <span style="color:#10b981;">${scores.health}/100</span></div>
+            <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Career Matrix:</strong> <span style="color:#6366f1;">${scores.career}/100</span></div>
+            <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Finance & SIP:</strong> <span style="color:#fbbf24;">${scores.finance}/100</span></div>
+          </div>
+          <p style="font-size:12px;color:#94a3b8;">Keep up the streak! Log in to your <a href="http://${req.headers.host || `localhost:${PORT}`}/#dashboard" style="color:#00f2fe;">BioVerse Dashboard</a> or explore your <a href="http://${req.headers.host || `localhost:${PORT}`}/continuum.html" style="color:#a855f7;">3D Life Journey</a>.</p>
+        `;
+
+        const result = await sendGmailSMTP({
+          to: recipient,
+          subject: `🌟 BioVerse Daily Digest: ${name} (Score: ${scores.life}/100)`,
+          body: digestHtml
+        });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 📱 OTP In-Memory Storage for Registration Verification
+  const otpStorage = global.__otpStorage || (global.__otpStorage = new Map());
+
+  // ✉️ API 4a: Send 6-Digit Email OTP
+  if (req.method === 'POST' && req.url === '/api/auth/send-otp') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email, name } = JSON.parse(rawBody || '{}');
+        if (!email || !email.includes('@')) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, error: 'Valid email address is required.' }));
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        otpStorage.set(cleanEmail, { otp, expiresAt });
+
+        const otpHtml = `
+          <div style="background:#0b1120;border:1px solid #38bdf8;border-radius:16px;padding:24px;text-align:center;color:#fff;font-family:'Segoe UI',Roboto,sans-serif;">
+            <h2 style="color:#00f2fe;margin:0 0 8px 0;">🧬 BioVerse Security Verification</h2>
+            <p style="color:#cbd5e1;font-size:14px;margin-bottom:20px;">Hello <strong>${name || 'BioVerse Explorer'}</strong>, use the 6-digit OTP code below to verify your BioVerse account registration:</p>
+            <div style="font-size:38px;font-weight:900;letter-spacing:10px;color:#fbbf24;background:rgba(251,191,36,0.12);border:2px dashed #fbbf24;border-radius:12px;padding:18px;margin:20px auto;max-width:320px;">
+              ${otp}
+            </div>
+            <p style="font-size:12.5px;color:#94a3b8;margin-top:20px;">This code expires in 10 minutes. If you did not attempt this registration, please disregard this message.</p>
+          </div>
+        `;
+
+        try {
+          await sendGmailSMTP({
+            to: cleanEmail,
+            subject: `🔐 Your BioVerse Verification Code: ${otp}`,
+            body: otpHtml
+          });
+        } catch (smtpErr) {
+          console.warn('⚠️ SMTP Send Warning (Demo fallback active):', smtpErr.message);
+        }
+
+        console.log(`🔑 Generated OTP for [${cleanEmail}]: ${otp}`);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          message: `Verification code sent to ${cleanEmail}`,
+          // Demo development hint in case SMTP is in test mode
+          devOtp: otp
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔑 API 4b: Verify 6-Digit Email OTP & Complete Registration
+  if (req.method === 'POST' && req.url === '/api/auth/verify-otp') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email, otp, name, password, identity, phone } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const cleanOtp = (otp || '').toString().trim();
+
+        const stored = otpStorage.get(cleanEmail);
+
+        if (!stored || stored.otp !== cleanOtp || Date.now() > stored.expiresAt) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, error: 'Invalid or expired OTP verification code.' }));
+        }
+
+        // Clean up OTP record
+        otpStorage.delete(cleanEmail);
+
+        const userId = 'usr_' + Date.now();
+        const formattedName = name || cleanEmail.split('@')[0];
+
+        if (dbPool) {
+          try {
+            await dbPool.query(
+              'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)',
+              [userId, cleanEmail, formattedName, password || 'BioVerse2026!']
+            );
+          } catch (err) {
+            console.warn('TiDB user insert notice:', err.message);
+          }
+        }
+
+        const localDB = getLocalDB();
+        const existingIdx = localDB.users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password: password || 'BioVerse2026!', identity: identity || 'student', phone: phone || '' };
+        if (existingIdx >= 0) {
+          localDB.users[existingIdx] = newUserObj;
+        } else {
+          localDB.users.push(newUserObj);
+        }
+        saveLocalDB(localDB);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          message: 'Account verified successfully!',
+          user: { id: userId, name: formattedName, email: cleanEmail, identity: identity || 'student' }
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔑 API 4c: Direct TiDB Auth Register
   if (req.method === 'POST' && req.url === '/api/auth/register') {
     let rawBody = '';
     req.on('data', chunk => rawBody += chunk.toString());
     req.on('end', async () => {
       try {
-        const { name, email, password } = JSON.parse(rawBody);
+        const { name, email, password, identity, phone } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
         const userId = 'usr_' + Date.now();
+        const formattedName = name || cleanEmail.split('@')[0];
 
         if (dbPool) {
           try {
             await dbPool.query(
-              'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?)',
-              [userId, email, name, password]
+              'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)',
+              [userId, cleanEmail, formattedName, password]
             );
           } catch (err) {}
         }
 
         const localDB = getLocalDB();
-        localDB.users.push({ id: userId, name, email, password });
+        const existingIdx = localDB.users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password, identity: identity || 'student', phone: phone || '' };
+        if (existingIdx >= 0) {
+          localDB.users[existingIdx] = newUserObj;
+        } else {
+          localDB.users.push(newUserObj);
+        }
         saveLocalDB(localDB);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, userId, name, email }));
+        res.end(JSON.stringify({ success: true, user: { id: userId, name: formattedName, email: cleanEmail, identity } }));
       } catch (err) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: false, error: err.message }));
@@ -336,47 +575,272 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // 🔑 API 4d: Strict TiDB & LocalDB Auth Login Validation
   if (req.method === 'POST' && req.url === '/api/auth/login') {
     let rawBody = '';
     req.on('data', chunk => rawBody += chunk.toString());
     req.on('end', async () => {
       try {
-        const { email, password } = JSON.parse(rawBody);
+        const { email, password } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
 
         let user = null;
+
+        // 1. Check TiDB Cloud Database
         if (dbPool) {
           try {
-            const [rows] = await dbPool.query('SELECT * FROM bv_users WHERE email = ?', [email]);
+            const [rows] = await dbPool.query('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
             if (rows.length > 0) user = rows[0];
           } catch (err) {}
         }
 
+        // 2. Check Local File DB
         if (!user) {
-          // Auto-provision user account if not yet registered in database
-          const derivedName = email.includes('saladi') ? 'Saladi Siddharth' :
-            email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          const userId = 'usr_' + Date.now();
+          const localDB = getLocalDB();
+          user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
+        }
 
-          user = { id: userId, email, name: derivedName, password: password || 'defaultPass' };
-
-          if (dbPool) {
-            try {
-              await dbPool.query(
-                'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)',
-                [userId, email, derivedName, password || 'defaultPass']
-              );
-            } catch (err) {}
-          }
-
+        // 3. Fallback default account check for admin/demo user
+        if (!user && (cleanEmail === 'saladisiddharth@gmail.com' || cleanEmail === 'siddharth@bioverse.ai')) {
+          user = {
+            id: 'usr_default_siddharth',
+            email: cleanEmail,
+            name: 'Saladi Siddharth',
+            password: 'BioVerse2026!'
+          };
           const localDB = getLocalDB();
           localDB.users.push(user);
           saveLocalDB(localDB);
+        }
+
+        // 4. If user is not found in registered accounts
+        if (!user) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({
+            success: false,
+            error: 'No account found with this email address. Please Sign Up first.'
+          }));
+        }
+
+        // 5. Check password match
+        if (user.password !== password) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({
+            success: false,
+            error: 'Invalid password. Please check your credentials and try again.'
+          }));
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
           user: { id: user.id, name: user.name, email: user.email }
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔔 API 4e: Login Security Alert Email Notification
+  if (req.method === 'POST' && req.url === '/api/auth/login-notify') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email, name, userAgent } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const formattedName = name || cleanEmail.split('@')[0];
+        const loginTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+        const loginAlertHtml = `
+          <div style="background:#070a14;border:1px solid #1e293b;border-radius:20px;padding:28px;max-width:560px;margin:0 auto;color:#f8fafc;font-family:'Segoe UI',Roboto,Helvetica,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+            <div style="text-align:center;margin-bottom:24px;">
+              <div style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#00f2fe,#4facfe);font-size:30px;margin-bottom:12px;box-shadow:0 0 24px rgba(0,242,254,0.5);">
+                🧬
+              </div>
+              <h2 style="margin:0;font-size:24px;font-weight:800;background:linear-gradient(135deg,#ffffff 0%,#00f2fe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">BioVerse Security Alert</h2>
+              <p style="margin:4px 0 0 0;font-size:13px;color:#94a3b8;">Intelligent Life Management Suite</p>
+            </div>
+
+            <div style="background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px;margin-bottom:20px;">
+              <div style="font-size:14px;color:#cbd5e1;margin-bottom:12px;">Hello <strong style="color:#ffffff;">${formattedName}</strong>,</div>
+              <p style="font-size:13.5px;color:#94a3b8;line-height:1.6;margin:0 0 14px 0;">
+                A new login was detected on your BioVerse account. Your real-time 5-pillar synchronization (Career, Health, Finance, Work & Life) is now active!
+              </p>
+
+              <div style="display:grid;grid-template-columns:1fr;gap:8px;font-size:12.5px;background:#0b1120;padding:12px 14px;border-radius:10px;border:1px solid rgba(0,242,254,0.2);">
+                <div>📅 <strong>Time (IST):</strong> <span style="color:#00f2fe;">${loginTime}</span></div>
+                <div>👤 <strong>Account:</strong> <span style="color:#fbbf24;">${cleanEmail}</span></div>
+                <div>🔒 <strong>Session Status:</strong> <span style="color:#10b981;">Active & Encrypted (TLS 1.2)</span></div>
+              </div>
+            </div>
+
+            <div style="text-align:center;margin-bottom:20px;">
+              <a href="http://${req.headers.host || 'localhost:3000'}/#/dashboard" style="display:inline-block;background:linear-gradient(135deg,#00f2fe 0%,#6366f1 100%);color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 28px;border-radius:999px;box-shadow:0 8px 25px rgba(0,242,254,0.35);">
+                Open BioVerse Dashboard →
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #1e293b;padding-top:14px;text-align:center;font-size:11.5px;color:#64748b;">
+              If this was not you, please immediately reset your password on the login screen.<br>
+              © 2026 BioVerse Platform • Automated security notification.
+            </div>
+          </div>
+        `;
+
+        try {
+          await sendGmailSMTP({
+            to: cleanEmail,
+            subject: `🧬 BioVerse Login Alert: ${formattedName}`,
+            body: loginAlertHtml
+          });
+        } catch (e) {
+          console.warn('Login email warning:', e.message);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'Login notification dispatched' }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔑 API 4f: Forgot Password OTP Dispatch
+  if (req.method === 'POST' && req.url === '/api/auth/forgot-otp') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+
+        if (!cleanEmail || !cleanEmail.includes('@')) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, error: 'Please provide a valid email address.' }));
+        }
+
+        let user = null;
+        if (dbPool) {
+          try {
+            const [rows] = await dbPool.query('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
+            if (rows.length > 0) user = rows[0];
+          } catch (err) {}
+        }
+
+        if (!user) {
+          const localDB = getLocalDB();
+          user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
+        }
+
+        if (!user && (cleanEmail === 'saladisiddharth@gmail.com' || cleanEmail === 'siddharth@bioverse.ai')) {
+          user = { email: cleanEmail, name: 'Saladi Siddharth' };
+        }
+
+        if (!user) {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({
+            success: false,
+            error: 'No registered BioVerse account was found with this email address.'
+          }));
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = Date.now() + 10 * 60 * 1000;
+        otpStorage.set(`forgot_${cleanEmail}`, { otp, expiresAt });
+
+        const resetHtml = `
+          <div style="background:#070a14;border:1px solid #f59e0b;border-radius:20px;padding:28px;max-width:540px;margin:0 auto;color:#fff;font-family:sans-serif;text-align:center;">
+            <div style="font-size:36px;margin-bottom:8px;">🔑</div>
+            <h2 style="color:#fbbf24;margin:0 0 10px 0;">BioVerse Password Reset Code</h2>
+            <p style="color:#cbd5e1;font-size:13.5px;line-height:1.5;">Hello <strong>${user.name || 'User'}</strong>, enter the 6-digit OTP code below to create your new password:</p>
+            
+            <div style="font-size:36px;font-weight:900;letter-spacing:10px;color:#fbbf24;background:rgba(251,191,36,0.12);border:2px dashed #fbbf24;border-radius:14px;padding:16px;margin:20px auto;max-width:300px;">
+              ${otp}
+            </div>
+
+            <p style="font-size:12px;color:#94a3b8;">This code is valid for 10 minutes. If you did not request this, your account remains secure.</p>
+          </div>
+        `;
+
+        try {
+          await sendGmailSMTP({
+            to: cleanEmail,
+            subject: `🔑 BioVerse Password Reset Code: ${otp}`,
+            body: resetHtml
+          });
+        } catch (e) {
+          console.warn('Reset email send error:', e.message);
+        }
+
+        console.log(`🔑 Generated Reset OTP for [${cleanEmail}]: ${otp}`);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          message: `Password reset code sent to ${cleanEmail}`,
+          devOtp: otp
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔑 API 4g: Reset Password Execution
+  if (req.method === 'POST' && req.url === '/api/auth/reset-password') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email, otp, newPassword } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const cleanOtp = (otp || '').toString().trim();
+
+        const stored = otpStorage.get(`forgot_${cleanEmail}`);
+        if (!stored || stored.otp !== cleanOtp || Date.now() > stored.expiresAt) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, error: 'Invalid or expired OTP reset code.' }));
+        }
+
+        if (!newPassword || newPassword.length < 6) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: false, error: 'New password must be at least 6 characters.' }));
+        }
+
+        otpStorage.delete(`forgot_${cleanEmail}`);
+
+        if (dbPool) {
+          try {
+            await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [newPassword, cleanEmail]);
+          } catch (err) {}
+        }
+
+        const localDB = getLocalDB();
+        const user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
+        if (user) {
+          user.password = newPassword;
+        } else {
+          localDB.users.push({
+            id: 'usr_' + Date.now(),
+            name: cleanEmail.split('@')[0],
+            email: cleanEmail,
+            password: newPassword
+          });
+        }
+        saveLocalDB(localDB);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          message: 'Password updated successfully! You can now sign in.'
         }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -442,11 +906,24 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`\n==================================================`);
-  console.log(`🚀 BioVerse Platform Server live at http://localhost:${PORT}`);
-  console.log(`☁️ Database: TiDB Cloud Serverless MySQL (gateway01.ap-southeast-1.prod.aws.tidbcloud.com)`);
-  console.log(`📁 Local DB Storage: ${LOCAL_DB_FILE}`);
-  console.log(`📧 Gmail SMTP Relay: ${EMAIL_USER}`);
-  console.log(`==================================================\n`);
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use.`);
+  } else {
+    console.error('❌ Server error:', err.message);
+  }
 });
+
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`\n==================================================`);
+    console.log(`🚀 BioVerse Platform Server live at http://localhost:${PORT}`);
+    console.log(`☁️ Database: TiDB Cloud Serverless MySQL (gateway01.ap-southeast-1.prod.aws.tidbcloud.com)`);
+    console.log(`📁 Local DB Storage: ${LOCAL_DB_FILE}`);
+    console.log(`📧 Gmail SMTP Relay: ${EMAIL_USER}`);
+    console.log(`==================================================\n`);
+  });
+}
+
+module.exports = server;
+

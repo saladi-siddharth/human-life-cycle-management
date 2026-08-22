@@ -6,6 +6,7 @@ function CoachPage() {
   const profile = Store.get('profile') || {};
   const hasKey = !!Store.get('apiSettings.geminiKey');
   const metrics = MLEngine.getMetrics();
+  const voiceOn = Store.get('speechVoiceEnabled');
 
   const content = `
     <div class="coach-page">
@@ -19,7 +20,10 @@ function CoachPage() {
           </div>
           <div class="coach-status"><span class="coach-status-dot"></span> Trained Naive Bayes Vector Classifier • 98.6% Accuracy</div>
         </div>
-        <div style="margin-left:auto;display:flex;gap:8px;">
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <button class="btn ${voiceOn ? 'btn-primary' : 'btn-ghost'} btn-sm" onclick="toggleCoachVoice()" data-tooltip="Toggle Text-to-Speech Voice">
+            <i class="fas fa-volume-up"></i> ${voiceOn ? 'Voice On' : 'Voice Off'}
+          </button>
           <button class="btn btn-ghost btn-sm" onclick="showMLMetricsModal()"><i class="fas fa-microchip"></i> ML Metrics</button>
           <button class="btn btn-ghost btn-sm" onclick="clearChat()"><i class="fas fa-trash"></i> Clear</button>
         </div>
@@ -61,9 +65,22 @@ function CoachPage() {
         ].map(s => `<button class="chat-suggestion" onclick="sendSuggestion('${s.replace(/'/g, "\\'")}')">${s}</button>`).join('')}
       </div>
 
-      <div class="chat-input-area">
-        <input type="text" class="chat-input" id="coach-input" placeholder="Ask your AI Life Coach (e.g., 'How do I optimize my IIT placement or Nifty SIP?')..." onkeydown="if(event.key==='Enter')sendMessage()">
-        <button class="chat-send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      <div class="chat-input-area" style="display:flex;gap:12px;align-items:center;">
+        <input type="text" class="chat-input" id="coach-input" placeholder="Ask your AI Life Coach (e.g., 'How do I optimize my IIT placement or Nifty SIP?')..." onkeydown="if(event.key==='Enter')sendMessage()" style="flex:1;">
+        <div class="pill pill--cyan" data-state="idle" onclick="sendMessage()" style="min-width:130px;height:46px;">
+          <span class="pill__cta">
+            <svg class="pill__coil"></svg>
+            <span class="pill__plate">
+              <span class="pill__label">Send</span>
+              <span class="pill__icon"><i class="fas fa-paper-plane"></i></span>
+            </span>
+            <span class="pill__status">
+              <span class="pill__spinner"></span>
+              <span class="pill__success-text"><i class="fas fa-check"></i></span>
+            </span>
+            <button type="button" aria-label="Send Message"></button>
+          </span>
+        </div>
       </div>
     </div>
   `;
@@ -101,6 +118,15 @@ async function sendMessage() {
     const indicator = document.getElementById('typing-indicator');
     if (indicator) indicator.remove();
 
+    // Text to Speech if enabled
+    if (Store.get('speechVoiceEnabled') && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const plainSpeech = aiText.replace(/[*_`#]/g, '').slice(0, 280);
+      const utter = new SpeechSynthesisUtterance(plainSpeech);
+      utter.rate = 1.05;
+      window.speechSynthesis.speak(utter);
+    }
+
     const formatted = aiText
       .replace(/### (.*?)\n/g, '<h4 style="margin:8px 0;color:var(--cyan);">$1</h4>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -114,12 +140,17 @@ async function sendMessage() {
         
         <!-- Interactive RLHF & Action Buttons -->
         <div style="margin-top:12px;padding-top:8px;border-top:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <button class="btn btn-primary btn-sm" style="font-size:11px;" onclick="convertAIToTask('${escapeHtml(message)}')">
-            <i class="fas fa-plus"></i> Add to Action Board
-          </button>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-primary btn-sm" style="font-size:11px;" onclick="convertAIToTask('${escapeHtml(message)}')">
+              <i class="fas fa-plus"></i> + Add Task
+            </button>
+            <button class="btn btn-secondary btn-sm" style="font-size:11px;" onclick="quickAddHabitFromAI('${escapeHtml(message)}')">
+              <i class="fas fa-fire"></i> + Add Habit
+            </button>
+          </div>
           
           <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);">
-            <span>Rate ML Response (RLHF):</span>
+            <span>Rate ML (RLHF):</span>
             <button class="btn btn-ghost btn-sm" style="padding:2px 6px;" onclick="submitMLFeedback('${mlPrediction.topIntent}', 1.0, this)" data-tooltip="Reward (+0.15 weight)">👍 Useful</button>
             <button class="btn btn-ghost btn-sm" style="padding:2px 6px;" onclick="submitMLFeedback('${mlPrediction.topIntent}', -1.0, this)" data-tooltip="Penalty (-0.15 weight)">👎 Adjust</button>
           </div>
@@ -132,6 +163,17 @@ async function sendMessage() {
     if (indicator) indicator.remove();
     chatMessages.innerHTML += `<div class="chat-bubble ai">Sorry, I encountered an issue processing your request. Please try again!</div>`;
   }
+}
+
+function toggleCoachVoice() {
+  Store.toggleSpeechVoice();
+  UI.toast('info', 'Voice Engine', `AI Speech synthesis ${Store.get('speechVoiceEnabled') ? 'Enabled 🔊' : 'Muted 🔇'}`);
+  Router.render();
+}
+
+function quickAddHabitFromAI(query) {
+  Store.addHabit({ name: query.slice(0, 30), category: 'Mindset', targetFreq: 'Daily' });
+  UI.toast('success', 'Habit Added 🔥', `Created daily habit for: "${query.slice(0, 30)}"`);
 }
 
 function submitMLFeedback(intentKey, rewardMultiplier, btnElement) {
@@ -199,4 +241,7 @@ window.convertAIToTask = convertAIToTask;
 window.clearChat = clearChat;
 window.submitMLFeedback = submitMLFeedback;
 window.showMLMetricsModal = showMLMetricsModal;
+window.toggleCoachVoice = toggleCoachVoice;
+window.quickAddHabitFromAI = quickAddHabitFromAI;
+
 

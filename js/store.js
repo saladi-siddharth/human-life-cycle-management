@@ -168,7 +168,10 @@ const Store = {
         { id: 'w1', date: '2026-07-21', type: 'Gym Resistance Training', duration: 45, calories: 350 }
       ],
       macroLogs: { protein: 135, carbs: 220, fat: 60, calorieTarget: 2200 },
-      moodLogs: [{ date: '2026-07-22', mood: 'Focused', score: 88 }]
+      moodLogs: [
+        { id: 'm1', date: '2026-07-22', mood: 'Focused', score: 88, notes: 'High mental clarity after morning workout and hydration.' },
+        { id: 'm2', date: '2026-07-21', mood: 'Energized', score: 92, notes: 'Completed Google interview prep milestone.' }
+      ]
     },
 
     career: {
@@ -185,6 +188,42 @@ const Store = {
       ]
     },
 
+    // ─── Daily Habit Streaks ───────────────────────────────────
+    habits: [
+      { id: 'h1', title: 'Solve 1 LeetCode / System Design Challenge', category: 'career', streak: 14, completedToday: true },
+      { id: 'h2', title: 'Drink 2.5L Water & Electrolytes', category: 'health', streak: 8, completedToday: false },
+      { id: 'h3', title: 'Read 20 Mins Tech & Finance Literature', category: 'growth', streak: 21, completedToday: true },
+      { id: 'h4', title: 'Evening 30-min Fitness / Cardio Session', category: 'health', streak: 5, completedToday: false },
+      { id: 'h5', title: 'Audit 50/30/20 Budget & Expense Ledger', category: 'finance', streak: 12, completedToday: true }
+    ],
+
+    // ─── National Competitive Exams & Certifications ──────────
+    exams: [
+      { id: 'ex1', name: 'GATE CSE 2027 (IISc/IIT M.Tech & PSU)', targetDate: '2027-02-06', syllabusProgress: 68, targetScore: 'AIR < 100' },
+      { id: 'ex2', name: 'CAT 2026 (IIM Ahmedabad & Bangalore)', targetDate: '2026-11-29', syllabusProgress: 52, targetScore: '99.5+ Percentile' },
+      { id: 'ex3', name: 'AWS Certified Solutions Architect', targetDate: '2026-09-15', syllabusProgress: 85, targetScore: '850 / 1000' }
+    ],
+
+    // ─── Tax Profile & Exemptions (Indian IT Act) ──────────────
+    taxProfile: {
+      annualIncome: 1400000,
+      deductions80C: 150000,
+      healthInsurance80D: 25000,
+      nps80CCD: 50000,
+      standardDeduction: 75000,
+      hraExemption: 120000
+    },
+
+    // ─── Technical & Behavioral Interview Flashcards ──────────
+    interviewQuestions: [
+      { id: 'iq1', category: 'System Design', title: 'Design a Real-Time Distributed Rate Limiter', difficulty: 'Hard', company: 'Google / Stripe', answer: 'Use Token Bucket or Leaky Bucket with Redis clusters. Implement sliding window logs with Lua scripts for atomicity. Handle multi-datacenter clock drift with NTP synchronizers.' },
+      { id: 'iq2', category: 'Data Structures', title: 'LRU Cache Implementation with O(1) Operations', difficulty: 'Medium', company: 'Amazon / Microsoft', answer: 'Use a Doubly Linked List paired with a Hash Map. Map stores Key -> Node reference. Move accessed node to head; evict from tail upon capacity breach.' },
+      { id: 'iq3', category: 'System Design', title: 'Design URL Shortener (TinyURL) at 100M Daily Queries', difficulty: 'Medium', company: 'Meta / Uber', answer: 'Base62 encoding of auto-incrementing IDs or MD5 hash prefixes. Implement Cassandra/DynamoDB for high write throughput with Redis caching for top 20% hot links.' },
+      { id: 'iq4', category: 'Behavioral', title: 'Describe a Time You Resolved a Critical Production Incident', difficulty: 'Senior', company: 'All Tier 1 Tech', answer: 'Use STAR method: Situation (database deadlock during flash sale), Task (restore 99.99% availability), Action (triaged slow queries, introduced read replicas & circuit breakers), Result (zero data loss, latency reduced by 70%).' }
+    ],
+
+    soundEnabled: true,
+    speechVoiceEnabled: false,
     apiSettings: { geminiKey: '' },
     notifications: [],
     theme: 'dark',
@@ -240,11 +279,7 @@ const Store = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: this._state })
-      }).then(res => res.json()).then(data => {
-        if (data.syncedToTiDB && typeof UI !== 'undefined' && UI.toast) {
-          UI.toast('success', '⚡ Saved to TiDB Cloud Database', 'State & form data persisted to TiDB Cloud Serverless MySQL.');
-        }
-      }).catch(() => {});
+      }).then(res => res.json()).catch(() => {});
     } catch (e) {}
   },
   async fetchFromBackend() {
@@ -524,17 +559,18 @@ const Store = {
     return Boolean(this._state.onboardingComplete);
   },
 
-  async login(email, password) {
-    const namePart = email ? email.split('@')[0].replace(/[._]/g, ' ') : 'User';
-    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    this._state.user = { email, name: formattedName };
-    this._state.isAuthenticated = true;
-    if (!this._state.profile.name || this._state.profile.name === 'User') {
-      this._state.profile.name = formattedName;
-    }
-    this._state.profile.email = email;
-    this._notify();
+  hasSeenTour() {
+    return Boolean(this._state.hasSeenTour);
+  },
 
+  markTourCompleted() {
+    this._state.hasSeenTour = true;
+    this._state.isNewUser = false;
+    this._save();
+    this._notify();
+  },
+
+  async login(email, password) {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -544,44 +580,226 @@ const Store = {
       const data = await res.json();
       if (data.success && data.user) {
         this._state.user = data.user;
+        this._state.isAuthenticated = true;
         this._state.profile.name = data.user.name;
+        this._state.profile.email = data.user.email;
+        this._state.onboardingComplete = true;
+        this._save();
         this._notify();
+
+        // 🔔 Dispatch Security Login Email Notification
+        this.notifyLoginSuccess(data.user.email, data.user.name);
+
+        return { success: true, user: data.user };
+      } else {
+        return { success: false, error: data.error || 'Invalid credentials' };
       }
     } catch (e) {
-      console.warn('TiDB Auth Sync fallback to local state:', e.message);
+      console.warn('Login request error:', e.message);
+      return { success: false, error: 'Connection error during login. Please try again.' };
+    }
+  },
+
+  async notifyLoginSuccess(email, name) {
+    try {
+      fetch('/api/auth/login-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name })
+      }).catch(() => {});
+    } catch (e) {}
+  },
+
+  async sendEmailNotification(subject, htmlBody, recipient = null) {
+    try {
+      const email = recipient || this._state.profile.email || this._state.user?.email || 'saladisiddharth@gmail.com';
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: email, subject, body: htmlBody })
+      }).catch(() => {});
+    } catch (e) {}
+  },
+
+  async sendForgotPasswordOtp(email) {
+    try {
+      const res = await fetch('/api/auth/forgot-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async resetPassword(email, otp, newPassword) {
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, newPassword })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
     }
   },
 
   loginWithGoogle() {
-    this._state.user = { email: 'rohan.sharma@bioverse.in', name: 'Rohan Sharma' };
+    this._state.user = { email: 'siddharth@bioverse.ai', name: 'Saladi Siddharth' };
     this._state.isAuthenticated = true;
-    this._state.profile.name = 'Rohan Sharma';
-    this._state.profile.email = 'rohan.sharma@bioverse.in';
+    this._state.profile.name = 'Saladi Siddharth';
+    this._state.profile.email = 'siddharth@bioverse.ai';
+    this._state.onboardingComplete = true;
+    this._save();
     this._notify();
+    this.notifyLoginSuccess('siddharth@bioverse.ai', 'Saladi Siddharth');
+    return { success: true, user: this._state.user };
   },
 
-  async register(name, email, password) {
-    this._state.user = { email, name };
+  async sendRegistrationOtp(email, name = '') {
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async verifyRegistrationOtp(email, otp, name, password, identity = 'student', phone = '') {
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, name, password, identity, phone })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        this._state.user = data.user;
+        this._state.isAuthenticated = true;
+        this._state.identity = data.user.identity || identity || 'student';
+        this._state.profile.name = data.user.name;
+        this._state.profile.email = data.user.email;
+        this._state.profile.phone = phone;
+        this._state.isNewUser = true;
+        this._state.hasSeenTour = false; // Tour runs for first-time users
+        this._state.onboardingComplete = true;
+        this._save();
+        this._notify();
+
+        this.notifyLoginSuccess(data.user.email, data.user.name);
+
+        return { success: true, user: data.user };
+      } else {
+        return { success: false, error: data.error || 'Invalid OTP code' };
+      }
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async register(name, email, password, initialIdentity = 'student', phone = '') {
+    const formattedName = name || (email ? email.split('@')[0] : 'User');
+    this._state.user = { email, name: formattedName, phone };
     this._state.isAuthenticated = true;
-    this._state.profile.name = name;
+    this._state.identity = initialIdentity || 'student';
+    this._state.profile.name = formattedName;
     this._state.profile.email = email;
-    this._state.onboardingComplete = false;
+    this._state.profile.phone = phone;
+    this._state.onboardingComplete = true;
+    this._state.isNewUser = true;
+    this._save();
     this._notify();
 
     try {
       await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name: formattedName, email, password, identity: initialIdentity, phone })
       });
     } catch (e) {
-      console.warn('TiDB Register Sync fallback to local state:', e.message);
+      console.warn('TiDB Register Sync notice:', e.message);
     }
+    return { success: true, user: this._state.user };
+  },
+
+  completeOnboarding(customData = {}) {
+    const identity = this._state.identity || 'student';
+    const name = this._state.profile.name || 'User';
+
+    // Mark as completed for one time only
+    this._state.onboardingComplete = true;
+
+    // Apply any customized profile inputs
+    if (customData && typeof customData === 'object') {
+      Object.assign(this._state.profile, customData);
+    }
+
+    // Synthesize personalized tasks based on user identity
+    if (identity === 'student') {
+      this._state.tasks = [
+        { id: 't-s1', title: 'Explore NIRF Tier-1 Indian Colleges & Admission Cutoffs', domain: 'student', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-08-30' },
+        { id: 't-s2', title: 'Submit National Scholarship Portal (NSP) Application', domain: 'student', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-09-15' },
+        { id: 't-s3', title: 'Apply for PM Internship Scheme / NITI Aayog Policy Track', domain: 'career', quadrant: 'q2', priority: 'high', completed: false, dueDate: '2026-09-01' },
+        { id: 't-s4', title: 'Set up ₹1,000/mo Student Micro-SIP in Nifty 50 Index Fund', domain: 'finance', quadrant: 'q2', priority: 'medium', completed: false, dueDate: '2026-08-25' },
+        { id: 't-s5', title: 'Target 2500ml Daily Hydration & 7.5h Circadian Sleep', domain: 'health', quadrant: 'q2', priority: 'medium', completed: false, dueDate: '2026-08-22' }
+      ];
+      this._state.lifeGoals = [
+        { id: 'lg-s1', category: 'Growth', title: 'Secure SDE Offer from Top Tier-1 Tech Company in India', targetYear: '2026', completed: false, progress: 50 },
+        { id: 'lg-s2', category: 'Purpose', title: 'Complete Govt / AICTE Research Fellowship', targetYear: '2027', completed: false, progress: 20 },
+        { id: 'lg-s3', category: 'Adventure', title: 'Himalayan Solo Expedition & Trek', targetYear: '2027', completed: false, progress: 10 }
+      ];
+    } else if (identity === 'employee') {
+      this._state.tasks = [
+        { id: 't-e1', title: 'Benchmark CTC against Indian IT Tier-1 & Startup Salary Levels', domain: 'career', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-08-30' },
+        { id: 't-e2', title: 'Optimize Section 80C (ELSS, EPF) & Section 80D Tax Shields', domain: 'finance', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-09-10' },
+        { id: 't-e3', title: 'Run 50-Minute Deep Work Sprint on High-Impact Deliverable', domain: 'work', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-08-23' },
+        { id: 't-e4', title: 'Automate ₹25,000 Monthly SIP Compounding Routine', domain: 'finance', quadrant: 'q2', priority: 'high', completed: false, dueDate: '2026-08-28' },
+        { id: 't-e5', title: 'Evening Posture & Mobility Protocol for Screen Workers', domain: 'health', quadrant: 'q2', priority: 'medium', completed: false, dueDate: '2026-08-22' }
+      ];
+      this._state.lifeGoals = [
+        { id: 'lg-e1', category: 'Growth', title: 'Attain Staff SDE / Principal Role with ₹35+ LPA Package', targetYear: '2026', completed: false, progress: 40 },
+        { id: 'lg-e2', category: 'Finance', title: 'Build ₹50 Lakh Liquid Investment Portfolio', targetYear: '2028', completed: false, progress: 25 },
+        { id: 'lg-e3', category: 'Relationships', title: 'Fund Family Real Estate & Annual Retreat', targetYear: '2027', completed: false, progress: 35 }
+      ];
+    } else {
+      this._state.tasks = [
+        { id: 't-b1', title: 'Apply for Startup India DPIIT Recognition & Tax Holidays', domain: 'business', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-08-30' },
+        { id: 't-b2', title: 'Review Institutional Pitch Deck & Cap Table Dilution Model', domain: 'business', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-09-05' },
+        { id: 't-b3', title: 'Analyze Monthly Burn Rate, Unit Economics & Runway', domain: 'finance', quadrant: 'q1', priority: 'high', completed: false, dueDate: '2026-08-28' },
+        { id: 't-b4', title: 'Set Weekly OKRs & Sprint Milestones for Engineering Team', domain: 'work', quadrant: 'q2', priority: 'high', completed: false, dueDate: '2026-08-25' },
+        { id: 't-b5', title: 'Executive Stress Resilience & HRV Recovery Routine', domain: 'health', quadrant: 'q2', priority: 'medium', completed: false, dueDate: '2026-08-22' }
+      ];
+      this._state.lifeGoals = [
+        { id: 'lg-b1', category: 'Growth', title: 'Scale Annual Recurring Revenue (ARR) to ₹1.5 Crore+', targetYear: '2026', completed: false, progress: 35 },
+        { id: 'lg-b2', category: 'Finance', title: 'Close $500k Institutional Pre-Series A Round', targetYear: '2027', completed: false, progress: 20 },
+        { id: 'lg-b3', category: 'Purpose', title: 'Create 25+ High-Impact Tech Jobs in India', targetYear: '2028', completed: false, progress: 15 }
+      ];
+    }
+
+    // Add tailored welcome notification
+    this.addNotification({
+      type: identity,
+      icon: '🎉',
+      title: `Welcome to BioVerse, ${name}!`,
+      text: `Your ${identity.toUpperCase()} intelligence dashboard, customized roadmaps, and AI recommendations are ready.`
+    });
+
+    this.recalculateScores();
+    this._save();
+    this._notify();
   },
 
   logout() {
     this._state.user = null;
     this._state.isAuthenticated = false;
+    this._save();
     this._notify();
   },
 
@@ -718,6 +936,183 @@ const Store = {
       this._save();
       this._notify();
     }
+  },
+
+  // ─── Habit Streaks Management ─────────────────────────────
+  toggleHabit(id) {
+    if (!this._state.habits) this._state.habits = [];
+    const h = this._state.habits.find(x => x.id === id);
+    if (h) {
+      h.completedToday = !h.completedToday;
+      if (h.completedToday) {
+        h.streak = (h.streak || 0) + 1;
+        if (typeof ActionPhysics !== 'undefined') ActionPhysics.playSound('sloth');
+      } else {
+        h.streak = Math.max(0, (h.streak || 1) - 1);
+      }
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
+  },
+
+  addHabit(habit) {
+    if (!this._state.habits) this._state.habits = [];
+    const newH = {
+      id: 'h_' + Date.now(),
+      title: habit.title,
+      category: habit.category || 'growth',
+      streak: 1,
+      completedToday: true
+    };
+    this._state.habits.unshift(newH);
+    this.recalculateScores();
+    this._save();
+    this._notify();
+    return newH;
+  },
+
+  deleteHabit(id) {
+    if (this._state.habits) {
+      this._state.habits = this._state.habits.filter(x => x.id !== id);
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Competitive Exams & Milestones ───────────────────────
+  addExam(exam) {
+    if (!this._state.exams) this._state.exams = [];
+    const newE = {
+      id: 'ex_' + Date.now(),
+      name: exam.name,
+      targetDate: exam.targetDate || '2027-02-01',
+      syllabusProgress: Number(exam.syllabusProgress) || 20,
+      targetScore: exam.targetScore || 'Target Milestone'
+    };
+    this._state.exams.unshift(newE);
+    this._save();
+    this._notify();
+    return newE;
+  },
+
+  updateExamProgress(id, progress) {
+    if (this._state.exams) {
+      const e = this._state.exams.find(x => x.id === id);
+      if (e) {
+        e.syllabusProgress = Math.max(0, Math.min(100, Number(progress)));
+        this._save();
+        this._notify();
+      }
+    }
+  },
+
+  deleteExam(id) {
+    if (this._state.exams) {
+      this._state.exams = this._state.exams.filter(x => x.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Financial Wealth & SIP Compounding Math Engine ───────
+  calculateSIP(monthlyInvestment, annualRatePercent, years) {
+    const P = Number(monthlyInvestment) || 10000;
+    const i = (Number(annualRatePercent) || 13.5) / 100 / 12;
+    const n = (Number(years) || 10) * 12;
+    
+    // Future Value = P * [((1 + i)^n - 1) / i] * (1 + i)
+    const futureValue = Math.round(P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i));
+    const totalInvested = Math.round(P * n);
+    const wealthCreated = futureValue - totalInvested;
+
+    // Generate yearly data series for chart
+    const labels = [];
+    const investedSeries = [];
+    const totalSeries = [];
+
+    for (let yr = 1; yr <= (Number(years) || 10); yr++) {
+      const months = yr * 12;
+      const fv = Math.round(P * ((Math.pow(1 + i, months) - 1) / i) * (1 + i));
+      const inv = P * months;
+      labels.push(`Yr ${yr}`);
+      investedSeries.push(inv);
+      totalSeries.push(fv);
+    }
+
+    return { futureValue, totalInvested, wealthCreated, labels, investedSeries, totalSeries };
+  },
+
+  // ─── Indian Income Tax Calculator (Old vs New Regime) ─────
+  calculateTax(annualIncome = 1400000, profile = null) {
+    const income = Number(annualIncome) || 1400000;
+    const p = profile || this._state.taxProfile || {};
+
+    // 1. NEW TAX REGIME (FY 2024-25 / 2025-26 Slabs)
+    // Standard deduction under new regime: ₹75,000
+    const newTaxable = Math.max(0, income - 75000);
+    let newTax = 0;
+    if (newTaxable <= 300000) newTax = 0;
+    else if (newTaxable <= 700000) newTax = (newTaxable - 300000) * 0.05;
+    else if (newTaxable <= 1000000) newTax = 20000 + (newTaxable - 700000) * 0.10;
+    else if (newTaxable <= 1200000) newTax = 50000 + (newTaxable - 1000000) * 0.15;
+    else if (newTaxable <= 1500000) newTax = 80000 + (newTaxable - 1200000) * 0.20;
+    else newTax = 140000 + (newTaxable - 1500000) * 0.30;
+    // Section 87A rebate for new regime up to ₹7 LPA taxable
+    if (newTaxable <= 700000) newTax = 0;
+    const newCess = newTax * 0.04;
+    const newTotal = Math.round(newTax + newCess);
+
+    // 2. OLD TAX REGIME
+    const stdDed = Number(p.standardDeduction) || 50000;
+    const ded80C = Math.min(150000, Number(p.deductions80C) || 150000);
+    const ded80D = Math.min(25000, Number(p.healthInsurance80D) || 25000);
+    const dedNPS = Math.min(50000, Number(p.nps80CCD) || 50000);
+    const hra = Number(p.hraExemption) || 100000;
+    const totalDeductions = stdDed + ded80C + ded80D + dedNPS + hra;
+    const oldTaxable = Math.max(0, income - totalDeductions);
+
+    let oldTax = 0;
+    if (oldTaxable <= 250000) oldTax = 0;
+    else if (oldTaxable <= 500000) oldTax = (oldTaxable - 250000) * 0.05;
+    else if (oldTaxable <= 1000000) oldTax = 12500 + (oldTaxable - 500000) * 0.20;
+    else oldTax = 112500 + (oldTaxable - 1000000) * 0.30;
+    if (oldTaxable <= 500000) oldTax = 0;
+    const oldCess = oldTax * 0.04;
+    const oldTotal = Math.round(oldTax + oldCess);
+
+    const recommendation = newTotal <= oldTotal ? 'New Tax Regime' : 'Old Tax Regime';
+    const annualSavings = Math.abs(oldTotal - newTotal);
+
+    return {
+      annualIncome: income,
+      newRegime: { taxableIncome: newTaxable, taxLiability: newTotal },
+      oldRegime: { taxableIncome: oldTaxable, totalDeductions, taxLiability: oldTotal },
+      recommendation,
+      annualSavings
+    };
+  },
+
+  // ─── Persona & Audio Toggle Helpers ───────────────────────
+  setIdentity(identity) {
+    this._state.identity = identity;
+    this._save();
+    this._notify();
+  },
+
+  toggleSound() {
+    this._state.soundEnabled = !this._state.soundEnabled;
+    this._save();
+    this._notify();
+    return this._state.soundEnabled;
+  },
+
+  toggleSpeechVoice() {
+    this._state.speechVoiceEnabled = !this._state.speechVoiceEnabled;
+    this._save();
+    this._notify();
+    return this._state.speechVoiceEnabled;
   }
 };
 

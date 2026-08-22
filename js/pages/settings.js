@@ -28,8 +28,8 @@ function SettingsPage() {
               <label style="font-size:12px;color:var(--text-muted);">API Key</label>
               <input type="password" id="gemini-key-input" class="chat-input" value="${apiKey}" placeholder="AIzaSy...">
             </div>
-            <div style="display:flex;gap:10px;">
-              <button type="submit" class="btn btn-primary btn-sm">Save Key</button>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${UI.pillButton({ text: 'Save API Key', icon: '<i class="fas fa-key"></i>', theme: 'cyan', type: 'submit', fullWidth: false })}
               <button type="button" class="btn btn-ghost btn-sm" onclick="toggleKeyVisibility()">Show/Hide</button>
             </div>
           </form>

@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BIOVERSE LUXURY MINIMALIST QUANTUM PILL BUTTON
+   Clean, Elegant, Ultra-Smooth 3D Coil Spring & Specular Glass Reflection
+   ═══════════════════════════════════════════════════════════════════ */
+
+.pill {
+  --btn-x: 0px;
+  --btn-y: 0px;
+  --pill-h: 50px;
+  --coil-color: #00f2fe;
+  --coil-glow: rgba(0, 242, 254, 0.4);
+  --plate-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+  --plate-border: rgba(255, 255, 255, 0.2);
+  --plate-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  height: var(--pill-h);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+  text-decoration: none;
+  outline: none;
+  isolation: isolate;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.pill.pill-full {
+  width: 100%;
+  display: flex;
+}
+
+/* ─── Color Themes ─────────────────────────────────────────────── */
+.pill--cyan {
+  --coil-color: #00f2fe;
+  --coil-glow: rgba(0, 242, 254, 0.45);
+  --plate-border: rgba(0, 242, 254, 0.35);
+}
+
+.pill--emerald {
+  --coil-color: #10b981;
+  --coil-glow: rgba(16, 185, 129, 0.45);
+  --plate-border: rgba(16, 185, 129, 0.35);
+}
+
+.pill--amber {
+  --coil-color: #fbbf24;
+  --coil-glow: rgba(251, 191, 36, 0.45);
+  --plate-border: rgba(251, 191, 36, 0.35);
+}
+
+.pill--purple {
+  --coil-color: #c084fc;
+  --coil-glow: rgba(192, 132, 252, 0.45);
+  --plate-border: rgba(192, 132, 252, 0.35);
+}
+
+/* ─── Main Pill Container (.pill__cta) ─────────────────────────── */
+.pill__cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: #090d16;
+  border: 1.5px solid var(--plate-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  clip-path: inset(0px var(--btn-x, 0px) round 999px);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Subtle Orbiting Laser Aura */
+.pill__cta::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0%, var(--coil-color) 25%, transparent 50%, var(--coil-color) 75%, transparent 100%);
+  opacity: 0.35;
+  filter: blur(6px);
+  transition: opacity 0.35s ease;
+  z-index: 0;
+  animation: pillAuraRotate 5s linear infinite;
+}
+
+@keyframes pillAuraRotate {
+  to { transform: rotate(360deg); }
+}
+
+.pill:hover .pill__cta {
+  border-color: var(--coil-color);
+  box-shadow: 0 12px 36px var(--coil-glow), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.pill:hover .pill__cta::before {
+  opacity: 0.75;
+}
+
+.pill:active .pill__cta {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* ─── 3D Coil Spring SVG Layer (.pill__coil & .coil__line) ─────── */
+.pill__coil {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.coil__line {
+  fill: none;
+  stroke: var(--coil-color);
+  stroke-width: 3.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px var(--coil-color));
+  opacity: 0.85;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.pill:hover .coil__line {
+  opacity: 1;
+  stroke-width: 4.5px;
+}
+
+/* ─── Foreground Liquid Glass Plate (.pill__plate) ─────────────── */
+.pill__plate {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  margin: 4px;
+  border-radius: 999px;
+  background: var(--plate-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+  box-shadow: var(--plate-shadow);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Shimmer Light Glint on Hover */
+.pill__plate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transition: left 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pill:hover .pill__plate::before {
+  left: 120%;
+}
+
+.pill__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14.5px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pill:hover .pill__icon {
+  transform: translateX(4px);
+}
+
+/* ─── Status / Loading / Success (.pill__status) ───────────────── */
+.pill__status {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: scale(0.92);
+}
+
+.pill__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--coil-color);
+  border-radius: 50%;
+  animation: pillSpin 0.75s linear infinite;
+}
+
+@keyframes pillSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── State Transitions (loading / success) ────────────────────── */
+.pill[data-state="loading"] .pill__plate {
+  opacity: 0;
+  transform: scale(0.88);
+}
+
+.pill[data-state="loading"] .pill__status {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pill[data-state="loading"] .coil__line {
+  animation: coilPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes coilPulse {
+  0% { stroke-width: 3px; opacity: 0.6; }
+  100% { stroke-width: 5.5px; opacity: 1; filter: drop-shadow(0 0 12px var(--coil-color)); }
+}
+
+.pill[data-state="success"] .pill__plate {
+  opacity: 0;
+  transform: scale(0.88);
+}
+
+.pill[data-state="success"] .pill__status {
+  opacity: 1;
+  color: #10b981;
+  transform: scale(1);
+}
+
+.pill[data-state="success"] .pill__cta {
+  border-color: #10b981;
+  box-shadow: 0 10px 36px rgba(16, 185, 129, 0.5);
+}
+
+/* ─── Hidden Native Submit Button ──────────────────────────────── */
+.pill button[type="submit"],
+.pill input[type="submit"],
+.pill button[type="button"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}

@@ -17,6 +17,7 @@
   "author": "BioVerse Team",
   "license": "MIT",
   "dependencies": {
+    "docx": "^9.7.1",
     "dotenv": "^17.4.2",
     "mysql2": "^3.23.3"
   }

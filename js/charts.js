@@ -253,5 +253,239 @@ const Charts = {
       ctx.fillStyle = gradient;
       ctx.fill();
     }, 200);
+  },
+
+  // ─── 5-Pillar Life Wheel Radar Chart ─────────────────────
+  radar(canvasId, data, options = {}) {
+    setTimeout(() => {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const size = options.size || Math.min(rect.width, 360);
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width = size + 'px';
+      canvas.style.height = size + 'px';
+      ctx.scale(dpr, dpr);
+
+      const cx = size / 2;
+      const cy = size / 2;
+      const radius = size / 2 - 40;
+      const labels = data.labels || ['Growth', 'Relationships', 'Purpose', 'Adventure', 'Legacy'];
+      const values = data.values || [80, 75, 85, 70, 78];
+      const count = labels.length;
+      const angleStep = (Math.PI * 2) / count;
+
+      // Concentric background polygon levels
+      const levels = 5;
+      for (let level = 1; level <= levels; level++) {
+        const r = (radius / levels) * level;
+        ctx.beginPath();
+        for (let i = 0; i < count; i++) {
+          const a = i * angleStep - Math.PI / 2;
+          const x = cx + r * Math.cos(a);
+          const y = cy + r * Math.sin(a);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Level percentage marker
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
+        ctx.font = '9px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${level * 20}%`, cx, cy - r + 10);
+      }
+
+      // Spoke radial lines
+      for (let i = 0; i < count; i++) {
+        const a = i * angleStep - Math.PI / 2;
+        const x = cx + radius * Math.cos(a);
+        const y = cy + radius * Math.sin(a);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Outer Pillar Labels
+        const labelRadius = radius + 22;
+        const lx = cx + labelRadius * Math.cos(a);
+        const ly = cy + labelRadius * Math.sin(a);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = 'bold 11px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(labels[i], lx, ly);
+
+        // Value text
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '10px Inter';
+        ctx.fillText(`${values[i]}%`, lx, ly + 13);
+      }
+
+      // Data polygon fill
+      ctx.beginPath();
+      for (let i = 0; i < count; i++) {
+        const a = i * angleStep - Math.PI / 2;
+        const valRatio = Math.max(0, Math.min(100, values[i])) / 100;
+        const r = radius * valRatio;
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      const gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
+      gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+      gradient.addColorStop(1, 'rgba(6, 182, 212, 0.25)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.strokeStyle = '#00f2fe';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Vertex highlight dots
+      for (let i = 0; i < count; i++) {
+        const a = i * angleStep - Math.PI / 2;
+        const valRatio = Math.max(0, Math.min(100, values[i])) / 100;
+        const r = radius * valRatio;
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f2fe';
+        ctx.fill();
+        ctx.strokeStyle = '#0a0e1a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }, 200);
+  },
+
+  // ─── SIP Compound Wealth Dual-Area Growth Chart ───────────
+  sipArea(canvasId, sipData, options = {}) {
+    setTimeout(() => {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const h = options.height || 220;
+      const w = rect.width;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.scale(dpr, dpr);
+
+      const pad = { top: 25, right: 20, bottom: 30, left: 65 };
+      const cw = w - pad.left - pad.right;
+      const ch = h - pad.top - pad.bottom;
+
+      const labels = sipData.labels || [];
+      const invested = sipData.investedSeries || [];
+      const futureVal = sipData.totalSeries || [];
+
+      if (!labels.length) return;
+
+      const maxVal = Math.max(...futureVal) * 1.12 || 100000;
+
+      // Horizontal grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + (ch / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right, y);
+        ctx.stroke();
+
+        const val = maxVal - (maxVal / 4) * i;
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px Inter';
+        ctx.textAlign = 'right';
+        ctx.fillText(`₹${(val / 100000).toFixed(1)}L`, pad.left - 8, y + 3);
+      }
+
+      // X-Axis Labels
+      labels.forEach((label, i) => {
+        if (i % Math.ceil(labels.length / 6) === 0 || i === labels.length - 1) {
+          const x = pad.left + (cw / (labels.length - 1)) * i;
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText(label, x, h - 8);
+        }
+      });
+
+      // 1. Shaded Future Value Area (Wealth Growth - Emerald)
+      const gradFV = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+      gradFV.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
+      gradFV.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+
+      ctx.beginPath();
+      ctx.moveTo(pad.left, h - pad.bottom);
+      futureVal.forEach((v, i) => {
+        const x = pad.left + (cw / (labels.length - 1)) * i;
+        const y = pad.top + ch - (v / maxVal) * ch;
+        ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad.left + cw, h - pad.bottom);
+      ctx.closePath();
+      ctx.fillStyle = gradFV;
+      ctx.fill();
+
+      // Future Value Line
+      ctx.beginPath();
+      futureVal.forEach((v, i) => {
+        const x = pad.left + (cw / (labels.length - 1)) * i;
+        const y = pad.top + ch - (v / maxVal) * ch;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 2. Shaded Invested Capital Area (Purple/Indigo)
+      const gradInv = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+      gradInv.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+      gradInv.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
+
+      ctx.beginPath();
+      ctx.moveTo(pad.left, h - pad.bottom);
+      invested.forEach((v, i) => {
+        const x = pad.left + (cw / (labels.length - 1)) * i;
+        const y = pad.top + ch - (v / maxVal) * ch;
+        ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad.left + cw, h - pad.bottom);
+      ctx.closePath();
+      ctx.fillStyle = gradInv;
+      ctx.fill();
+
+      // Invested Line
+      ctx.beginPath();
+      invested.forEach((v, i) => {
+        const x = pad.left + (cw / (labels.length - 1)) * i;
+        const y = pad.top + ch - (v / maxVal) * ch;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#6366f1';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }, 200);
   }
 };

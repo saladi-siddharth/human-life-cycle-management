@@ -1,66 +1,85 @@
 /* ═══════════════════════════════════════════════════════════════════
-   LIFE SUCCESS PAGE — Life Wheel, Goal Matrix & Functional Life Goal Creation
+   LIFE SUCCESS PAGE — 5-Pillar Balance, Goals & Daily Motivation
    ═══════════════════════════════════════════════════════════════════ */
 
 function LifePage() {
-  const goals = Store.get('lifeGoals') || [];
+  const goals = Store.get('lifeGoals') || [
+    { id: 'g-1', title: 'Achieve ₹50L Investment Corpus via Micro-SIPs', category: 'Purpose', targetYear: 2026, progress: 65, completed: false },
+    { id: 'g-2', title: 'Mentor 100 Engineering Students in Full-Stack AI', category: 'Legacy', targetYear: 2027, progress: 40, completed: false },
+    { id: 'g-3', title: 'Complete High-Altitude Himalayan Trek (Kedarkantha)', category: 'Adventure', targetYear: 2026, progress: 80, completed: true }
+  ];
   const scores = Store.get('scores') || {};
-
   const completedCount = goals.filter(g => g.completed).length;
 
   const content = `
     <div class="life-page">
       ${UI.sectionHeader(
         '🌟 Life Success & Purpose Matrix',
-        'Balance your life wheel across Relationships, Growth, Purpose, Adventure, and Legacy.',
+        'Balance your life wheel across Relationships, Growth, Purpose, Adventure, and Legacy with daily motivational guidance.',
         `<button class="btn btn-primary btn-sm" onclick="openLifeGoalModal()"><i class="fas fa-plus"></i> Add New Life Goal</button>`
       )}
+
+      <!-- Daily Motivation Banner -->
+      <div class="card card-glass" style="margin-bottom:var(--space-xl);padding:22px;background:linear-gradient(135deg, rgba(168,85,247,0.15), rgba(6,182,212,0.15));border:1px solid rgba(168,85,247,0.3);">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="font-size:36px;">✨</div>
+          <div>
+            <h3 style="margin:0;font-size:18px;color:#fff;">Daily Life Vision Motivation</h3>
+            <p style="margin:4px 0 0 0;font-size:13px;color:#cbd5e1;line-height:1.5;">
+              <em>"Consistency in small daily habits outperforms sudden bursts of intensity. Your health, skills, and savings compound in silence."</em>
+            </p>
+          </div>
+        </div>
+      </div>
 
       <!-- Hero Score & Life Wheel Balance -->
       <div class="card card-glass" style="margin-bottom:var(--space-xl);padding:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
         <div style="display:flex;align-items:center;gap:20px;">
           <div style="font-size:42px;background:rgba(168,85,247,0.15);width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;">🌟</div>
           <div>
-            <h2 style="margin:0;font-size:24px;">Life Success Score: <span style="color:var(--purple);">${scores.success || 77}/100</span></h2>
+            <h2 style="margin:0;font-size:24px;">Life Success Score: <span style="color:var(--purple);">${scores.success || 82}/100</span></h2>
             <p style="margin:4px 0 0 0;color:var(--text-secondary);font-size:var(--text-sm);">
-              ${completedCount} of ${goals.length} lifetime milestones achieved.
+              ${completedCount} of ${goals.length} lifetime milestones achieved • Dynamic 5-Pillar Equilibrium
             </p>
           </div>
         </div>
         <button class="btn btn-primary" onclick="openLifeGoalModal()"><i class="fas fa-bullseye"></i> Add Life Goal</button>
       </div>
 
-      <!-- Life Wheel 5 Pillars Grid -->
-      <h3 style="margin:0 0 16px 0;">5 Core Pillars of Life Balance</h3>
-      <div class="grid grid-5" style="gap:14px;margin-bottom:var(--space-xl);">
-        <div class="card card-glass" style="text-align:center;padding:16px;">
-          <div style="font-size:24px;margin-bottom:6px;">🌱</div>
-          <div style="font-weight:700;font-size:var(--text-sm);">Growth</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Continuous Learning</div>
+      <!-- Life Wheel 5 Pillars Radar Chart & Balance Matrix Grid -->
+      <div class="grid grid-2" id="life-radar-section" style="gap:24px;margin-bottom:var(--space-xl);">
+        
+        <!-- Radar Visualizer -->
+        <div class="card card-glass" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+          <h3 style="margin:0 0 16px 0;width:100%;display:flex;align-items:center;justify-content:space-between;">
+            <span><i class="fas fa-dharmachakra" style="color:var(--purple);"></i> 5-Pillar Life Wheel Radar</span>
+            <span class="badge badge-purple">Harmony: 84%</span>
+          </h3>
+          <div class="chart-canvas-wrap" style="width:100%;max-width:320px;height:240px;">
+            <canvas id="life-radar-chart"></canvas>
+          </div>
         </div>
 
-        <div class="card card-glass" style="text-align:center;padding:16px;">
-          <div style="font-size:24px;margin-bottom:6px;">❤️</div>
-          <div style="font-weight:700;font-size:var(--text-sm);">Relationships</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Family & Bonds</div>
-        </div>
-
-        <div class="card card-glass" style="text-align:center;padding:16px;">
-          <div style="font-size:24px;margin-bottom:6px;">🎯</div>
-          <div style="font-weight:700;font-size:var(--text-sm);">Purpose</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Meaningful Impact</div>
-        </div>
-
-        <div class="card card-glass" style="text-align:center;padding:16px;">
-          <div style="font-size:24px;margin-bottom:6px;">🧭</div>
-          <div style="font-weight:700;font-size:var(--text-sm);">Adventure</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Travel & Exploration</div>
-        </div>
-
-        <div class="card card-glass" style="text-align:center;padding:16px;">
-          <div style="font-size:24px;margin-bottom:6px;">🏛️</div>
-          <div style="font-weight:700;font-size:var(--text-sm);">Legacy</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Mentorship & Giving</div>
+        <!-- 5 Core Pillar Cards -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${[
+            { icon: '🌱', name: 'Growth & Mastery', score: scores.career || 85, desc: 'Technical depth, system design, and continuous learning.' },
+            { icon: '❤️', name: 'Relationships & Family', score: 80, desc: 'Quality time with loved ones and meaningful friendships.' },
+            { icon: '🎯', name: 'Purpose & Mission', score: 90, desc: 'Building high-impact software products & mentorship.' },
+            { icon: '🧭', name: 'Adventure & Exploration', score: 72, desc: 'Travel, nature treks, and trying new experiences.' },
+            { icon: '🏛️', name: 'Legacy & Giving', score: 82, desc: 'Open-source contributions and community scholarship.' }
+          ].map(p => `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(15,23,42,0.85);border-radius:12px;border:1px solid var(--glass-border);">
+              <span style="font-size:22px;">${p.icon}</span>
+              <div style="flex:1;">
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;color:#fff;">
+                  <span>${p.name}</span>
+                  <span style="color:var(--purple);">${p.score}%</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);">${p.desc}</div>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
 
@@ -82,8 +101,8 @@ function LifePage() {
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:10px;">
-                <span class="badge ${g.completed ? 'badge-success' : 'badge-primary'}">${g.completed ? 'Achieved 🎉' : `${g.progress}% Done`}</span>
-                <button class="btn-delete-epic btn-delete-sm" onclick="deleteGoalItem('${g.id}', this.closest('#goal-row-${g.id}'))" data-tooltip="Crumple & Toss Goal">
+                <span class="badge ${g.completed ? 'badge-success' : 'badge-primary'}">${g.completed ? 'Achieved 🎉' : `${g.progress || 50}% Done`}</span>
+                <button class="btn-delete-epic btn-delete-sm" onclick="deleteGoalItem('${g.id}', this.closest('#goal-row-${g.id}'))" data-tooltip="Delete Goal">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
@@ -94,23 +113,33 @@ function LifePage() {
     </div>
   `;
 
+  setTimeout(() => {
+    if (typeof Charts !== 'undefined') {
+      Charts.radar('life-radar-chart', {
+        labels: ['Growth', 'Relationships', 'Purpose', 'Adventure', 'Legacy'],
+        values: [scores.career || 85, 80, 90, 72, 82]
+      }, { height: 240 });
+    }
+  }, 200);
+
   return UI.dashboardLayout('/dashboard/life', content);
 }
 
-// ─── Life Goals Interactive Handlers ───────────────────────
 function toggleGoalDone(id) {
   Store.toggleLifeGoal(id);
   Router.render();
 }
+window.toggleGoalDone = toggleGoalDone;
 
 function deleteGoalItem(id, element) {
   const el = element || document.getElementById(`goal-row-${id}`);
   DeleteEngine.tossAndDelete(el, () => {
     Store.deleteLifeGoal(id);
-    UI.toast('info', 'Goal Tossed', 'Goal milestone crumpled and tossed to trash bin.');
+    UI.toast('info', 'Goal Removed', 'Milestone removed from your life list.');
     Router.render();
   });
 }
+window.deleteGoalItem = deleteGoalItem;
 
 function openLifeGoalModal() {
   const html = `
@@ -124,45 +153,34 @@ function openLifeGoalModal() {
         <div>
           <label style="font-size:12px;color:var(--text-muted);">Life Pillar Category</label>
           <select id="g-cat" class="chat-input">
-            <option value="Growth">Growth & Learning</option>
-            <option value="Relationships">Relationships & Family</option>
-            <option value="Purpose">Purpose & Career</option>
-            <option value="Adventure">Adventure & Travel</option>
-            <option value="Legacy">Legacy & Giving</option>
+            <option value="Growth">🌱 Growth & Learning</option>
+            <option value="Relationships">❤️ Relationships & Family</option>
+            <option value="Purpose" selected>🎯 Purpose & Mission</option>
+            <option value="Adventure">🧭 Adventure & Exploration</option>
+            <option value="Legacy">🏛️ Legacy & Giving</option>
           </select>
         </div>
         <div>
           <label style="font-size:12px;color:var(--text-muted);">Target Year</label>
-          <input type="number" id="g-year" class="chat-input" value="2026" required>
+          <input type="number" id="g-year" class="chat-input" value="2027" required>
         </div>
       </div>
-      <div>
-        <label style="font-size:12px;color:var(--text-muted);">Current Progress (%)</label>
-        <input type="range" min="0" max="100" step="5" value="20" class="slider" id="g-prog" oninput="document.getElementById('prog-val').textContent = this.value + '%'">
-        <span id="prog-val" style="font-size:12px;font-weight:700;color:var(--purple);display:block;text-align:right;">20%</span>
-      </div>
-      <button type="submit" class="btn btn-primary">Save Life Goal</button>
+      ${UI.pillButton({ text: 'Set Life Milestone', icon: '<i class="fas fa-star"></i>', theme: 'purple', type: 'submit' })}
     </form>
   `;
   UI.modal(html);
 }
+window.openLifeGoalModal = openLifeGoalModal;
 
 function saveLifeGoalForm(e) {
   e.preventDefault();
-  const title = document.getElementById('g-title').value;
-  const category = document.getElementById('g-cat').value;
-  const targetYear = document.getElementById('g-year').value;
-  const progress = document.getElementById('g-prog').value;
+  const title = document.getElementById('g-title')?.value;
+  const category = document.getElementById('g-cat')?.value;
+  const targetYear = document.getElementById('g-year')?.value;
 
-  Store.addLifeGoal({ title, category, targetYear, progress });
+  Store.addLifeGoal({ title, category, targetYear, progress: 10, completed: false });
   UI.closeModal();
-  ActionPhysics.slothCelebration(title);
-  UI.toast('success', 'Life Goal Added! 🦥🎉', `Saved "${title}" under ${category}. Cute sloth celebrated!`);
+  UI.toast('success', 'Life Goal Milestone Set 🌟', `Added "${title}" to your Life Success Matrix!`);
   Router.render();
 }
-
-window.openLifeGoalModal = openLifeGoalModal;
 window.saveLifeGoalForm = saveLifeGoalForm;
-window.toggleGoalDone = toggleGoalDone;
-window.deleteGoalItem = deleteGoalItem;
-

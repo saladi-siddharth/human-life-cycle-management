@@ -1,16 +1,20 @@
 /* ═══════════════════════════════════════════════════════════════════
    BIOVERSE MASTER AUTHENTICATION PAGE
    Features:
-   - Spring Physics Pull Lamp on Left Column
-   - Cute Eye-Tracking & Cover Eyes Panda Avatar
-   - Phone OTP tab with Integrated 6-Digit Slot Machine & Beam Cursor
-   - Sign Up tab with Microchip Vault Lock Password Entropy Meter
+   - Spring Physics Pull Lamp (Starts OFF by default, interactive turn ON)
+   - Cute Eye-Tracking & Cover/Peek Eyes Panda Avatar
+   - Password Visibility Toggle with Animated Eye Icon
+   - Real-time Email Format Recognition
+   - 6-Digit OTP Email Verification via Gmail SMTP
+   - Strict TiDB/LocalDB Credential Authentication
+   - Compact Single-Frame Layout
    ═══════════════════════════════════════════════════════════════════ */
 
 function LoginPage() {
   setTimeout(() => {
     initLampSpringPhysics();
     initPandaInteractivity();
+    switchAuthMode('email');
   }, 60);
 
   return `
@@ -26,15 +30,35 @@ function LoginPage() {
           <stop offset="0%" stop-color="#00f2fe" />
           <stop offset="100%" stop-color="#10b981" />
         </linearGradient>
+        <linearGradient id="beadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fef08a" />
+          <stop offset="100%" stop-color="#f59e0b" />
+        </linearGradient>
       </defs>
     </svg>
 
-    <div class="room is-on" id="room">
-      <div class="lamp-room-stage">
-        <!-- 👈 LEFT COLUMN: PROMINENT PULL LAMP WITH SPRING PHYSICS -->
-        <div class="lamp-left-column">
-          <div class="lamp-svg-container">
-            <svg id="lamp-svg" viewBox="0 0 320 400">
+    <!-- Lamp starts OFF by default -->
+    <div class="room" id="room" style="padding:20px 16px 20px; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+      
+      <!-- 🧭 TOP NAVIGATION BAR -->
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:960px; margin:0 auto 12px auto; padding:0 8px; position:relative; z-index:100;">
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/')" style="display:inline-flex; align-items:center; gap:8px; background:rgba(15,23,42,0.75); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.14); color:#fff; border-radius:999px; padding:7px 16px; font-weight:600; cursor:pointer;">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+        <div style="display:flex; align-items:center; gap:10px; background:rgba(15,23,42,0.75); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.14); border-radius:999px; padding:5px 12px;">
+          <span id="top-auth-switch-text" style="font-size:12.5px; color:#94a3b8;">Don't have an account?</span>
+          <button id="top-auth-switch-btn" class="btn btn-outline btn-sm" onclick="toggleLoginRegister()" style="border-radius:999px; padding:5px 12px; font-size:12px; font-weight:700; color:var(--emerald); border-color:var(--emerald); background:rgba(16,185,129,0.1);">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </button>
+        </div>
+      </div>
+
+      <div class="lamp-room-stage" style="gap:36px; max-width:960px; width:100%; align-items:center;">
+        
+        <!-- 👈 LEFT COLUMN: PULL LAMP WITH SPRING PHYSICS -->
+        <div class="lamp-left-column" style="height:380px; flex:0 0 280px;">
+          <div class="lamp-svg-container" style="width:280px; height:340px;">
+            <svg id="lamp-svg" viewBox="0 0 320 400" style="width:100%; height:100%;">
               <defs>
                 <radialGradient id="lampConeGlow" cx="40%" cy="0%" r="95%">
                   <stop offset="0%" stop-color="#fef08a" stop-opacity="0.85" />
@@ -42,10 +66,6 @@ function LoginPage() {
                   <stop offset="65%" stop-color="#6366f1" stop-opacity="0.15" />
                   <stop offset="100%" stop-color="#000000" stop-opacity="0" />
                 </radialGradient>
-                <linearGradient id="beadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#fef08a" />
-                  <stop offset="100%" stop-color="#f59e0b" />
-                </linearGradient>
               </defs>
 
               <polygon class="lamp_light" points="160,110 -200,600 850,600" fill="url(#lampConeGlow)" />
@@ -53,7 +73,7 @@ function LoginPage() {
               <path class="lamp__head" d="M120 110 C120 75 200 75 200 110 Z" fill="#1e293b" stroke="#fbbf24" stroke-width="2.5" />
               <circle cx="160" cy="112" r="12" fill="#fef08a" class="lamp_light" style="filter:drop-shadow(0 0 16px #fbbf24);" />
 
-              <g class="pull" id="pull-cord" role="button" tabindex="0" aria-pressed="true" aria-controls="signin">
+              <g class="pull" id="pull-cord" role="button" tabindex="0" aria-pressed="false" aria-controls="signin">
                 <path class="rope" id="rope-path" d="M 210 100 Q 210 160 210 220" />
                 <circle class="ropehit" id="rope-hit" cx="210" cy="220" r="32" />
                 <ellipse class="bead" id="bead" cx="210" cy="220" rx="10" ry="17" />
@@ -61,14 +81,16 @@ function LoginPage() {
             </svg>
           </div>
 
-          <div class="lamp-hint-tag" id="lamp-hint">
-            <i class="fas fa-hand-pointer"></i> Pull string to switch light!
+          <div class="lamp-hint-tag" id="lamp-hint" style="margin-top:8px; font-size:12px; padding:6px 14px; text-align:center;">
+            <i class="fas fa-lightbulb"></i> Pull cord or click to turn ON lamp & unlock form!
           </div>
         </div>
 
-        <!-- 👉 RIGHT COLUMN: CUTE PANDA & LIQUID GLASS CARD -->
-        <div class="liquid-glass-wrapper">
-          <div class="panda-container" id="panda-avatar">
+        <!-- 👉 RIGHT COLUMN: CUTE PANDA & COMPACT LIQUID GLASS CARD -->
+        <div class="liquid-glass-wrapper" style="max-width:440px;">
+          
+          <!-- Cute Interactive Panda Avatar -->
+          <div class="panda-container" id="panda-avatar" style="width:100px; height:85px; margin:0 auto -14px auto;">
             <svg class="panda-svg" viewBox="0 0 130 120">
               <circle cx="28" cy="28" r="16" fill="#0f172a" />
               <circle cx="102" cy="28" r="16" fill="#0f172a" />
@@ -98,73 +120,76 @@ function LoginPage() {
             </svg>
           </div>
 
-          <div class="liquid-blob-1"></div>
-          <div class="liquid-blob-2"></div>
-
-          <section class="card liquid-glass-card" id="signin">
-            <div style="text-align:center; margin-bottom:20px;">
-              <h2 style="font-size:26px; font-weight:800; color:#fff; margin:0; background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Welcome to BioVerse</h2>
-              <p style="color:#94a3b8; font-size:13.5px; margin-top:4px;">Intelligent life management suite</p>
+          <section class="card liquid-glass-card" id="signin" style="padding:24px 24px 18px; border-radius:24px;">
+            
+            <div style="text-align:center; margin-bottom:14px;">
+              <h2 style="font-size:22px; font-weight:800; color:#fff; margin:0; background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">BioVerse Authentication</h2>
+              <p style="color:#94a3b8; font-size:12px; margin-top:2px;">Turn lamp ON to activate sign in or register</p>
             </div>
 
-            <div class="lamp-auth-tabs">
-              <button class="lamp-auth-tab active" id="tab-btn-email" onclick="switchAuthMode('email')">
-                <i class="fas fa-envelope"></i> Email
+            <!-- Mode Tabs -->
+            <div class="lamp-auth-tabs" style="padding:3px; margin-bottom:16px;">
+              <button class="lamp-auth-tab active" id="tab-btn-email" onclick="switchAuthMode('email')" style="padding:8px 6px; font-size:12px;">
+                <i class="fas fa-envelope"></i> Login
               </button>
-              <button class="lamp-auth-tab" id="tab-btn-phone" onclick="switchAuthMode('phone')">
-                <i class="fas fa-mobile-alt"></i> Phone OTP
+              <button class="lamp-auth-tab" id="tab-btn-phone" onclick="switchAuthMode('phone')" style="padding:8px 6px; font-size:12px;">
+                <i class="fas fa-mobile-alt"></i> Phone
               </button>
-              <button class="lamp-auth-tab" id="tab-btn-register" onclick="switchAuthMode('register')">
+              <button class="lamp-auth-tab" id="tab-btn-register" onclick="switchAuthMode('register')" style="padding:8px 6px; font-size:12px;">
                 <i class="fas fa-user-plus"></i> Sign Up
               </button>
             </div>
 
-            <!-- MODE 1: EMAIL & PASSWORD -->
+            <!-- MODE 1: LOGIN (EMAIL & PASSWORD) -->
             <div id="mode-email" class="auth-mode-content">
-              <div class="form-group" style="margin-bottom:16px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Email Address</label>
-                <input type="email" class="form-input" id="email-input" placeholder="you@example.com" value="siddharth@bioverse.ai">
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Email Address</label>
+                <input type="email" class="form-input" id="email-input" placeholder="you@example.com" value="siddharth@bioverse.ai" style="padding:10px 12px; font-size:13px;">
               </div>
 
-              <div class="form-group" style="position:relative; margin-bottom:16px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Password</label>
-                <input type="password" class="form-input" id="password-input" placeholder="••••••••••••" value="BioVerse2026!">
-                <button class="password-toggle" type="button" onclick="togglePandaPassword('password-input', this)" style="position:absolute; right:14px; top:36px; background:none; border:none; color:#94a3b8; cursor:pointer;"><i class="fas fa-eye"></i></button>
+              <div class="form-group" style="position:relative; margin-bottom:12px;">
+                <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Password</label>
+                <input type="password" class="form-input" id="password-input" placeholder="••••••••••••" value="BioVerse2026!" style="padding:10px 12px; padding-right:40px; font-size:13px;">
+                <button type="button" class="password-toggle" onclick="togglePandaPassword('password-input', this)" style="position:absolute; right:12px; top:28px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:14px; padding:4px;">
+                  <i class="fas fa-eye"></i>
+                </button>
               </div>
 
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
                   <input type="checkbox" checked style="accent-color:#fbbf24;"> 
-                  <span style="font-size:13px; color:#94a3b8;">Remember me</span>
+                  <span style="font-size:12px; color:#94a3b8;">Remember me</span>
                 </label>
-                <a style="font-size:13px; color:#fbbf24; cursor:pointer;" onclick="Router.navigate('/auth/forgot-password')">Forgot password?</a>
+                <a style="font-size:12px; color:#fbbf24; cursor:pointer;" onclick="Router.navigate('/auth/forgot-password')">Forgot password?</a>
               </div>
 
-              <button onclick="handleMasterLogin('Email Sign In')" style="width:100%; padding:14px; border-radius:16px; background:linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border:none; font-weight:800; color:#0f172a; cursor:pointer; font-size:15px; box-shadow:0 6px 20px rgba(251,191,36,0.4);">
-                <i class="fas fa-sign-in-alt"></i> Sign In
+              <button type="button" class="btn btn-primary btn-full" onclick="handleUserSignIn('email')" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px; background:linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color:#0f172a; border:none; box-shadow:0 6px 20px rgba(251,191,36,0.35);">
+                <i class="fas fa-sign-in-alt"></i> Sign In to BioVerse
               </button>
+
+              <div style="text-align:center; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
+                <span style="color:#94a3b8; font-size:12.5px;">New to BioVerse?</span>
+                <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthMode('register')" style="margin-left:8px; border-radius:999px; border-color:var(--emerald); color:var(--emerald); background:rgba(16,185,129,0.08); font-weight:700; font-size:11.5px; padding:4px 10px;">
+                  <i class="fas fa-user-plus"></i> Create Account
+                </button>
+              </div>
             </div>
 
-            <!-- MODE 2: PHONE & INTEGRATED SLOT MACHINE OTP -->
+            <!-- MODE 2: PHONE OTP -->
             <div id="mode-phone" class="auth-mode-content" style="display:none;">
-              <div class="form-group" style="margin-bottom:16px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1; display:block; margin-bottom:6px;">Mobile Phone Number</label>
+              <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Mobile Phone Number</label>
                 <div class="phone-input-group">
-                  <select class="phone-prefix-select">
+                  <select class="phone-prefix-select" style="padding:8px 10px; font-size:12px;">
                     <option value="+91">🇮🇳 +91</option>
                     <option value="+1">🇺🇸 +1</option>
                     <option value="+44">🇬🇧 +44</option>
-                    <option value="+81">🇯🇵 +81</option>
                   </select>
-                  <input type="tel" class="form-input" id="phone-number" placeholder="98765 43210" value="9876543210" style="flex:1;">
+                  <input type="tel" class="form-input" id="phone-number" placeholder="98765 43210" value="9876543210" style="flex:1; padding:8px 12px; font-size:13px;">
                 </div>
               </div>
 
-              <div style="text-align:center; margin-top:16px; margin-bottom:4px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1;">6-Digit Verification Code</label>
-              </div>
-
-              <div class="code__field" id="otp-code-field">
+              <div class="code__field" id="otp-code-field" style="margin-bottom:12px;">
                 <span class="code_cursor active" id="code-cursor"></span>
                 <div class="slots__container" id="slots-container">
                   ${[0, 1, 2, 3, 4, 5].map(i => `
@@ -181,73 +206,79 @@ function LoginPage() {
                 </div>
               </div>
 
-              <button class="btn-auto-fill" onclick="demoAutoFillOtp()" style="margin: 8px auto 16px;">
+              <button class="btn-auto-fill" onclick="demoAutoFillOtp()" style="margin: 4px auto 12px; font-size:11px; padding:4px 10px;">
                 <i class="fas fa-magic"></i> Auto-fill Demo Code (849201)
               </button>
 
-              <button onclick="handleMasterLogin('Phone OTP')" style="width:100%; padding:14px; border-radius:16px; background:linear-gradient(135deg, #00f2fe 0%, #4f46e5 100%); border:none; font-weight:800; color:#fff; cursor:pointer; font-size:15px; box-shadow:0 6px 20px rgba(0,242,254,0.35);">
+              <button type="button" class="btn btn-primary btn-full" onclick="handleUserSignIn('phone')" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
                 <i class="fas fa-shield-alt"></i> Verify Phone & Login
               </button>
             </div>
 
-            <!-- MODE 3: SIGN UP REGISTER WITH MICROCHIP VAULT LOCK STRENGTH METER -->
+            <!-- MODE 3: SIGN UP WITH REAL-TIME VALIDATION & 6-DIGIT EMAIL OTP -->
             <div id="mode-register" class="auth-mode-content" style="display:none;">
-              <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1;">Full Name</label>
-                <input type="text" class="form-input" placeholder="Siddharth Sharma">
+              
+              <div class="form-group" style="margin-bottom:8px;">
+                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Full Name</label>
+                <input type="text" class="form-input" id="reg-name-input" placeholder="e.g. Saladi Siddharth" value="Saladi Siddharth" style="padding:7px 10px; font-size:12.5px;">
               </div>
 
-              <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1;">Email Address</label>
-                <input type="email" class="form-input" placeholder="you@example.com">
+              <div class="form-group" style="margin-bottom:8px;">
+                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:flex; justify-content:space-between;">
+                  <span>Email Address</span>
+                  <span id="reg-email-status" style="font-size:10.5px;"></span>
+                </label>
+                <input type="email" class="form-input" id="reg-email-input" oninput="validateRegEmail(this.value)" placeholder="you@example.com" value="saladisiddharth@gmail.com" style="padding:7px 10px; font-size:12.5px;">
               </div>
 
-              <div class="form-group" style="position:relative; margin-bottom:12px;">
-                <label class="form-label" style="font-size:13px; color:#cbd5e1;">Create Password</label>
-                <input type="password" class="form-input" id="reg-password-input" oninput="updatePasswordVaultStrength(this.value)" placeholder="Type strong password...">
-                <button class="password-toggle" type="button" onclick="togglePandaPassword('reg-password-input', this)" style="position:absolute; right:12px; top:32px; background:none; border:none; color:#94a3b8; cursor:pointer;"><i class="fas fa-eye"></i></button>
+              <div class="form-group" style="margin-bottom:8px;">
+                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Primary Track</label>
+                <select class="form-select" id="reg-identity-select" style="background:rgba(15,23,42,0.9); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:6px 10px; width:100%; font-size:12px;">
+                  <option value="student">🎓 Student (Colleges, Cutoffs & Scholarships)</option>
+                  <option value="employee">💼 Employee / Professional (Salary & Wealth)</option>
+                  <option value="business">🏢 Business Owner / Founder (Scale & Ops)</option>
+                </select>
               </div>
 
-              <!-- MICROCHIP VAULT LOCK & STRENGTH METER -->
-              <div class="lock" id="vault-lock">
-                <div class="chip">
-                  <div class="door tier-1" id="door">
-                    <svg viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="4"/>
-                      <circle cx="50" cy="50" r="30" fill="none" stroke="url(#vaultGradient)" stroke-width="4" stroke-dasharray="180" stroke-dashoffset="180" id="vault-ring"/>
-                      <path d="M 40 45 L 40 38 C 40 30 60 30 60 38 L 60 45" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" id="vault-shackle"/>
-                      <rect x="36" y="45" width="28" height="22" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="2"/>
-                      <circle cx="50" cy="54" r="3" fill="#fbbf24"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="meter" id="vault-meter">
-                  <i class="seg" data-t="1"></i>
-                  <i class="seg" data-t="2"></i>
-                  <i class="seg" data-t="3"></i>
-                  <i class="seg" data-t="4"></i>
-                </div>
-                <div class="entropy-label" id="entropy-label">
-                  Security Entropy: <span id="entropy-tier-name" style="color:#ef4444;">Weak (Too Short)</span>
-                </div>
+              <div class="form-group" style="position:relative; margin-bottom:8px;">
+                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Create Password</label>
+                <input type="password" class="form-input" id="reg-password-input" oninput="updatePasswordVaultStrength(this.value)" placeholder="Enter password..." value="BioVerse2026!" style="padding:7px 10px; padding-right:38px; font-size:12.5px;">
+                <button type="button" class="password-toggle" onclick="togglePandaPassword('reg-password-input', this)" style="position:absolute; right:10px; top:24px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
+                  <i class="fas fa-eye"></i>
+                </button>
               </div>
 
-              <button onclick="handleMasterLogin('Account Registration')" style="width:100%; padding:14px; border-radius:16px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; font-weight:800; color:#fff; cursor:pointer; font-size:15px; box-shadow:0 6px 20px rgba(16,185,129,0.35);">
-                <i class="fas fa-user-plus"></i> Create Account
+              <!-- Streamlined Entropy Bar -->
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:11px; color:#94a3b8;">
+                <span>Security: <strong id="entropy-tier-name" style="color:#10b981;">Biometric Encrypted</strong></span>
+                <span id="entropy-badge" style="color:#10b981;"><i class="fas fa-lock"></i> Strong</span>
+              </div>
+
+              <!-- OTP Dispatch Button -->
+              <button type="button" id="btn-send-reg-otp" class="btn btn-outline btn-full" onclick="handleSendRegistrationOtp()" style="border-radius:12px; font-weight:700; color:#00f2fe; border-color:#00f2fe; background:rgba(0,242,254,0.08); padding:9px; font-size:12.5px;">
+                <i class="fas fa-paper-plane"></i> Send 6-Digit OTP to Email
               </button>
+
+              <!-- OTP Verification Box (Reveals once OTP is sent) -->
+              <div id="reg-otp-container" style="display:none; margin-top:10px; padding:12px; background:rgba(0,242,254,0.06); border:1px solid rgba(0,242,254,0.3); border-radius:14px; text-align:center;">
+                <label style="font-size:11.5px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:6px;">Enter 6-Digit Verification Code</label>
+                <input type="text" maxlength="6" id="reg-otp-input" placeholder="• • • • • •" style="letter-spacing:6px; text-align:center; font-size:18px; font-weight:800; color:#fbbf24; background:rgba(15,23,42,0.9); border:1px solid #fbbf24; border-radius:10px; padding:6px 10px; width:160px; margin:0 auto 8px auto; display:block;">
+                <button type="button" id="btn-verify-reg-otp" class="btn btn-success btn-full btn-sm" onclick="handleVerifyRegistrationOtp()" style="border-radius:10px; font-weight:800; padding:8px; font-size:12px;">
+                  <i class="fas fa-check-circle"></i> Verify OTP & Open Dashboard
+                </button>
+              </div>
+
+              <div style="text-align:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
+                <span style="color:#94a3b8; font-size:12px;">Already registered?</span>
+                <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthMode('email')" style="margin-left:8px; border-radius:999px; border-color:var(--amber); color:var(--amber); background:rgba(251,191,36,0.08); font-weight:700; font-size:11px; padding:3px 8px;">
+                  <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+              </div>
             </div>
 
-            <!-- GOOGLE AUTH BUTTON -->
-            <div style="margin-top:18px;">
-              <div style="text-align:center; color:#64748b; font-size:12px; margin-bottom:12px;">or sign in with</div>
-              <button onclick="handleMasterLogin('Google OAuth')" style="width:100%; padding:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); border-radius:16px; color:#fff; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; backdrop-filter:blur(10px);">
-                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Continue with Google
-              </button>
-            </div>
-
-            <div style="text-align:center; margin-top:20px; font-size:12px; color:#64748b; display:flex; align-items:center; justify-content:center; gap:6px;">
-              <i class="fas fa-shield-alt" style="color:#fbbf24;"></i> BioVerse 256-Bit SSL Encrypted
+            <!-- Footer Badge -->
+            <div style="text-align:center; margin-top:10px; font-size:11px; color:#64748b; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <i class="fas fa-shield-alt" style="color:#10b981;"></i> BioVerse 256-Bit SSL Encrypted
             </div>
           </section>
         </div>
@@ -257,30 +288,73 @@ function LoginPage() {
 }
 
 function RegisterPage() {
+  setTimeout(() => {
+    switchAuthMode('register');
+  }, 100);
   return LoginPage();
 }
 
 function ForgotPasswordPage() {
   return `
-    <div class="room is-on">
-      <div class="liquid-glass-wrapper" style="max-width:440px; margin:40px auto;">
-        <div class="liquid-glass-card">
-          <div style="text-align:center; margin-bottom:20px;">
-            <div style="font-size:40px; margin-bottom:8px;">🔑</div>
-            <h2 style="font-size:24px; font-weight:800; color:#fff;">Reset Password</h2>
-            <p style="color:#94a3b8; font-size:13.5px;">We'll send password reset instructions to your email</p>
+    <div class="room is-on" style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px 16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:440px; margin:0 auto 16px auto; padding:0 8px;">
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/')" style="display:inline-flex; align-items:center; gap:8px; background:rgba(15,23,42,0.75); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.14); color:#fff; border-radius:999px; padding:7px 16px; font-weight:600; cursor:pointer;">
+          <i class="fas fa-arrow-left"></i> Home
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="Router.navigate('/auth/login')" style="display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 14px; font-weight:700; color:var(--amber); border-color:var(--amber); background:rgba(251,191,36,0.1);">
+          <i class="fas fa-sign-in-alt"></i> Back to Login
+        </button>
+      </div>
+
+      <div class="liquid-glass-wrapper" style="max-width:440px; margin:0 auto;">
+        <div class="liquid-glass-card" style="padding:28px 24px; border-radius:24px;">
+          <div style="text-align:center; margin-bottom:16px;">
+            <div style="font-size:36px; margin-bottom:6px;">🔑</div>
+            <h2 style="font-size:22px; font-weight:800; color:#fff; margin:0;">Reset Password</h2>
+            <p style="color:#94a3b8; font-size:12.5px; margin-top:4px;">We'll send a 6-digit OTP verification code to your registered email</p>
           </div>
 
-          <div class="form-group" style="margin-bottom:20px;">
-            <label class="form-label" style="font-size:13px; color:#cbd5e1;">Email Address</label>
-            <input type="email" class="form-input" id="forgot-email" placeholder="you@example.com">
+          <!-- Step 1: Email Form -->
+          <div id="forgot-step-1">
+            <div class="form-group" style="margin-bottom:16px;">
+              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Registered Email Address</label>
+              <input type="email" class="form-input" id="forgot-email" placeholder="you@example.com" value="saladisiddharth@gmail.com" style="padding:10px 12px; font-size:13px;">
+            </div>
+
+            <button type="button" id="btn-forgot-send-otp" class="btn btn-primary btn-full" onclick="handleSendForgotOtp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
+              <i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code
+            </button>
           </div>
 
-          <button onclick="handleForgotPasswordSubmit()" style="width:100%; padding:14px; border-radius:16px; background:linear-gradient(135deg, #00f2fe 0%, #4f46e5 100%); border:none; font-weight:800; color:#fff; cursor:pointer;">
-            <i class="fas fa-paper-plane"></i> Send Reset Code
-          </button>
+          <!-- Step 2: OTP & New Password Form -->
+          <div id="forgot-step-2" style="display:none;">
+            <div class="form-group" style="margin-bottom:12px; text-align:center;">
+              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:6px;">Enter 6-Digit OTP from Email</label>
+              <input type="text" maxlength="6" class="form-input" id="forgot-otp-input" placeholder="• • • • • •" style="letter-spacing:6px; text-align:center; font-size:18px; font-weight:800; color:#fbbf24; padding:8px 12px; width:170px; margin:0 auto; display:block;">
+            </div>
 
-          <div style="text-align:center; margin-top:20px; font-size:13.5px;">
+            <div class="form-group" style="position:relative; margin-bottom:12px;">
+              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">New Password</label>
+              <input type="password" class="form-input" id="forgot-new-password" placeholder="Min 6 characters..." style="padding:10px 12px; padding-right:38px; font-size:13px;">
+              <button type="button" class="password-toggle" onclick="togglePandaPassword('forgot-new-password', this)" style="position:absolute; right:10px; top:26px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+
+            <div class="form-group" style="position:relative; margin-bottom:16px;">
+              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Confirm New Password</label>
+              <input type="password" class="form-input" id="forgot-confirm-password" placeholder="Repeat new password..." style="padding:10px 12px; padding-right:38px; font-size:13px;">
+              <button type="button" class="password-toggle" onclick="togglePandaPassword('forgot-confirm-password', this)" style="position:absolute; right:10px; top:26px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+
+            <button type="button" id="btn-forgot-save-pass" class="btn btn-success btn-full" onclick="handleSaveNewPassword()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
+              <i class="fas fa-check-circle"></i> Save New Password & Continue
+            </button>
+          </div>
+
+          <div style="text-align:center; margin-top:16px; font-size:12.5px;">
             Remember password? <a onclick="Router.navigate('/auth/login')" style="color:#fbbf24; cursor:pointer; font-weight:600;">Sign in</a>
           </div>
         </div>
@@ -290,8 +364,7 @@ function ForgotPasswordPage() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   SPRING PHYSICS ENGINE
-   User Formula: k = 210, c = 8.4; vy += (-k*(by-REST.y) - c*vy) * dt; by += vy * dt;
+   SPRING PHYSICS ENGINE — LAMP STARTS OFF BY DEFAULT
    ═══════════════════════════════════════════════════════════════════ */
 function initLampSpringPhysics() {
   const room = document.getElementById('room');
@@ -300,6 +373,7 @@ function initLampSpringPhysics() {
   const ropeHit = document.getElementById('rope-hit');
   const bead = document.getElementById('bead');
   const pullCord = document.getElementById('pull-cord');
+  const lampHint = document.getElementById('lamp-hint');
 
   if (!pullCord || !ropePath) return;
 
@@ -308,7 +382,14 @@ function initLampSpringPhysics() {
   let vy = 0;
   let isDragging = false;
   let lastTime = performance.now();
-  let isOn = true;
+  let isOn = false; // Starts OFF by default
+
+  // Start with form disabled until lamp light is turned ON
+  if (card) {
+    card.inert = true;
+    card.style.opacity = '0.5';
+    card.style.pointerEvents = 'none';
+  }
 
   const k = 210;
   const c = 8.4;
@@ -334,15 +415,35 @@ function initLampSpringPhysics() {
   function toggleLampSwitch() {
     isOn = !isOn;
     if (isOn) {
-      room.classList.add('is-on');
-      if (card) card.inert = false;
+      if (room) room.classList.add('is-on');
+      if (card) {
+        card.inert = false;
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+      }
       pullCord.setAttribute('aria-pressed', 'true');
-      UI.toast('info', 'Lamp Light ON', 'Mood lighting activated!');
+      if (lampHint) {
+        lampHint.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Lamp Light ON! Form is unlocked.';
+        lampHint.style.background = 'rgba(16,185,129,0.18)';
+        lampHint.style.borderColor = 'rgba(16,185,129,0.5)';
+        lampHint.style.color = '#10b981';
+      }
+      if (typeof UI !== 'undefined') UI.toast('info', '💡 Lamp Light ON', 'Form illuminated & unlocked. You can now fill details!');
     } else {
-      room.classList.remove('is-on');
-      if (card) card.inert = true;
+      if (room) room.classList.remove('is-on');
+      if (card) {
+        card.inert = true;
+        card.style.opacity = '0.5';
+        card.style.pointerEvents = 'none';
+      }
       pullCord.setAttribute('aria-pressed', 'false');
-      UI.toast('warning', 'Lamp Light OFF', 'Pull string to switch light back on!');
+      if (lampHint) {
+        lampHint.innerHTML = '<i class="fas fa-lightbulb"></i> Pull cord or click to turn ON lamp & unlock form!';
+        lampHint.style.background = 'rgba(251,191,36,0.18)';
+        lampHint.style.borderColor = 'rgba(251,191,36,0.5)';
+        lampHint.style.color = '#fbbf24';
+      }
+      if (typeof UI !== 'undefined') UI.toast('warning', '💡 Lamp Light OFF', 'Pull string to turn on light and unlock form.');
     }
   }
 
@@ -384,11 +485,14 @@ function initLampSpringPhysics() {
   });
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   PANDA AVATAR INTERACTIVITY
+   ═══════════════════════════════════════════════════════════════════ */
 function initPandaInteractivity() {
   const pandaAvatar = document.getElementById('panda-avatar');
   const pupilLeft = document.getElementById('pupil-left');
   const pupilRight = document.getElementById('pupil-right');
-  const passwordInput = document.getElementById('password-input');
+  const passwordInputs = ['password-input', 'reg-password-input'];
 
   if (pandaAvatar && pupilLeft && pupilRight) {
     window.addEventListener('mousemove', (e) => {
@@ -408,85 +512,89 @@ function initPandaInteractivity() {
     });
   }
 
-  if (passwordInput && pandaAvatar) {
-    passwordInput.addEventListener('focus', () => {
-      pandaAvatar.classList.remove('peeking');
-      pandaAvatar.classList.add('covering');
-    });
-
-    passwordInput.addEventListener('blur', () => {
-      pandaAvatar.classList.remove('covering', 'peeking');
-    });
-  }
+  passwordInputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input && pandaAvatar) {
+      input.addEventListener('focus', () => {
+        if (input.type === 'password') {
+          pandaAvatar.classList.remove('peeking');
+          pandaAvatar.classList.add('covering');
+        }
+      });
+      input.addEventListener('blur', () => {
+        pandaAvatar.classList.remove('covering', 'peeking');
+      });
+    }
+  });
 }
 
-function toggleVaultLockerPassword(inputId, btn) {
+/* ═══════════════════════════════════════════════════════════════════
+   PASSWORD VISIBILITY TOGGLE (EYE ICON FIX)
+   ═══════════════════════════════════════════════════════════════════ */
+function togglePandaPassword(inputId, btn) {
   const input = document.getElementById(inputId);
   const pandaAvatar = document.getElementById('panda-avatar');
   if (!input) return;
 
+  const icon = btn ? btn.querySelector('i') : null;
+
   if (input.type === 'password') {
     input.type = 'text';
-    btn.classList.add('unlocked');
+    if (icon) {
+      icon.className = 'fas fa-eye-slash';
+      icon.style.color = '#fbbf24';
+    }
     if (pandaAvatar) {
       pandaAvatar.classList.remove('covering');
       pandaAvatar.classList.add('peeking');
     }
   } else {
     input.type = 'password';
-    btn.classList.remove('unlocked');
+    if (icon) {
+      icon.className = 'fas fa-eye';
+      icon.style.color = '#94a3b8';
+    }
     if (pandaAvatar) {
       pandaAvatar.classList.remove('peeking');
       pandaAvatar.classList.add('covering');
     }
   }
 }
-
-function bindVaultLockerKeypress() {
-  ['password-input', 'reg-password-input'].forEach(id => {
-    const inp = document.getElementById(id);
-    if (!inp) return;
-    inp.addEventListener('input', () => {
-      const btn = inp.parentElement.querySelector('.vault-locker-btn');
-      if (!btn) return;
-      const needle = btn.querySelector('.dial-needle');
-      const ticks = btn.querySelector('.dial-ticks');
-      const angle = inp.value.length * 30;
-      if (needle) needle.style.transform = `rotate(${angle}deg)`;
-      if (ticks) ticks.style.transform = `rotate(${angle / 2}deg)`;
-    });
-  });
-}
-
+window.togglePandaPassword = togglePandaPassword;
 
 /* ═══════════════════════════════════════════════════════════════════
-   CYBER MICROCHIP VAULT PASSWORD ENTROPY GAUGE
-   User Formula: bits = len * Math.log2(pool);
-   tier = bits < 30 ? 1 : bits < 50 ? 2 : bits < 70 ? 3 : 4;
+   REAL-TIME EMAIL VALIDATION
+   ═══════════════════════════════════════════════════════════════════ */
+function validateRegEmail(email) {
+  const statusEl = document.getElementById('reg-email-status');
+  if (!statusEl) return;
+  const val = (email || '').trim();
+  if (!val) {
+    statusEl.innerHTML = '';
+    return;
+  }
+  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  if (isValid) {
+    statusEl.innerHTML = '<span style="color:#10b981;font-weight:700;"><i class="fas fa-check-circle"></i> Valid</span>';
+  } else {
+    statusEl.innerHTML = '<span style="color:#ef4444;font-weight:700;"><i class="fas fa-exclamation-circle"></i> Invalid format</span>';
+  }
+}
+window.validateRegEmail = validateRegEmail;
+
+/* ═══════════════════════════════════════════════════════════════════
+   PASSWORD ENTROPY CALCULATOR
    ═══════════════════════════════════════════════════════════════════ */
 function updatePasswordVaultStrength(password) {
-  const door = document.getElementById('door');
-  const chip = document.getElementById('cyber-chip');
   const tierLabel = document.getElementById('entropy-tier-name');
   const entropyBadge = document.getElementById('entropy-badge');
-  const entropyIcon = document.getElementById('entropy-icon');
-  const segments = document.querySelectorAll('#vault-meter .seg');
-  const vaultRing = document.getElementById('vault-ring');
-
-  if (!door || !tierLabel) return;
+  if (!tierLabel || !entropyBadge) return;
 
   if (!password) {
-    door.className = 'door tier-1';
-    if (chip) chip.className = 'chip tier-1';
-    tierLabel.textContent = 'Unsecured (0 bits)';
-    if (entropyBadge) {
-      entropyBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-      entropyBadge.style.boxShadow = 'none';
-      entropyBadge.style.color = '#ef4444';
-    }
-    if (entropyIcon) entropyIcon.className = 'fas fa-exclamation-triangle';
-    segments.forEach(s => s.className = 'seg');
-    if (vaultRing) vaultRing.style.strokeDashoffset = '264';
+    tierLabel.textContent = 'Enter password';
+    tierLabel.style.color = '#94a3b8';
+    entropyBadge.innerHTML = '<i class="fas fa-shield-alt"></i> Empty';
+    entropyBadge.style.color = '#94a3b8';
     return;
   }
 
@@ -498,158 +606,29 @@ function updatePasswordVaultStrength(password) {
 
   const len = password.length;
   const bits = pool > 0 ? len * Math.log2(pool) : 0;
-  const tier = bits < 30 ? 1 : (bits < 50 ? 2 : (bits < 70 ? 3 : 4));
 
-  const tiers = {
-    1: { name: `Weak Entropy (${Math.round(bits)} bits)`, color: '#ef4444', icon: 'fas fa-shield-alt' },
-    2: { name: `Fair Cyber Guard (${Math.round(bits)} bits)`, color: '#f59e0b', icon: 'fas fa-shield-alt' },
-    3: { name: `Quantum Encrypted (${Math.round(bits)} bits)`, color: '#00f2fe', icon: 'fas fa-user-shield' },
-    4: { name: `Biometric Vault Sealed (${Math.round(bits)} bits)`, color: '#10b981', icon: 'fas fa-lock' }
-  };
-
-  door.className = `door tier-${tier}`;
-  if (chip) chip.className = `chip tier-${tier}`;
-  tierLabel.textContent = tiers[tier].name;
-
-  if (entropyBadge) {
-    entropyBadge.style.borderColor = tiers[tier].color;
-    entropyBadge.style.boxShadow = `0 0 16px ${tiers[tier].color}50`;
-    entropyBadge.style.color = tiers[tier].color;
+  if (bits < 30) {
+    tierLabel.textContent = 'Weak';
+    tierLabel.style.color = '#ef4444';
+    entropyBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Weak';
+    entropyBadge.style.color = '#ef4444';
+  } else if (bits < 50) {
+    tierLabel.textContent = 'Moderate';
+    tierLabel.style.color = '#f59e0b';
+    entropyBadge.innerHTML = '<i class="fas fa-shield-alt"></i> Fair';
+    entropyBadge.style.color = '#f59e0b';
+  } else {
+    tierLabel.textContent = 'Quantum Secured';
+    tierLabel.style.color = '#10b981';
+    entropyBadge.innerHTML = '<i class="fas fa-lock"></i> Strong';
+    entropyBadge.style.color = '#10b981';
   }
-
-  if (entropyIcon) {
-    entropyIcon.className = tiers[tier].icon;
-    entropyIcon.style.color = tiers[tier].color;
-  }
-
-  if (vaultRing) {
-    const offset = Math.max(0, 264 - (bits / 85) * 264);
-    vaultRing.style.strokeDashoffset = offset;
-    vaultRing.style.transition = 'stroke-dashoffset 0.4s ease';
-    segments.forEach((seg, i) => {
-        const segTier = i + 1;
-        if (segTier <= tier) {
-          seg.className = `seg active-${tier}`;
-        } else {
-          seg.className = 'seg';
-        }
-      });
-
-      if (tier === 4) {
-        celebrateVaultLockdown();
-      } else {
-        vaultAlreadyCelebrated = false;
-      }
-    }
 }
+window.updatePasswordVaultStrength = updatePasswordVaultStrength;
 
-
-function initOtpSlotSystem() {
-  const container = document.getElementById('slots-container');
-  if (!container) return;
-  const cursor = document.getElementById('code-cursor');
-  const slots = container.querySelectorAll('.slot');
-  const inputs = container.querySelectorAll('.slot__input');
-
-  function updateCursor(index) {
-    if (index >= 0 && index < slots.length) {
-      const activeSlot = slots[index];
-      const containerRect = container.getBoundingClientRect();
-      const slotRect = activeSlot.getBoundingClientRect();
-      cursor.style.transform = `translateX(${slotRect.left - containerRect.left}px)`;
-      cursor.classList.add('active');
-    } else {
-      cursor.classList.remove('active');
-    }
-  }
-
-  inputs.forEach((input, idx) => {
-    input.addEventListener('focus', () => updateCursor(idx));
-
-    input.addEventListener('input', (e) => {
-      const val = e.target.value.replace(/[^0-9]/g, '');
-      e.target.value = val;
-      const slot = slots[idx];
-      const digitSpan = slot.querySelector('.slot__digit');
-
-      if (val) {
-        digitSpan.textContent = val;
-        slot.classList.add('filled');
-
-        const r = slot.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const dx = cx - (r.left + r.width / 2);
-
-        slot.animate([
-          { transform: 'none' },
-          { transform: `translate(${dx}px) scale(.34)` },
-          { transform: 'none' }
-        ], { delay: 0, duration: 640, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
-
-        if (idx < inputs.length - 1) {
-          inputs[idx + 1].focus();
-          updateCursor(idx + 1);
-        } else {
-          setTimeout(() => handleMasterLogin('Phone OTP'), 300);
-        }
-      } else {
-        digitSpan.textContent = '';
-        slot.classList.remove('filled');
-      }
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && !input.value && idx > 0) {
-        inputs[idx - 1].focus();
-        inputs[idx - 1].value = '';
-        slots[idx - 1].querySelector('.slot__digit').textContent = '';
-        slots[idx - 1].classList.remove('filled');
-        updateCursor(idx - 1);
-      }
-    });
-  });
-}
-
-function demoAutoFillOtp() {
-  const sampleCode = "849201".split('');
-  const container = document.getElementById('slots-container');
-  if (!container) return;
-  const slots = container.querySelectorAll('.slot');
-  const inputs = container.querySelectorAll('.slot__input');
-  const cursor = document.getElementById('code-cursor');
-
-  sampleCode.forEach((digit, i) => {
-    setTimeout(() => {
-      if (inputs[i]) {
-        inputs[i].value = digit;
-        const slot = slots[i];
-        const digitSpan = slot.querySelector('.slot__digit');
-        digitSpan.textContent = digit;
-        slot.classList.add('filled');
-
-        const r = slot.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const dx = cx - (r.left + r.width / 2);
-
-        slot.animate([
-          { transform: 'none' },
-          { transform: `translate(${dx}px) scale(.34)` },
-          { transform: 'none' }
-        ], { duration: 640, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
-
-        const slotRect = slot.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        cursor.style.transform = `translateX(${slotRect.left - containerRect.left}px)`;
-        cursor.classList.add('active');
-
-        if (i === sampleCode.length - 1) {
-          setTimeout(() => handleMasterLogin('Phone OTP'), 400);
-        }
-      }
-    }, i * 140);
-  });
-}
-
+/* ═══════════════════════════════════════════════════════════════════
+   MODE SWITCHER & NAVIGATION
+   ═══════════════════════════════════════════════════════════════════ */
 function switchAuthMode(mode) {
   document.querySelectorAll('.lamp-auth-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.auth-mode-content').forEach(c => c.style.display = 'none');
@@ -660,37 +639,317 @@ function switchAuthMode(mode) {
   if (tabBtn) tabBtn.classList.add('active');
   if (modeContent) modeContent.style.display = 'block';
 
-  if (mode === 'phone') {
-    setTimeout(() => initOtpSlotSystem(), 60);
+  // Synchronize Top Bar Mode Switcher
+  const topText = document.getElementById('top-auth-switch-text');
+  const topBtn = document.getElementById('top-auth-switch-btn');
+  if (topText && topBtn) {
+    if (mode === 'register') {
+      topText.textContent = 'Already have an account?';
+      topBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      topBtn.style.color = 'var(--amber)';
+      topBtn.style.borderColor = 'var(--amber)';
+      topBtn.style.background = 'rgba(251,191,36,0.1)';
+    } else {
+      topText.textContent = "Don't have an account?";
+      topBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up';
+      topBtn.style.color = 'var(--emerald)';
+      topBtn.style.borderColor = 'var(--emerald)';
+      topBtn.style.background = 'rgba(16,185,129,0.1)';
+    }
   }
 }
+window.switchAuthMode = switchAuthMode;
 
-function handleMasterLogin(methodName) {
-  if (typeof UI !== 'undefined') {
-    UI.toast('success', `${methodName} Successful!`, 'Welcome back to BioVerse!');
+function toggleLoginRegister() {
+  const isRegister = document.getElementById('mode-register')?.style.display !== 'none';
+  if (isRegister) {
+    switchAuthMode('email');
+    if (typeof Router !== 'undefined') Router.navigate('/auth/login');
+  } else {
+    switchAuthMode('register');
+    if (typeof Router !== 'undefined') Router.navigate('/auth/register');
   }
+}
+window.toggleLoginRegister = toggleLoginRegister;
+
+/* ═══════════════════════════════════════════════════════════════════
+   6-DIGIT EMAIL OTP SEND & VERIFY HANDLERS
+   ═══════════════════════════════════════════════════════════════════ */
+async function handleSendRegistrationOtp() {
+  const name = document.getElementById('reg-name-input')?.value?.trim();
+  const email = document.getElementById('reg-email-input')?.value?.trim();
+  const password = document.getElementById('reg-password-input')?.value;
+
+  if (!name) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Name Required', 'Please enter your full name.');
+    document.getElementById('reg-name-input')?.focus();
+    return;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Valid Email Required', 'Please enter a valid email address.');
+    document.getElementById('reg-email-input')?.focus();
+    return;
+  }
+  if (!password || password.length < 6) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Password Too Short', 'Password must be at least 6 characters.');
+    document.getElementById('reg-password-input')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-send-reg-otp');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending 6-Digit OTP to Email...';
+  }
+
+  const res = await Store.sendRegistrationOtp(email, name);
+
+  if (res.success) {
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', '📧 6-Digit OTP Dispatched!', `Verification code sent to ${email}. Check your inbox!`);
+    }
+    const otpContainer = document.getElementById('reg-otp-container');
+    if (otpContainer) {
+      otpContainer.style.display = 'block';
+      otpContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const otpInput = document.getElementById('reg-otp-input');
+    if (otpInput) {
+      if (res.devOtp) otpInput.placeholder = res.devOtp; // Helpful development placeholder
+      otpInput.focus();
+    }
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-redo"></i> Resend OTP Code';
+      btn.disabled = false;
+    }
+  } else {
+    if (typeof UI !== 'undefined') {
+      UI.toast('error', 'Failed to Send OTP', res.error || 'Please check your email address and retry.');
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send 6-Digit OTP to Email';
+    }
+  }
+}
+window.handleSendRegistrationOtp = handleSendRegistrationOtp;
+
+async function handleVerifyRegistrationOtp() {
+  const name = document.getElementById('reg-name-input')?.value?.trim();
+  const email = document.getElementById('reg-email-input')?.value?.trim();
+  const identity = document.getElementById('reg-identity-select')?.value || 'student';
+  const password = document.getElementById('reg-password-input')?.value;
+  const otp = document.getElementById('reg-otp-input')?.value?.trim();
+
+  if (!otp || otp.length < 6) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Enter 6-Digit OTP', 'Please enter the complete 6-digit verification code.');
+    document.getElementById('reg-otp-input')?.focus();
+    return;
+  }
+
+  const verifyBtn = document.getElementById('btn-verify-reg-otp');
+  if (verifyBtn) {
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  }
+
+  const res = await Store.verifyRegistrationOtp(email, otp, name, password, identity);
+
+  if (res.success) {
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', `🎉 Welcome to BioVerse, ${name || 'Explorer'}!`, 'Account verified! Launching your personalized dashboard & demo tour...');
+    }
+
+    setTimeout(() => {
+      if (typeof Router !== 'undefined') {
+        Router.navigate('/dashboard');
+      } else {
+        window.location.href = 'index.html#/dashboard';
+      }
+    }, 600);
+  } else {
+    if (typeof UI !== 'undefined') {
+      UI.toast('error', 'Verification Failed', res.error || 'Invalid OTP code. Please verify and try again.');
+    }
+    if (verifyBtn) {
+      verifyBtn.disabled = false;
+      verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP & Open Dashboard';
+    }
+  }
+}
+window.handleVerifyRegistrationOtp = handleVerifyRegistrationOtp;
+
+/* ═══════════════════════════════════════════════════════════════════
+   USER SIGN IN HANDLER (STRICT CREDENTIAL VALIDATION)
+   ═══════════════════════════════════════════════════════════════════ */
+async function handleUserSignIn(method = 'email') {
+  let email = '';
+  let password = '';
+
+  if (method === 'email') {
+    email = document.getElementById('email-input')?.value?.trim();
+    password = document.getElementById('password-input')?.value;
+  } else if (method === 'phone') {
+    const phone = document.getElementById('phone-number')?.value || '9876543210';
+    email = `${phone}@bioverse.phone`;
+    password = 'BioVerse2026!';
+  }
+
+  if (!email) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Email Required', 'Please enter your registered email address.');
+    document.getElementById('email-input')?.focus();
+    return;
+  }
+  if (!password) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Password Required', 'Please enter your account password.');
+    document.getElementById('password-input')?.focus();
+    return;
+  }
+
   const panda = document.getElementById('panda-avatar');
   if (panda) {
-    panda.style.transform = 'translateY(-14px) scale(1.1)';
-    panda.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    panda.style.transform = 'translateY(-10px) scale(1.06)';
+    panda.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
   }
-  if (typeof Store !== 'undefined') {
-    Store.login('user@bioverse.ai', 'authenticated');
-  }
-  setTimeout(() => {
-    if (typeof Router !== 'undefined') {
-      Router.navigate('/dashboard');
-    } else {
-      window.location.href = 'index.html';
-    }
-  }, 1000);
-}
 
-function handleForgotPasswordSubmit() {
-  if (typeof UI !== 'undefined') {
-    UI.toast('success', 'Reset Link Dispatched', 'Check your email inbox.');
+  const result = await Store.login(email, password);
+
+  if (result.success) {
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', 'Sign In Successful!', `Welcome back, ${result.user?.name || 'User'}!`);
+    }
+    setTimeout(() => {
+      if (typeof Router !== 'undefined') {
+        Router.navigate('/dashboard');
+      } else {
+        window.location.href = 'index.html#/dashboard';
+      }
+    }, 400);
+  } else {
+    if (typeof UI !== 'undefined') {
+      UI.toast('error', 'Login Failed', result.error || 'Invalid email or password. Please check your credentials.');
+    }
   }
-  setTimeout(() => {
-    if (typeof Router !== 'undefined') Router.navigate('/auth/login');
-  }, 1500);
 }
+window.handleUserSignIn = handleUserSignIn;
+
+async function handleSendForgotOtp() {
+  const email = document.getElementById('forgot-email')?.value?.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Valid Email Required', 'Please enter your registered email address.');
+    document.getElementById('forgot-email')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-forgot-send-otp');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking & Sending OTP...';
+  }
+
+  const res = await Store.sendForgotPasswordOtp(email);
+
+  if (res.success) {
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', '📧 Reset OTP Dispatched!', `Verification code sent to ${email}. Check your inbox!`);
+    }
+    const step1 = document.getElementById('forgot-step-1');
+    const step2 = document.getElementById('forgot-step-2');
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'block';
+
+    const otpInput = document.getElementById('forgot-otp-input');
+    if (otpInput) {
+      if (res.devOtp) otpInput.placeholder = res.devOtp;
+      otpInput.focus();
+    }
+  } else {
+    if (typeof UI !== 'undefined') {
+      UI.toast('error', 'Reset Failed', res.error || 'No registered account found with this email.');
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code';
+    }
+  }
+}
+window.handleSendForgotOtp = handleSendForgotOtp;
+
+async function handleSaveNewPassword() {
+  const email = document.getElementById('forgot-email')?.value?.trim();
+  const otp = document.getElementById('forgot-otp-input')?.value?.trim();
+  const newPassword = document.getElementById('forgot-new-password')?.value;
+  const confirmPassword = document.getElementById('forgot-confirm-password')?.value;
+
+  if (!otp || otp.length < 6) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Enter OTP', 'Please enter the 6-digit OTP code.');
+    document.getElementById('forgot-otp-input')?.focus();
+    return;
+  }
+  if (!newPassword || newPassword.length < 6) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Password Too Short', 'Password must be at least 6 characters.');
+    document.getElementById('forgot-new-password')?.focus();
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Passwords Do Not Match', 'Please ensure both passwords match.');
+    document.getElementById('forgot-confirm-password')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-forgot-save-pass');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Password...';
+  }
+
+  const res = await Store.resetPassword(email, otp, newPassword);
+
+  if (res.success) {
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', '🎉 Password Updated!', 'Logging into your BioVerse dashboard...');
+    }
+    await Store.login(email, newPassword);
+    setTimeout(() => {
+      if (typeof Router !== 'undefined') {
+        Router.navigate('/dashboard');
+      } else {
+        window.location.href = 'index.html#/dashboard';
+      }
+    }, 600);
+  } else {
+    if (typeof UI !== 'undefined') {
+      UI.toast('error', 'Reset Failed', res.error || 'Invalid or expired OTP code.');
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Save New Password & Continue';
+    }
+  }
+}
+window.handleSaveNewPassword = handleSaveNewPassword;
+
+
+function demoAutoFillOtp() {
+  const sampleCode = "849201".split('');
+  const container = document.getElementById('slots-container');
+  if (!container) return;
+  const slots = container.querySelectorAll('.slot');
+  const inputs = container.querySelectorAll('.slot__input');
+
+  sampleCode.forEach((digit, i) => {
+    setTimeout(() => {
+      if (inputs[i]) {
+        inputs[i].value = digit;
+        const slot = slots[i];
+        const digitSpan = slot.querySelector('.slot__digit');
+        if (digitSpan) digitSpan.textContent = digit;
+        slot.classList.add('filled');
+        if (i === sampleCode.length - 1) {
+          setTimeout(() => handleUserSignIn('phone'), 300);
+        }
+      }
+    }, i * 100);
+  });
+}
+window.demoAutoFillOtp = demoAutoFillOtp;

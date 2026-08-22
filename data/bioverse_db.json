@@ -23,21 +23,103 @@
       "email": "user@bioverse.ai",
       "name": "User",
       "password": "authenticated"
+    },
+    {
+      "id": "usr_1787208738851",
+      "email": "user@bioverse.ai",
+      "name": "User",
+      "password": "authenticated"
+    },
+    {
+      "id": "usr_1787225952076",
+      "email": "user@bioverse.ai",
+      "name": "User",
+      "password": "authenticated"
+    },
+    {
+      "id": "usr_1787230046576",
+      "email": "user@bioverse.ai",
+      "name": "User",
+      "password": "authenticated"
+    },
+    {
+      "id": "usr_1787230888888",
+      "email": "user@bioverse.ai",
+      "name": "User",
+      "password": "authenticated"
+    },
+    {
+      "id": "usr_1787236443988",
+      "email": "siddharth@bioverse.ai",
+      "name": "Siddharth",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787239444778",
+      "name": "Saladi Siddharth",
+      "email": "saladisiddharth@gmail.com",
+      "password": "MyNewBioVersePass2026!"
+    },
+    {
+      "id": "usr_1787241890378",
+      "name": "Saladi Siddharth",
+      "email": "saladisiddharth@gmail.com",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787242145339",
+      "email": "9876543210@bioverse.phone",
+      "name": "9876543210",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787284579946",
+      "email": "saladisiddharth@gmail.com",
+      "name": "Saladi Siddharth",
+      "password": "Mahi@1809"
+    },
+    {
+      "id": "usr_1787284582010",
+      "email": "siddharth@bioverse.ai",
+      "name": "Siddharth",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787284582917",
+      "email": "siddharth@bioverse.ai",
+      "name": "Siddharth",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787284593691",
+      "email": "saladisiddharth@gmail.com",
+      "name": "Saladi Siddharth",
+      "password": "Mahi@1809"
+    },
+    {
+      "id": "usr_1787285356208",
+      "email": "siddharth@bioverse.ai",
+      "name": "Siddharth",
+      "password": "BioVerse2026!"
+    },
+    {
+      "id": "usr_1787285802787",
+      "name": "New Test User",
+      "email": "newuser_test@gmail.com",
+      "password": "MySecretPassword2026!",
+      "identity": "student",
+      "phone": ""
     }
   ],
   "state": {
-    "user": {
-      "id": "usr_1786866884908",
-      "name": "User",
-      "email": "user@bioverse.ai"
-    },
-    "isAuthenticated": true,
+    "user": null,
+    "isAuthenticated": false,
     "identity": "student",
     "onboardingStep": 0,
     "onboardingComplete": true,
     "profile": {
-      "name": "User",
-      "email": "user@bioverse.ai",
+      "name": "Siddharth",
+      "email": "siddharth@bioverse.ai",
       "avatar": "",
       "lifeStage": "Higher Education & Career Build",
       "goalIntensity": "ambitious",
@@ -66,63 +148,53 @@
       "fundingStatus": "Startup India Incubated"
     },
     "scores": {
-      "life": 72,
-      "career": 85,
+      "life": 64,
+      "career": 45,
       "health": 67,
-      "finance": 73,
-      "work": 65,
-      "success": 68
+      "finance": 99,
+      "work": 50,
+      "success": 60
     },
     "tasks": [
       {
-        "id": "t1",
-        "title": "Prepare for Google Software Engineer Internship Interview",
-        "domain": "career",
+        "id": "t_1787288910507",
+        "title": "hello",
+        "domain": "work",
         "quadrant": "q1",
-        "priority": "high",
+        "priority": "medium",
         "completed": false,
-        "dueDate": "2026-08-05"
+        "dueDate": "2026-08-21"
       },
       {
-        "id": "t2",
-        "title": "Apply for NITI Aayog Policy & Tech Internship",
-        "domain": "student",
-        "quadrant": "q1",
-        "priority": "high",
-        "completed": true,
-        "dueDate": "2026-07-20"
-      },
-      {
-        "id": "t3",
-        "title": "Complete PMSS & NSP Scholarship Application Verification",
-        "domain": "student",
-        "quadrant": "q2",
-        "priority": "high",
-        "completed": false,
-        "dueDate": "2026-08-10"
-      },
-      {
-        "id": "t4",
-        "title": "30-min Evening Cardio & Fitness Session",
-        "domain": "health",
+        "id": "t_1786859664029",
+        "title": "gh",
+        "domain": "work",
         "quadrant": "q2",
         "priority": "medium",
         "completed": false,
-        "dueDate": "2026-07-23"
+        "dueDate": "2026-08-16"
       },
       {
-        "id": "t5",
-        "title": "Automate monthly SIP investment in Nifty 50 Index Fund",
-        "domain": "finance",
+        "id": "t_1786853907968",
+        "title": "hello",
+        "domain": "work",
         "quadrant": "q2",
-        "priority": "high",
-        "completed": true,
-        "dueDate": "2026-07-15"
+        "priority": "medium",
+        "completed": false,
+        "dueDate": "2026-08-16"
       }
     ],
     "lifeGoals": [
       {
-        "id": "lg_1787130969738",
+        "id": "lg_1787291920761",
+        "category": "Purpose",
+        "title": "ert",
+        "targetYear": "2027",
+        "completed": false,
+        "progress": 10
+      },
+      {
+        "id": "lg_1786859674507",
         "category": "Growth",
         "title": "mentor ",
         "targetYear": "2026",
@@ -130,12 +202,20 @@
         "progress": 20
       },
       {
-        "id": "lg1",
+        "id": "lg_1786853917088",
         "category": "Growth",
-        "title": "Publish 2 Research Papers on Applied Machine Learning",
+        "title": "mentor ",
         "targetYear": "2026",
         "completed": false,
-        "progress": 60
+        "progress": 20
+      },
+      {
+        "id": "lg_1786839124184",
+        "category": "Relationships",
+        "title": "mentor ",
+        "targetYear": "2030",
+        "completed": false,
+        "progress": 20
       },
       {
         "id": "lg2",
@@ -144,14 +224,6 @@
         "targetYear": "2027",
         "completed": false,
         "progress": 30
-      },
-      {
-        "id": "lg3",
-        "category": "Purpose",
-        "title": "Mentor 50 underprivileged students in coding",
-        "targetYear": "2026",
-        "completed": true,
-        "progress": 100
       },
       {
         "id": "lg4",
@@ -163,35 +235,11 @@
       }
     ],
     "finances": {
-      "monthlyIncome": 75000,
+      "monthlyIncome": 100000,
       "savingsTarget": 25000,
       "emergencyFund": 180000,
       "emergencyFundTarget": 300000,
       "transactions": [
-        {
-          "id": "f1",
-          "type": "income",
-          "amount": 75000,
-          "category": "Stipend / Income",
-          "date": "2026-07-01",
-          "note": "Monthly Internship Stipend / Salary"
-        },
-        {
-          "id": "f2",
-          "type": "expense",
-          "amount": 18000,
-          "category": "Housing & Rent",
-          "date": "2026-07-02",
-          "note": "PG / Flat Rent & Maintenance"
-        },
-        {
-          "id": "f3",
-          "type": "expense",
-          "amount": 8500,
-          "category": "Food & Mess",
-          "date": "2026-07-05",
-          "note": "Mess & Food Expenses"
-        },
         {
           "id": "f4",
           "type": "expense",
@@ -242,6 +290,30 @@
     },
     "indianColleges": [
       {
+        "id": "c_1786860211441",
+        "name": "hgjh",
+        "field": "Engineering & Tech",
+        "location": "hf",
+        "nirfRank": "#15 Engineering (Tier 1)",
+        "tuition": "₹3.0 Lakh/yr",
+        "avgPlacement": "₹16.5 LPA",
+        "exam": "JEE Main / DASA",
+        "link": "https://www.education.gov.in",
+        "applyLink": "https://www.education.gov.in"
+      },
+      {
+        "id": "c_1786860080054",
+        "name": "hgjh",
+        "field": "Engineering & Tech",
+        "location": "hf",
+        "nirfRank": "#15 Engineering (Tier 1)",
+        "tuition": "₹3.0 Lakh/yr",
+        "avgPlacement": "₹16.5 LPA",
+        "exam": "JEE Main / DASA",
+        "link": "https://www.education.gov.in",
+        "applyLink": "https://www.education.gov.in"
+      },
+      {
         "id": "c1",
         "name": "IIT Bombay (Indian Institute of Technology)",
         "field": "Engineering & Tech",
@@ -267,30 +339,6 @@
       },
       {
         "id": "c3",
-        "name": "IIT Madras",
-        "field": "Engineering & Tech",
-        "location": "Chennai, Tamil Nadu",
-        "nirfRank": "#1 Overall (Tier 1)",
-        "tuition": "₹2.1 Lakh/yr",
-        "avgPlacement": "₹21.4 LPA",
-        "exam": "JEE Advanced",
-        "link": "https://www.iitm.ac.in",
-        "applyLink": "https://www.iitm.ac.in/academics/admissions"
-      },
-      {
-        "id": "c4",
-        "name": "IIT Kharagpur",
-        "field": "Engineering & Tech",
-        "location": "Kharagpur, West Bengal",
-        "nirfRank": "#5 Engineering (Tier 1)",
-        "tuition": "₹2.2 Lakh/yr",
-        "avgPlacement": "₹19.5 LPA",
-        "exam": "JEE Advanced",
-        "link": "https://www.iitkgp.ac.in",
-        "applyLink": "https://www.iitkgp.ac.in/admissions"
-      },
-      {
-        "id": "c5",
         "name": "AIIMS New Delhi",
         "field": "Medicine & Healthcare",
         "location": "New Delhi",
@@ -302,19 +350,7 @@
         "applyLink": "https://www.aiimsexams.ac.in"
       },
       {
-        "id": "c6",
-        "name": "PGIMER Chandigarh",
-        "field": "Medicine & Healthcare",
-        "location": "Chandigarh",
-        "nirfRank": "#2 Medical (Tier 1)",
-        "tuition": "₹2,400/yr",
-        "avgPlacement": "Super-Specialty R&D",
-        "exam": "NEET PG / INI-CET",
-        "link": "https://pgimer.edu.in",
-        "applyLink": "https://pgimer.edu.in"
-      },
-      {
-        "id": "c7",
+        "id": "c4",
         "name": "IIM Ahmedabad (Indian Institute of Management)",
         "field": "Business & Management",
         "location": "Ahmedabad, Gujarat",
@@ -326,31 +362,19 @@
         "applyLink": "https://www.iima.ac.in/academics/mba"
       },
       {
-        "id": "c8",
-        "name": "IIM Bangalore",
-        "field": "Business & Management",
-        "location": "Bengaluru, Karnataka",
-        "nirfRank": "#2 Management (Tier 1)",
-        "tuition": "₹24.5 Lakh Total",
-        "avgPlacement": "₹33.8 LPA",
-        "exam": "CAT",
-        "link": "https://www.iimb.ac.in",
-        "applyLink": "https://www.iimb.ac.in/pgp-admissions"
-      },
-      {
-        "id": "c9",
+        "id": "c5",
         "name": "IISc Bangalore (Indian Institute of Science)",
         "field": "Pure Sciences",
         "location": "Bengaluru, Karnataka",
         "nirfRank": "#1 University (Tier 1)",
         "tuition": "₹30,000/yr",
         "avgPlacement": "Global R&D Placements",
-        "exam": "JEE / GATE / KVPY",
+        "exam": "JEE / GATE",
         "link": "https://iisc.ac.in",
         "applyLink": "https://iisc.ac.in/admissions"
       },
       {
-        "id": "c10",
+        "id": "c6",
         "name": "NLSIU Bengaluru (National Law School)",
         "field": "Law",
         "location": "Bengaluru, Karnataka",
@@ -362,19 +386,7 @@
         "applyLink": "https://www.nls.ac.in/admissions"
       },
       {
-        "id": "c11",
-        "name": "NID Ahmedabad (National Institute of Design)",
-        "field": "Design & Arts",
-        "location": "Ahmedabad, Gujarat",
-        "nirfRank": "#1 Design (Tier 1)",
-        "tuition": "₹3.5 Lakh/yr",
-        "avgPlacement": "₹14.0 LPA",
-        "exam": "NID DAT",
-        "link": "https://www.nid.edu",
-        "applyLink": "https://admissions.nid.edu"
-      },
-      {
-        "id": "c12",
+        "id": "c7",
         "name": "NIT Trichy (National Institute of Technology)",
         "field": "Engineering & Tech",
         "location": "Tiruchirappalli, Tamil Nadu",
@@ -386,7 +398,7 @@
         "applyLink": "https://www.nitt.edu/home/academics/admissions"
       },
       {
-        "id": "c13",
+        "id": "c8",
         "name": "BITS Pilani",
         "field": "Engineering & Tech",
         "location": "Pilani, Rajasthan",
@@ -398,44 +410,20 @@
         "applyLink": "https://www.bitsadmission.com"
       },
       {
-        "id": "c14",
-        "name": "DTU Delhi (Delhi Technological University)",
-        "field": "Engineering & Tech",
-        "location": "New Delhi",
-        "nirfRank": "#29 Engineering (Tier 2)",
-        "tuition": "₹1.9 Lakh/yr",
-        "avgPlacement": "₹15.5 LPA",
-        "exam": "JEE Main / JAC Delhi",
-        "link": "http://www.dtu.ac.in",
-        "applyLink": "https://jacdelhi.admissions.nic.in"
-      },
-      {
-        "id": "c15",
-        "name": "IIIT Hyderabad",
-        "field": "Engineering & Tech",
-        "location": "Hyderabad, Telangana",
-        "nirfRank": "#55 Engineering (Tier 2)",
-        "tuition": "₹3.6 Lakh/yr",
-        "avgPlacement": "₹30.0 LPA",
-        "exam": "JEE Main / UGEE",
-        "link": "https://www.iiit.ac.in",
-        "applyLink": "https://ugadmissions.iiit.ac.in"
-      },
-      {
-        "id": "c16",
-        "name": "KMC Manipal (Kasturba Medical College)",
+        "id": "c9",
+        "name": "Manipal Academy of Higher Education",
         "field": "Medicine & Healthcare",
         "location": "Manipal, Karnataka",
-        "nirfRank": "#9 Medical (Tier 2)",
+        "nirfRank": "#6 Medical (Tier 2)",
         "tuition": "₹17.8 Lakh/yr",
         "avgPlacement": "₹12.0 LPA",
-        "exam": "NEET UG",
-        "link": "https://manipal.edu/kmc-manipal.html",
+        "exam": "MET",
+        "link": "https://manipal.edu",
         "applyLink": "https://manipal.edu/mu/admission.html"
       },
       {
-        "id": "c17",
-        "name": "Symbiosis SIBM Pune",
+        "id": "c10",
+        "name": "Symbiosis Institute of Business Management",
         "field": "Business & Management",
         "location": "Pune, Maharashtra",
         "nirfRank": "#17 Management (Tier 2)",
@@ -446,43 +434,19 @@
         "applyLink": "https://www.sibm.edu/welcome/mba"
       },
       {
-        "id": "c18",
-        "name": "NALSAR University of Law",
+        "id": "c11",
+        "name": "ILSU Pune (ILS Law College)",
         "field": "Law",
-        "location": "Hyderabad, Telangana",
-        "nirfRank": "#3 Law (Tier 2)",
-        "tuition": "₹2.8 Lakh/yr",
-        "avgPlacement": "₹15.0 LPA",
-        "exam": "CLAT",
-        "link": "https://www.nalsar.ac.in",
-        "applyLink": "https://www.nalsar.ac.in/admissions"
-      },
-      {
-        "id": "c19",
-        "name": "IISER Pune",
-        "field": "Pure Sciences",
         "location": "Pune, Maharashtra",
-        "nirfRank": "#34 University (Tier 2)",
-        "tuition": "₹45,000/yr",
-        "avgPlacement": "Global PhD Fellowships",
-        "exam": "IAT / JEE Advanced",
-        "link": "https://www.iiserpune.ac.in",
-        "applyLink": "https://www.iiseradmission.in"
-      },
-      {
-        "id": "c20",
-        "name": "NIFT New Delhi",
-        "field": "Design & Arts",
-        "location": "New Delhi",
-        "nirfRank": "#1 Fashion (Tier 2)",
-        "tuition": "₹3.2 Lakh/yr",
+        "nirfRank": "#5 Law (Tier 2)",
+        "tuition": "₹42,000/yr",
         "avgPlacement": "₹8.5 LPA",
-        "exam": "NIFT Entrance",
-        "link": "https://nift.ac.in",
-        "applyLink": "https://nift.ac.in/admission"
+        "exam": "MH CET Law",
+        "link": "https://ilslaw.edu",
+        "applyLink": "https://ilslaw.edu/admissions"
       },
       {
-        "id": "c21",
+        "id": "c12",
         "name": "PSG College of Technology",
         "field": "Engineering & Tech",
         "location": "Coimbatore, Tamil Nadu",
@@ -494,8 +458,8 @@
         "applyLink": "https://www.psgtech.edu/admissions.php"
       },
       {
-        "id": "c22",
-        "name": "KIIT University",
+        "id": "c13",
+        "name": "Kalinga Institute of Industrial Technology",
         "field": "Engineering & Tech",
         "location": "Bhubaneswar, Odisha",
         "nirfRank": "#39 Engineering (Tier 3)",
@@ -506,31 +470,7 @@
         "applyLink": "https://kiit.ac.in/admission"
       },
       {
-        "id": "c23",
-        "name": "VIT Vellore",
-        "field": "Engineering & Tech",
-        "location": "Vellore, Tamil Nadu",
-        "nirfRank": "#11 Engineering (Tier 3)",
-        "tuition": "₹1.98 Lakh/yr",
-        "avgPlacement": "₹9.2 LPA",
-        "exam": "VITEEE",
-        "link": "https://vit.ac.in",
-        "applyLink": "https://viteee.vit.ac.in"
-      },
-      {
-        "id": "c24",
-        "name": "SRM Institute of Science & Tech",
-        "field": "Engineering & Tech",
-        "location": "Chennai, Tamil Nadu",
-        "nirfRank": "#28 Engineering (Tier 3)",
-        "tuition": "₹2.5 Lakh/yr",
-        "avgPlacement": "₹7.5 LPA",
-        "exam": "SRMJEEE",
-        "link": "https://www.srmist.edu.in",
-        "applyLink": "https://applications.srmist.edu.in"
-      },
-      {
-        "id": "c25",
+        "id": "c14",
         "name": "Christ University",
         "field": "Business & Management",
         "location": "Bengaluru, Karnataka",
@@ -542,7 +482,7 @@
         "applyLink": "https://christuniversity.in/admissions"
       },
       {
-        "id": "c26",
+        "id": "c15",
         "name": "DY Patil Medical College",
         "field": "Medicine & Healthcare",
         "location": "Navi Mumbai, Maharashtra",
@@ -554,19 +494,7 @@
         "applyLink": "https://dypatil.edu/admissions"
       },
       {
-        "id": "c27",
-        "name": "St. Xavier's College",
-        "field": "Pure Sciences",
-        "location": "Mumbai, Maharashtra",
-        "nirfRank": "#87 Overall (Tier 3)",
-        "tuition": "₹18,000/yr",
-        "avgPlacement": "₹6.0 LPA",
-        "exam": "Merit List / XET",
-        "link": "https://xaviers.ac",
-        "applyLink": "https://xaviers.ac/admissions"
-      },
-      {
-        "id": "c28",
+        "id": "c16",
         "name": "Lovely Professional University (LPU)",
         "field": "Engineering & Tech",
         "location": "Jalandhar, Punjab",
@@ -578,7 +506,7 @@
         "applyLink": "https://www.lpu.in/admission"
       },
       {
-        "id": "c29",
+        "id": "c17",
         "name": "Amity University Noida",
         "field": "Engineering & Tech",
         "location": "Noida, Uttar Pradesh",
@@ -590,7 +518,7 @@
         "applyLink": "https://amity.edu/admission-procedure.aspx"
       },
       {
-        "id": "c30",
+        "id": "c18",
         "name": "Chitkara University",
         "field": "Engineering & Tech",
         "location": "Rajpura, Punjab",
@@ -600,18 +528,6 @@
         "exam": "JEE Main",
         "link": "https://www.chitkara.edu.in",
         "applyLink": "https://www.chitkara.edu.in/admissions"
-      },
-      {
-        "id": "c31",
-        "name": "Chandigarh University",
-        "field": "Engineering & Tech",
-        "location": "Mohali, Punjab",
-        "nirfRank": "#45 Engineering (Tier 4)",
-        "tuition": "₹1.6 Lakh/yr",
-        "avgPlacement": "₹6.0 LPA",
-        "exam": "CUCET",
-        "link": "https://www.cuchd.in",
-        "applyLink": "https://cucet.cuchd.in"
       }
     ],
     "indianScholarships": [
@@ -637,16 +553,6 @@
       },
       {
         "id": "sch3",
-        "name": "AICTE Pragati Scholarship for Girls",
-        "type": "Government",
-        "provider": "AICTE, Govt of India",
-        "amount": "₹50,000 / year",
-        "deadline": "15 November 2026",
-        "eligibility": "Girl students admitted to AICTE Diploma/Degree",
-        "applyLink": "https://www.aicte-india.org/schemes/students-development-schemes/Pragathi"
-      },
-      {
-        "id": "sch4",
         "name": "Tata Building India & Education Trust Scholarship",
         "type": "Private CSR",
         "provider": "Tata Trusts",
@@ -656,7 +562,7 @@
         "applyLink": "https://www.tatatrusts.org/our-work/individual-grants-programme/education-grants"
       },
       {
-        "id": "sch5",
+        "id": "sch4",
         "name": "Reliance Foundation Undergraduate Scholarship",
         "type": "Private CSR",
         "provider": "Reliance Foundation",
@@ -666,17 +572,7 @@
         "applyLink": "https://www.scholarships.reliancefoundation.org"
       },
       {
-        "id": "sch6",
-        "name": "HDFC Bank Parivartan ECSS Scholarship",
-        "type": "Private CSR",
-        "provider": "HDFC Bank Parivartan",
-        "amount": "Up to ₹75,000 / year",
-        "deadline": "30 October 2026",
-        "eligibility": "Class 1 to College students facing financial crisis",
-        "applyLink": "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme"
-      },
-      {
-        "id": "sch7",
+        "id": "sch5",
         "name": "Aditya Birla Capital Scholarship Scheme",
         "type": "Private CSR",
         "provider": "Aditya Birla Foundation",
@@ -686,7 +582,7 @@
         "applyLink": "https://www.buddy4study.com/page/aditya-birla-capital-scholarship"
       },
       {
-        "id": "sch8",
+        "id": "sch6",
         "name": "DST INSPIRE Scholarship (SHE)",
         "type": "Government",
         "provider": "Dept of Science & Technology, Govt of India",
@@ -694,26 +590,6 @@
         "deadline": "31 December 2026",
         "eligibility": "Top 1% in Class 12th pursuing Basic & Natural Sciences",
         "applyLink": "https://online-inspire.gov.in"
-      },
-      {
-        "id": "sch9",
-        "name": "SBI Asha Scholarship Scheme",
-        "type": "Private CSR",
-        "provider": "SBI Foundation",
-        "amount": "Up to ₹50,000 / year",
-        "deadline": "25 November 2026",
-        "eligibility": "Meritorious students from low-income families",
-        "applyLink": "https://www.sbifoundation.in"
-      },
-      {
-        "id": "sch10",
-        "name": "Kotak Kanya Scholarship",
-        "type": "Private CSR",
-        "provider": "Kotak Education Foundation",
-        "amount": "Up to ₹1,50,000 / year",
-        "deadline": "30 September 2026",
-        "eligibility": "Meritorious girl students pursuing professional UG degrees",
-        "applyLink": "https://kotakeducation.org/kotak-kanya-scholarship/"
       }
     ],
     "indianInternships": [
@@ -749,16 +625,6 @@
       },
       {
         "id": "int4",
-        "company": "Reserve Bank of India (RBI)",
-        "title": "RBI Summer Internship Program",
-        "type": "Government",
-        "location": "Mumbai / Regional Centers",
-        "stipend": "₹20,000 / month",
-        "duration": "3 Months",
-        "applyLink": "https://opportunities.rbi.org.in"
-      },
-      {
-        "id": "int5",
         "company": "Google India",
         "title": "Software Engineering Intern (Summer 2026)",
         "type": "Corporate Tech",
@@ -768,7 +634,7 @@
         "applyLink": "https://buildyourfuture.withgoogle.com/internships"
       },
       {
-        "id": "int6",
+        "id": "int5",
         "company": "Microsoft India",
         "title": "Research & Software Development Intern",
         "type": "Corporate Tech",
@@ -778,17 +644,7 @@
         "applyLink": "https://careers.microsoft.com/students/us/en/indiascholarships"
       },
       {
-        "id": "int7",
-        "company": "Amazon India",
-        "title": "Software Development Engineer Intern",
-        "type": "Corporate Tech",
-        "location": "Bengaluru / Hyderabad",
-        "stipend": "₹95,000 / month",
-        "duration": "6 Months",
-        "applyLink": "https://www.amazon.jobs/en/teams/internships-india"
-      },
-      {
-        "id": "int8",
+        "id": "int6",
         "company": "Razorpay",
         "title": "Product & Engineering Summer Intern",
         "type": "Fintech Unicorn",
@@ -796,26 +652,6 @@
         "stipend": "₹60,000 / month",
         "duration": "3 Months",
         "applyLink": "https://razorpay.com/jobs"
-      },
-      {
-        "id": "int9",
-        "company": "Flipkart",
-        "title": "Runway SDE Female Intern Program",
-        "type": "Corporate Tech",
-        "location": "Bengaluru, Karnataka",
-        "stipend": "₹80,000 / month",
-        "duration": "2 Months",
-        "applyLink": "https://www.flipkartcareers.com"
-      },
-      {
-        "id": "int10",
-        "company": "Zerodha",
-        "title": "Fintech Systems & UI/UX Intern",
-        "type": "Fintech Unicorn",
-        "location": "Bengaluru / Remote",
-        "stipend": "₹45,000 / month",
-        "duration": "3 to 6 Months",
-        "applyLink": "https://zerodha.com/careers"
       }
     ],
     "health": {
@@ -839,11 +675,11 @@
       ],
       "workoutLogs": [
         {
-          "id": "w1",
-          "date": "2026-07-21",
-          "type": "Gym Resistance Training",
+          "id": "w_1787291940337",
+          "date": "2026-08-21",
+          "type": "r",
           "duration": 45,
-          "calories": 350
+          "calories": 380
         }
       ],
       "macroLogs": {
@@ -884,36 +720,76 @@
         }
       ],
       "resumeText": "Undergraduate Engineering student specializing in scalable full-stack applications, algorithms, and distributed AI systems.",
-      "jobApplications": [
-        {
-          "id": "j_1787130826995",
-          "company": "ghfg",
-          "role": "grf",
-          "stage": "Applied",
-          "salary": "220000",
-          "appliedDate": "2026-08-19",
-          "notes": "Tracked via BioVerse"
-        },
-        {
-          "id": "j1",
-          "company": "Google India",
-          "role": "SWE Intern 2026",
-          "stage": "Interviewing",
-          "salary": "13,20,00,00",
-          "appliedDate": "2026-06-15",
-          "notes": "Coding Round Passed"
-        },
-        {
-          "id": "j2",
-          "company": "Razorpay",
-          "role": "Backend Engineer Intern",
-          "stage": "Offer",
-          "salary": "7,20,000",
-          "appliedDate": "2026-05-20",
-          "notes": "Offer Received: ₹60k/month stipend"
-        }
-      ]
+      "jobApplications": []
     },
+    "habits": [],
+    "exams": [
+      {
+        "id": "ex1",
+        "name": "GATE CSE 2027 (IISc/IIT M.Tech & PSU)",
+        "targetDate": "2027-02-06",
+        "syllabusProgress": 68,
+        "targetScore": "AIR < 100"
+      },
+      {
+        "id": "ex2",
+        "name": "CAT 2026 (IIM Ahmedabad & Bangalore)",
+        "targetDate": "2026-11-29",
+        "syllabusProgress": 52,
+        "targetScore": "99.5+ Percentile"
+      },
+      {
+        "id": "ex3",
+        "name": "AWS Certified Solutions Architect",
+        "targetDate": "2026-09-15",
+        "syllabusProgress": 85,
+        "targetScore": "850 / 1000"
+      }
+    ],
+    "taxProfile": {
+      "annualIncome": 1400000,
+      "deductions80C": 150000,
+      "healthInsurance80D": 25000,
+      "nps80CCD": 50000,
+      "standardDeduction": 75000,
+      "hraExemption": 120000
+    },
+    "interviewQuestions": [
+      {
+        "id": "iq1",
+        "category": "System Design",
+        "title": "Design a Real-Time Distributed Rate Limiter",
+        "difficulty": "Hard",
+        "company": "Google / Stripe",
+        "answer": "Use Token Bucket or Leaky Bucket with Redis clusters. Implement sliding window logs with Lua scripts for atomicity. Handle multi-datacenter clock drift with NTP synchronizers."
+      },
+      {
+        "id": "iq2",
+        "category": "Data Structures",
+        "title": "LRU Cache Implementation with O(1) Operations",
+        "difficulty": "Medium",
+        "company": "Amazon / Microsoft",
+        "answer": "Use a Doubly Linked List paired with a Hash Map. Map stores Key -> Node reference. Move accessed node to head; evict from tail upon capacity breach."
+      },
+      {
+        "id": "iq3",
+        "category": "System Design",
+        "title": "Design URL Shortener (TinyURL) at 100M Daily Queries",
+        "difficulty": "Medium",
+        "company": "Meta / Uber",
+        "answer": "Base62 encoding of auto-incrementing IDs or MD5 hash prefixes. Implement Cassandra/DynamoDB for high write throughput with Redis caching for top 20% hot links."
+      },
+      {
+        "id": "iq4",
+        "category": "Behavioral",
+        "title": "Describe a Time You Resolved a Critical Production Incident",
+        "difficulty": "Senior",
+        "company": "All Tier 1 Tech",
+        "answer": "Use STAR method: Situation (database deadlock during flash sale), Task (restore 99.99% availability), Action (triaged slow queries, introduced read replicas & circuit breakers), Result (zero data loss, latency reduced by 70%)."
+      }
+    ],
+    "soundEnabled": true,
+    "speechVoiceEnabled": false,
     "apiSettings": {
       "geminiKey": ""
     },
@@ -944,7 +820,173 @@
       }
     ],
     "theme": "dark",
-    "sidebarOpen": false
+    "sidebarOpen": false,
+    "emailLogs": [
+      {
+        "id": "em_1787288910514",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Work Priority: Eisenhower Task Added",
+        "body": "<p style=\"color:#06b6d4;font-weight:bold;\">Eisenhower Task Added</p><p>New Task \"hello\" assigned to Matrix Q1</p>",
+        "category": "Work",
+        "timestamp": "8/21/2026, 10:38:30 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786859664031",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Work Priority: Eisenhower Task Added",
+        "body": "<p style=\"color:#06b6d4;font-weight:bold;\">Eisenhower Task Added</p><p>New Task \"gh\" assigned to Matrix Q2</p>",
+        "category": "Work",
+        "timestamp": "8/16/2026, 11:24:24 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786859650958",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Finance Alert: Financial Ledger Activity",
+        "body": "<p style=\"color:#f59e0b;font-weight:bold;\">Financial Ledger Activity</p><p>Logged EXPENSE of ₹56 (Stipend / Income - General)</p>",
+        "category": "Finance",
+        "timestamp": "8/16/2026, 11:24:10 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786859638706",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Finance Alert: Financial Ledger Activity",
+        "body": "<p style=\"color:#f59e0b;font-weight:bold;\">Financial Ledger Activity</p><p>Logged EXPENSE of ₹444 (Stipend / Income - General)</p>",
+        "category": "Finance",
+        "timestamp": "8/16/2026, 11:23:58 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786859615848",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Workout Completed 💪",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Workout Completed 💪</p><p>Completed 45 mins of dd (300 kcal burned).</p>",
+        "category": "Health",
+        "timestamp": "8/16/2026, 11:23:35 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786853907970",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Work Priority: Eisenhower Task Added",
+        "body": "<p style=\"color:#06b6d4;font-weight:bold;\">Eisenhower Task Added</p><p>New Task \"hello\" assigned to Matrix Q2</p>",
+        "category": "Work",
+        "timestamp": "8/16/2026, 9:48:27 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786853898778",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Finance Alert: Financial Ledger Activity",
+        "body": "<p style=\"color:#f59e0b;font-weight:bold;\">Financial Ledger Activity</p><p>Logged EXPENSE of ₹40,000 (Stipend / Income - 3w)</p>",
+        "category": "Finance",
+        "timestamp": "8/16/2026, 9:48:18 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786853885686",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Workout Completed 💪",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Workout Completed 💪</p><p>Completed 45 mins of training (300 kcal burned).</p>",
+        "category": "Health",
+        "timestamp": "8/16/2026, 9:48:05 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786839460893",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Gmail SMTP Test Dispatch",
+        "body": "\n        <p>Congratulations! Your Gmail SMTP integration is working perfectly.</p>\n        <p><strong>Configured Account:</strong> mahisiddharth721@gmail.com</p>\n        <p><strong>Server Host:</strong> smtp.gmail.com:465</p>\n        <p>All component events across Login, Health, Finance, Work, and Student tracks will dispatch real-time alerts to this inbox.</p>\n      ",
+        "category": "System Test",
+        "timestamp": "8/16/2026, 5:47:40 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786839188184",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Workout Completed 💪",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Workout Completed 💪</p><p>Completed 45 mins of training (300 kcal burned).</p>",
+        "category": "Health",
+        "timestamp": "8/16/2026, 5:43:08 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786839176241",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Finance Alert: Financial Ledger Activity",
+        "body": "<p style=\"color:#f59e0b;font-weight:bold;\">Financial Ledger Activity</p><p>Logged INCOME of ₹100,000 (Food & Mess - 3w)</p>",
+        "category": "Finance",
+        "timestamp": "8/16/2026, 5:42:56 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786839154294",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Work Priority: Eisenhower Task Added",
+        "body": "<p style=\"color:#06b6d4;font-weight:bold;\">Eisenhower Task Added</p><p>New Task \"hello\" assigned to Matrix Q3</p>",
+        "category": "Work",
+        "timestamp": "8/16/2026, 5:42:34 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786776053906",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Hydration Goal Achieved! 🎉",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Hydration Goal Achieved! 🎉</p><p>You hit your 2,500ml daily target (4500ml logged).</p>",
+        "category": "Health",
+        "timestamp": "8/15/2026, 12:10:53 PM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786776053416",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Hydration Goal Achieved! 🎉",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Hydration Goal Achieved! 🎉</p><p>You hit your 2,500ml daily target (3750ml logged).</p>",
+        "category": "Health",
+        "timestamp": "8/15/2026, 12:10:53 PM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786775690680",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Hydration Goal Achieved! 🎉",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Hydration Goal Achieved! 🎉</p><p>You hit your 2,500ml daily target (3500ml logged).</p>",
+        "category": "Health",
+        "timestamp": "8/15/2026, 12:04:50 PM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786775690008",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Hydration Goal Achieved! 🎉",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Hydration Goal Achieved! 🎉</p><p>You hit your 2,500ml daily target (3250ml logged).</p>",
+        "category": "Health",
+        "timestamp": "8/15/2026, 12:04:50 PM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786775689292",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Health Protocol: Hydration Goal Achieved! 🎉",
+        "body": "<p style=\"color:#10b981;font-weight:bold;\">Hydration Goal Achieved! 🎉</p><p>You hit your 2,500ml daily target (3000ml logged).</p>",
+        "category": "Health",
+        "timestamp": "8/15/2026, 12:04:49 PM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1786771841532",
+        "to": "mahisiddharth721@gmail.com",
+        "subject": "Security Alert: OTP Login Success",
+        "body": "\n        <p>A new security activity was detected on your BioVerse Account:</p>\n        <ul>\n          <li><strong>Event:</strong> OTP Login Success</li>\n          <li><strong>Details:</strong> Verified 2FA OTP login completed at 11:00:41 AM</li>\n          <li><strong>IP / Device:</strong> Web Session (Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36)</li>\n        </ul>\n        <p>If this was not you, please secure your account immediately.</p>\n      ",
+        "category": "Security",
+        "timestamp": "8/15/2026, 11:00:41 AM",
+        "status": "sent"
+      }
+    ],
+    "hasSeenTour": true,
+    "isNewUser": false
   },
   "tasks": [],
   "goals": [],
