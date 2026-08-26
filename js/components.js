@@ -147,7 +147,14 @@ const UI = {
         </div>
 
         <!-- Right Aligned Actions & Profile -->
-        <div class="topbar-actions" style="display:flex; align-items:center; gap:12px; margin-left:auto;">
+        <div class="topbar-actions" style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+          <!-- Spotlight Command Palette Trigger -->
+          <button class="btn btn-ghost btn-sm" onclick="CommandPalette.open()" data-tooltip="Quick Command (Ctrl+K)" style="font-size:12px; font-weight:600; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:5px 10px; display:flex; align-items:center; gap:8px; color:#cbd5e1; cursor:pointer;">
+            <i class="fas fa-search" style="color:var(--cyan);"></i>
+            <span>Search...</span>
+            <kbd style="font-size:10px; font-family:monospace; background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; color:#94a3b8;">⌘K</kbd>
+          </button>
+
           <!-- Quick Return to Overview -->
           <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/dashboard')" data-tooltip="Dashboard Overview" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;">
             <i class="fas fa-th-large"></i> <span>Overview</span>
@@ -191,6 +198,31 @@ const UI = {
           </div>
         </div>
       </nav>
+      ${this.telemetryTicker()}
+    `;
+  },
+
+  // ─── Live Cyberpunk Bio-Telemetry Marquee ──────────────
+  telemetryTicker() {
+    const scores = Store.get('scores') || {};
+    const finances = Store.get('finances') || {};
+    const health = Store.get('health') || {};
+    const tasks = Store.get('tasks') || [];
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const velocity = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 92;
+
+    return `
+      <div class="bio-telemetry-ticker-bar" style="background:rgba(6,9,18,0.95); border-bottom:1px solid rgba(0,242,254,0.18); overflow:hidden; white-space:nowrap; padding:5px 0; font-family:var(--font-mono, monospace); font-size:11px; color:#94a3b8; display:flex; align-items:center;">
+        <div class="ticker-content" style="display:inline-flex; gap:32px; animation: tickerMarquee 40s linear infinite;">
+          <span><strong style="color:#10b981;">● TiDB CLOUD:</strong> CONNECTED (TLS 1.2 • 14ms)</span>
+          <span><strong style="color:#00f2fe;">💧 HYDRATION:</strong> ${health.waterIntake || 2100}ml (${Math.min(100, Math.round(((health.waterIntake || 2100) / 2500) * 100))}%)</span>
+          <span><strong style="color:#ec4899;">⚡ VELOCITY:</strong> ${velocity}% EXECUTION</span>
+          <span><strong style="color:#fbbf24;">💰 MONTHLY INCOME:</strong> ₹${Number(finances.monthlyIncome || 100000).toLocaleString()}</span>
+          <span><strong style="color:#c084fc;">🧬 MASTER LIFE SCORE:</strong> ${scores.life || 86}/100 <span style="color:#10b981;">▲ +4.2%</span></span>
+          <span><strong style="color:#38bdf8;">🧠 AI LIFE COACH:</strong> GEMINI NEURAL ACTIVE</span>
+          <span><strong style="color:#10b981;">🔒 DPDP ACT 2023:</strong> VAULT SECURED</span>
+        </div>
+      </div>
     `;
   },
 

@@ -1664,3 +1664,14 @@
   margin: 0 auto !important;
   padding: 28px 24px !important;
 }
+
+/* ─── Cyberpunk Telemetry Marquee Animation ─────────────────────── */
+@keyframes tickerMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.bio-telemetry-ticker-bar:hover .ticker-content {
+  animation-play-state: paused;
+}
+

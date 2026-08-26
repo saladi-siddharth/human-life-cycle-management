@@ -1,0 +1,21 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BIOVERSE 3D CARD TILT & HOLOGRAPHIC SPECULAR STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.card-tilt-target {
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-holographic-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+  mix-blend-mode: overlay;
+}
