@@ -130,7 +130,7 @@ function LifePage() {
 function toggleGoalDone(id) {
   Store.toggleLifeGoal(id);
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.slothCelebration('Milestone Achieved! 🏆');
+    ActionPhysics.launchCelebration('life', 'Milestone Achieved! 🏆', '5-Pillar Equilibrium Unlocked 🌟');
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(50, 'Achieved Lifetime Goal Milestone');
@@ -190,7 +190,7 @@ function saveLifeGoalForm(e) {
   UI.closeModal();
 
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.slothCelebration(title);
+    ActionPhysics.launchCelebration('life', title, '5-Pillar Goal Set in Matrix 🌟');
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(30, `Set Milestone: ${title}`);

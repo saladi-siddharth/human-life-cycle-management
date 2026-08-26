@@ -714,7 +714,7 @@ function quickAddWater(amount) {
   });
 
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.emeraldPulse(`💧 Hydrated +${amount}ml`);
+    ActionPhysics.launchCelebration('health', `+${amount}ml Water Logged`, 'Hydration & Cellular Vitality 💧');
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(10, 'Logged Clean Hydration');
@@ -809,8 +809,7 @@ function saveWorkoutForm(e) {
 
   UI.closeModal();
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.dumbbellFlex(type);
-    ActionPhysics.emeraldPulse(`💪 ${dur}m ${type}`);
+    ActionPhysics.launchCelebration('health', `${dur}m ${type}`, 'Workout & Vitality Synchronized 💪');
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(25, 'Completed Daily Physical Training');

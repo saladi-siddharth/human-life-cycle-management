@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
-   BIOVERSE ACTION PHYSICS ENGINE — Cute Sloth "Hurray!", Typing Feedback & 3D Creations
+   BIOVERSE CELESTIAL ACTION PHYSICS & CANVAS CELEBRATION ENGINE
+   Ultra-Smooth 60FPS Full-Screen Particle Physics, Audio DSP & Micro-Interactions
    ═══════════════════════════════════════════════════════════════════ */
 
 const ActionPhysics = {
@@ -19,6 +20,7 @@ const ActionPhysics = {
   _ambientSource: null,
   _ambientGain: null,
 
+  // ─── Web Audio DSP Synthesizer ─────────────────────────────
   playSound(type = 'sloth') {
     try {
       if (typeof Store !== 'undefined' && Store.get('soundEnabled') === false) return;
@@ -27,49 +29,43 @@ const ActionPhysics = {
       const now = ctx.currentTime;
 
       if (type === 'type') {
-        // Soft mechanical typewriter keypress chime
+        // Soft mechanical keypress chime
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(1200 + Math.random() * 300, now);
         osc.frequency.exponentialRampToValueAtTime(600, now + 0.04);
-
         gain.gain.setValueAtTime(0.08, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.04);
-      } else if (type === 'sloth') {
-        // Joyful 3-tone victory melody chime for Cute Sloth Hurray
+      } else if (type === 'sloth' || type === 'victory') {
+        // Joyful 4-tone victory harmonic chime
         const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         freqs.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-
-          gain.gain.setValueAtTime(0.25, now + idx * 0.09);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.25);
-
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          gain.gain.setValueAtTime(0.22, now + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.28);
           osc.connect(gain);
           gain.connect(ctx.destination);
-          osc.start(now + idx * 0.09);
-          osc.stop(now + idx * 0.09 + 0.25);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.28);
         });
       } else if (type === 'rocket') {
-        // Rocket launch engine sweep whoosh
+        // Rocket launch sweep whoosh
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(100, now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
-
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.5);
         gain.gain.setValueAtTime(0.01, now);
         gain.gain.linearRampToValueAtTime(0.2, now + 0.2);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
@@ -79,113 +75,97 @@ const ActionPhysics = {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(400, now + 0.2);
-
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.22);
         gain.gain.setValueAtTime(0.2, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.25);
       } else if (type === 'moon') {
-        // Soft soothing lullaby bell
+        // Lullaby bell
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(880, now);
         osc.frequency.exponentialRampToValueAtTime(440, now + 0.5);
-
         gain.gain.setValueAtTime(0.2, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.5);
-      } else if (type === 'wand') {
+      } else if (type === 'wand' || type === 'sparkle') {
         // Magic wand starburst chime
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(1500, now);
-        osc.frequency.exponentialRampToValueAtTime(3000, now + 0.2);
-
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(3200, now + 0.22);
         gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.2);
+        osc.stop(now + 0.22);
       } else if (type === 'waterSplash') {
-        // Liquid water pour and splash sound
-        [440, 580, 720, 880, 1100].forEach((freq, idx) => {
+        // Liquid splash sound
+        [440, 600, 780, 960, 1200].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq + Math.random() * 80, now + idx * 0.04);
-          osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + idx * 0.04 + 0.08);
-
-          gain.gain.setValueAtTime(0.18, now + idx * 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.09);
-
+          osc.frequency.setValueAtTime(freq + Math.random() * 80, now + idx * 0.035);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + idx * 0.035 + 0.08);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.035);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.035 + 0.09);
           osc.connect(gain);
           gain.connect(ctx.destination);
-          osc.start(now + idx * 0.04);
-          osc.stop(now + idx * 0.04 + 0.09);
+          osc.start(now + idx * 0.035);
+          osc.stop(now + idx * 0.035 + 0.09);
         });
       } else if (type === 'coinDrop') {
-        // Metallic coin clink audio chime
-        [3200, 4800, 2400].forEach((freq, idx) => {
+        // Metallic coin clinks
+        [3200, 4800, 2400, 3600].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.05);
-          osc.frequency.exponentialRampToValueAtTime(freq * 0.6, now + idx * 0.05 + 0.12);
-
-          gain.gain.setValueAtTime(0.22, now + idx * 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.12);
-
+          osc.frequency.setValueAtTime(freq, now + idx * 0.045);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.6, now + idx * 0.045 + 0.12);
+          gain.gain.setValueAtTime(0.22, now + idx * 0.045);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.12);
           osc.connect(gain);
           gain.connect(ctx.destination);
-          osc.start(now + idx * 0.05);
-          osc.stop(now + idx * 0.05 + 0.12);
+          osc.start(now + idx * 0.045);
+          osc.stop(now + idx * 0.045 + 0.12);
         });
       } else if (type === 'pomodoroBell') {
-        // Harmonic Tibetan singing bowl gong
+        // Tibetan singing bowl gong
         [432, 864, 1296].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = idx === 0 ? 'sine' : 'triangle';
           osc.frequency.setValueAtTime(freq, now);
-
           gain.gain.setValueAtTime(0.3 / (idx + 1), now);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
-
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now);
           osc.stop(now + 2.5);
         });
       }
-    } catch (e) {
-      // Silent fallback
-    }
+    } catch (e) {}
   },
 
-  // ─── Continuous Ambient Focus Soundscapes ─────────────────
+  // ─── Ambient Focus Soundscape ──────────────────────────────
   startAmbientNoise(mode = 'pink') {
     try {
       if (this._ambientSource) this.stopAmbientNoise();
       const ctx = this.getAudioContext();
       if (!ctx) return;
-
       const bufferSize = ctx.sampleRate * 3;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
-
       let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
       for (let i = 0; i < bufferSize; i++) {
         const white = Math.random() * 2 - 1;
@@ -199,23 +179,18 @@ const ActionPhysics = {
           data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
           b6 = white * 0.115926;
         } else {
-          // Soft rain / white noise
           data[i] = white * 0.035;
         }
       }
-
       this._ambientSource = ctx.createBufferSource();
       this._ambientSource.buffer = buffer;
       this._ambientSource.loop = true;
-
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(mode === 'pink' ? 800 : 1800, ctx.currentTime);
-
       this._ambientGain = ctx.createGain();
       this._ambientGain.gain.setValueAtTime(0.01, ctx.currentTime);
       this._ambientGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 1.5);
-
       this._ambientSource.connect(filter);
       filter.connect(this._ambientGain);
       this._ambientGain.connect(ctx.destination);
@@ -237,348 +212,353 @@ const ActionPhysics = {
     } catch (e) {}
   },
 
-  // ─── 1. CUTE SLOTH "HURRAY!" GOAL CELEBRATION ───────────────
-  slothCelebration(goalTitle = 'New Milestone') {
-    this.playSound('sloth');
+  // ═══════════════════════════════════════════════════════════════════
+  // 🌟 HIGH-PERFORMANCE 60FPS FULL-SCREEN CANVAS CELEBRATION ENGINE 🌟
+  // ═══════════════════════════════════════════════════════════════════
+  launchCelebration(preset = 'career', title = 'Action Completed!', subtitle = 'Synchronized with BioVerse Matrix') {
+    // 1. Play Sound
+    const soundMap = {
+      career: 'wand',
+      health: 'flex',
+      finance: 'coinDrop',
+      work: 'wand',
+      life: 'sloth',
+      student: 'sloth',
+      business: 'coinDrop'
+    };
+    this.playSound(soundMap[preset] || 'wand');
 
-    const overlay = document.createElement('div');
-    overlay.className = 'sloth-celebration-overlay';
-    overlay.innerHTML = `
-      <div class="sloth-modal-card">
-        <div class="confetti-container-sloth" id="sloth-confetti-box"></div>
-        
-        <!-- Speech Bubble -->
-        <div class="sloth-speech-bubble">
-          <span>Hurray! 🦥🎉 Goal Unlocked!</span>
-          <strong class="sloth-goal-title">"${goalTitle}"</strong>
-        </div>
-
-        <!-- Cute Animated SVG Sloth Character -->
-        <div class="sloth-character-wrapper">
-          <svg class="cute-sloth-svg" viewBox="0 0 200 200">
-            <!-- Party Hat -->
-            <polygon points="100,20 85,60 115,60" fill="#f43f5e" />
-            <circle cx="100" cy="18" r="7" fill="#fbbf24" />
-            <path d="M 85,60 Q 100,65 115,60" stroke="#f59e0b" stroke-width="3" fill="none" />
-
-            <!-- Sloth Body -->
-            <ellipse cx="100" cy="130" rx="45" ry="50" fill="#a88b68" />
-            <ellipse cx="100" cy="130" rx="32" ry="38" fill="#e6d5bc" />
-
-            <!-- Sloth Head -->
-            <circle cx="100" cy="90" r="35" fill="#a88b68" />
-            <ellipse cx="100" cy="92" rx="28" ry="22" fill="#e6d5bc" />
-
-            <!-- Eye Patches -->
-            <ellipse cx="86" cy="90" rx="10" ry="7" fill="#785d3f" transform="rotate(-10 86 90)" />
-            <ellipse cx="114" cy="90" rx="10" ry="7" fill="#785d3f" transform="rotate(10 114 90)" />
-
-            <!-- Happy Eyes -->
-            <path d="M 82,90 Q 86,85 90,90" stroke="#2d1e18" stroke-width="3" fill="none" stroke-linecap="round" />
-            <path d="M 110,90 Q 114,85 118,90" stroke="#2d1e18" stroke-width="3" fill="none" stroke-linecap="round" />
-
-            <!-- Cute Nose & Smile -->
-            <ellipse cx="100" cy="96" rx="5" ry="4" fill="#2d1e18" />
-            <path d="M 94,101 Q 100,107 106,101" stroke="#2d1e18" stroke-width="2.5" fill="none" stroke-linecap="round" />
-
-            <!-- Cheeks -->
-            <circle cx="78" cy="96" r="4" fill="#f43f5e" opacity="0.6" />
-            <circle cx="122" cy="96" r="4" fill="#f43f5e" opacity="0.6" />
-
-            <!-- Waving Arms (Hurray pose) -->
-            <g class="sloth-arm-left">
-              <path d="M 60,110 Q 35,80 25,60" stroke="#a88b68" stroke-width="12" stroke-linecap="round" fill="none" />
-              <circle cx="23" cy="58" r="6" fill="#785d3f" />
-            </g>
-            <g class="sloth-arm-right">
-              <path d="M 140,110 Q 165,80 175,60" stroke="#a88b68" stroke-width="12" stroke-linecap="round" fill="none" />
-              <circle cx="177" cy="58" r="6" fill="#785d3f" />
-            </g>
-          </svg>
-        </div>
-
-        <button class="btn btn-primary btn-sm sloth-close-btn" onclick="this.closest('.sloth-celebration-overlay').remove()">
-          Awesome! 🚀
-        </button>
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    // Generate Confetti Particles
-    const confettiBox = overlay.querySelector('#sloth-confetti-box');
-    const colors = ['#f43f5e', '#3b82f6', '#10b981', '#fbbf24', '#a855f7', '#06b6d4'];
-    for (let i = 0; i < 35; i++) {
-      const c = document.createElement('div');
-      c.className = 'sloth-confetti-piece';
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const left = Math.random() * 100;
-      const delay = Math.random() * 1.5;
-      const duration = 1.8 + Math.random() * 1.2;
-
-      c.style.cssText = `
-        position: absolute;
-        top: -10px;
-        left: ${left}%;
-        width: ${Math.random() * 8 + 6}px;
-        height: ${Math.random() * 12 + 6}px;
-        background: ${color};
-        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-        animation: confettiDrop ${duration}s linear ${delay}s infinite;
+    // 2. Setup Fullscreen Canvas
+    let canvas = document.getElementById('bioverse-celebration-canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      canvas.id = 'bioverse-celebration-canvas';
+      canvas.style.cssText = `
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 999999;
       `;
-      confettiBox.appendChild(c);
+      document.body.appendChild(canvas);
     }
 
-    setTimeout(() => {
-      if (overlay.parentNode) {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.4s ease';
-        setTimeout(() => overlay.remove(), 400);
+    const dpr = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    // 3. Theme Color Palettes & Iconography
+    const themeConfig = {
+      career: {
+        colors: ['#00f2fe', '#4facfe', '#6366f1', '#a855f7', '#fbbf24', '#ffffff'],
+        icon: '🚀',
+        badgeBg: 'rgba(0, 242, 254, 0.18)',
+        badgeBorder: '#00f2fe',
+        auraGlow: 'rgba(0, 242, 254, 0.85)'
+      },
+      health: {
+        colors: ['#10b981', '#059669', '#00f2fe', '#34d399', '#6ee7b7', '#ffffff'],
+        icon: '💧',
+        badgeBg: 'rgba(16, 185, 129, 0.18)',
+        badgeBorder: '#10b981',
+        auraGlow: 'rgba(16, 185, 129, 0.85)'
+      },
+      finance: {
+        colors: ['#fbbf24', '#f59e0b', '#10b981', '#ffd700', '#fef08a', '#ffffff'],
+        icon: '🪙',
+        badgeBg: 'rgba(251, 191, 36, 0.18)',
+        badgeBorder: '#fbbf24',
+        auraGlow: 'rgba(251, 191, 36, 0.85)'
+      },
+      work: {
+        colors: ['#38bdf8', '#6366f1', '#ec4899', '#c084fc', '#818cf8', '#ffffff'],
+        icon: '⚡',
+        badgeBg: 'rgba(56, 189, 248, 0.18)',
+        badgeBorder: '#38bdf8',
+        auraGlow: 'rgba(56, 189, 248, 0.85)'
+      },
+      life: {
+        colors: ['#ec4899', '#f43f5e', '#a855f7', '#fbbf24', '#00f2fe', '#10b981'],
+        icon: '🌟',
+        badgeBg: 'rgba(236, 72, 153, 0.18)',
+        badgeBorder: '#ec4899',
+        auraGlow: 'rgba(236, 72, 153, 0.85)'
+      },
+      student: {
+        colors: ['#6366f1', '#8b5cf6', '#00f2fe', '#fbbf24', '#10b981', '#ffffff'],
+        icon: '🎓',
+        badgeBg: 'rgba(99, 102, 241, 0.18)',
+        badgeBorder: '#6366f1',
+        auraGlow: 'rgba(99, 102, 241, 0.85)'
+      },
+      business: {
+        colors: ['#00f2fe', '#10b981', '#fbbf24', '#6366f1', '#38bdf8', '#ffffff'],
+        icon: '🏢',
+        badgeBg: 'rgba(0, 242, 254, 0.18)',
+        badgeBorder: '#00f2fe',
+        auraGlow: 'rgba(0, 242, 254, 0.85)'
       }
-    }, 4500);
+    };
+
+    const cfg = themeConfig[preset] || themeConfig.career;
+
+    // 4. Spawn 90 Kinetic Physics Particles
+    const particles = [];
+    const originX = width / 2;
+    const originY = height / 2;
+
+    for (let i = 0; i < 95; i++) {
+      const angle = (i / 95) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+      const speed = 4 + Math.random() * 12;
+      const color = cfg.colors[Math.floor(Math.random() * cfg.colors.length)];
+      const size = Math.random() * 8 + 4;
+      const isCoin = preset === 'finance' && Math.random() > 0.4;
+      const isRibbon = (preset === 'life' || preset === 'student') && Math.random() > 0.5;
+
+      particles.push({
+        x: originX + (Math.random() - 0.5) * 40,
+        y: originY + (Math.random() - 0.5) * 40,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2.5,
+        gravity: 0.18 + Math.random() * 0.12,
+        drag: 0.97,
+        size: size,
+        color: color,
+        alpha: 1.0,
+        decay: 0.012 + Math.random() * 0.01,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.25,
+        wobble: Math.random() * Math.PI * 2,
+        isCoin: isCoin,
+        isRibbon: isRibbon,
+        sparkle: Math.random() > 0.6
+      });
+    }
+
+    // 5. Central 3D Kinetic Glass Badge State
+    const badge = {
+      scale: 0.1,
+      targetScale: 1.0,
+      opacity: 1.0,
+      shockwaveRadius: 10,
+      shockwaveAlpha: 1.0,
+      iconY: 0
+    };
+
+    let animationFrameId = null;
+    const startTime = performance.now();
+    const duration = 2200; // 2.2 seconds celebration
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      ctx.clearRect(0, 0, width, height);
+
+      // A. Draw Shockwave Expanding Ring
+      if (badge.shockwaveAlpha > 0) {
+        badge.shockwaveRadius += (width * 0.55 - badge.shockwaveRadius) * 0.08;
+        badge.shockwaveAlpha = Math.max(0, 1 - (badge.shockwaveRadius / (width * 0.45)));
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(originX, originY, badge.shockwaveRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = cfg.auraGlow;
+        ctx.lineWidth = Math.max(1, 4 * badge.shockwaveAlpha);
+        ctx.shadowColor = cfg.badgeBorder;
+        ctx.shadowBlur = 25;
+        ctx.globalAlpha = badge.shockwaveAlpha * 0.75;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // B. Render Particles with Kinetic Physics
+      particles.forEach(p => {
+        if (p.alpha <= 0) return;
+
+        p.vx *= p.drag;
+        p.vy *= p.drag;
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        p.wobble += 0.1;
+        p.alpha -= p.decay;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.globalAlpha = Math.max(0, p.alpha);
+
+        if (p.isCoin) {
+          // 🪙 3D Spinning Coin Ellipse
+          const coinWidth = p.size * 1.8 * Math.cos(p.wobble);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, Math.abs(coinWidth) + 1, p.size * 1.4, 0, 0, Math.PI * 2);
+          ctx.fillStyle = '#fbbf24';
+          ctx.shadowColor = '#f59e0b';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        } else if (p.isRibbon) {
+          // 🎉 Confetti Ribbon
+          const ribbonW = p.size * 1.6;
+          const ribbonH = p.size * 2.8 * Math.sin(p.wobble);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.fillRect(-ribbonW / 2, -Math.abs(ribbonH) / 2, ribbonW, Math.abs(ribbonH) + 1);
+        } else {
+          // ✨ Glowing Starburst / Energy Orb
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = p.sparkle ? 14 : 6;
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // C. Render Floating 3D Central Glass Badge
+      badge.scale += (badge.targetScale - badge.scale) * 0.15;
+      if (elapsed > 1600) {
+        badge.opacity = Math.max(0, 1 - (elapsed - 1600) / 500);
+      }
+
+      if (badge.opacity > 0) {
+        ctx.save();
+        ctx.translate(originX, originY);
+        ctx.scale(badge.scale, badge.scale);
+        ctx.globalAlpha = badge.opacity;
+
+        // Glowing Background Card
+        const cardW = Math.min(width - 40, 360);
+        const cardH = 110;
+        const radius = 22;
+
+        // Card Glow
+        ctx.shadowColor = cfg.auraGlow;
+        ctx.shadowBlur = 35;
+        ctx.fillStyle = 'rgba(7, 10, 20, 0.94)';
+        ctx.beginPath();
+        ctx.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, radius);
+        ctx.fill();
+
+        // Card Hairline Border
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = cfg.badgeBorder;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Icon
+        ctx.font = '36px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cfg.icon, -cardW / 2 + 45, 0);
+
+        // Title Text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(title.length > 26 ? title.substring(0, 24) + '...' : title, -cardW / 2 + 82, -8);
+
+        // Subtitle Text
+        ctx.fillStyle = cfg.badgeBorder;
+        ctx.font = '600 12px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText(subtitle, -cardW / 2 + 82, 14);
+
+        // XP / Status Badge Chip
+        ctx.fillStyle = cfg.badgeBg;
+        ctx.beginPath();
+        ctx.roundRect(-cardW / 2 + 82, 24, 150, 18, 9);
+        ctx.fill();
+        ctx.strokeStyle = cfg.badgeBorder;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9.5px "Inter", monospace';
+        ctx.fillText('✨ TELEMETRY RECORDED', -cardW / 2 + 90, 37);
+
+        ctx.restore();
+      }
+
+      if (elapsed < duration) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, width, height);
+      }
+    }
+
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    animationFrameId = requestAnimationFrame(animate);
   },
 
-  // ─── 2. 3D ROCKET LAUNCH PHYSICS (Job Application) ──────────
+  // ─── Backwards-Compatible Specialized Trigger Wrappers ─────
+  supernovaBurst(type = 'skill', label = 'Skill Mastered!') {
+    this.launchCelebration('career', label, 'Career Matrix Level Up 🚀');
+  },
+
+  goldCoinShower(amount = '₹25,000') {
+    this.launchCelebration('finance', `${amount} Recorded`, 'Compounding Wealth Multiplier 💰');
+  },
+
+  emeraldPulse(label = 'Health Synchronized') {
+    this.launchCelebration('health', label, 'Vitality & Hydration Compounded 💪');
+  },
+
+  quantumPortal(title = 'Task Scheduled') {
+    this.launchCelebration('work', title, 'Priority Scheduled in Focus Matrix ⚡');
+  },
+
+  slothCelebration(goalTitle = 'New Milestone') {
+    this.launchCelebration('life', goalTitle, '5-Pillar Equilibrium Achieved 🌟');
+  },
+
   rocketLaunch(company = 'Top Company', role = 'Role') {
-    this.playSound('rocket');
-
-    const rocket = document.createElement('div');
-    rocket.className = 'action-rocket-3d';
-    rocket.innerHTML = `
-      <div class="rocket-body">🚀</div>
-      <div class="rocket-flame"></div>
-      <div class="rocket-smoke"></div>
-    `;
-
-    const startX = window.innerWidth / 2 - 25;
-    rocket.style.cssText = `
-      position: fixed;
-      bottom: -100px;
-      left: ${startX}px;
-      font-size: 48px;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s ease-in;
-    `;
-
-    document.body.appendChild(rocket);
-
-    requestAnimationFrame(() => {
-      rocket.style.transform = `translate3d(0, -${window.innerHeight + 150}px, 0) scale(1.3) rotate(-5deg)`;
-    });
-
-    setTimeout(() => {
-      if (rocket.parentNode) rocket.parentNode.removeChild(rocket);
-    }, 1300);
+    this.launchCelebration('career', `${role} @ ${company}`, 'Application Tracked & Launched 🚀');
   },
 
-  // ─── 3. DUMBBELL MUSCLE POWER FLEX PHYSICS (Workout) ────────
   dumbbellFlex(workoutType = 'Workout') {
-    this.playSound('flex');
-
-    const flexEl = document.createElement('div');
-    flexEl.className = 'action-flex-dumbbell';
-    flexEl.innerHTML = `
-      <div class="flex-icon">🏋️‍♂️</div>
-      <div class="flex-aura"></div>
-      <div class="flex-label">Power Session: ${workoutType}!</div>
-    `;
-
-    flexEl.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-    `;
-
-    document.body.appendChild(flexEl);
-
-    requestAnimationFrame(() => {
-      flexEl.style.transform = 'translate(-50%, -50%) scale(1.4)';
-    });
-
-    setTimeout(() => {
-      flexEl.style.transform = 'translate(-50%, -50%) scale(0) rotate(20deg)';
-      flexEl.style.opacity = '0';
-      setTimeout(() => {
-        if (flexEl.parentNode) flexEl.parentNode.removeChild(flexEl);
-      }, 400);
-    }, 1400);
+    this.launchCelebration('health', `${workoutType} Complete`, 'Muscle Hypertrophy & Vitality 💪');
   },
 
-  // ─── 4. FLOATING MOON & DRIFTING ZZZ PHYSICS (Sleep) ────────
   moonSleep(hours = 8) {
-    this.playSound('moon');
-
-    const moonEl = document.createElement('div');
-    moonEl.className = 'action-moon-sleep';
-    moonEl.innerHTML = `
-      <div class="moon-body">🌙</div>
-      <div class="zzz-bubble z1">Z</div>
-      <div class="zzz-bubble z2">z</div>
-      <div class="zzz-bubble z3">z</div>
-    `;
-
-    moonEl.style.cssText = `
-      position: fixed;
-      bottom: 20%;
-      right: 20%;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 1.5s ease-out, opacity 1.5s ease-out;
-    `;
-
-    document.body.appendChild(moonEl);
-
-    requestAnimationFrame(() => {
-      moonEl.style.transform = 'translate3d(-40px, -120px, 0) scale(1.3)';
-    });
-
-    setTimeout(() => {
-      moonEl.style.opacity = '0';
-      setTimeout(() => {
-        if (moonEl.parentNode) moonEl.parentNode.removeChild(moonEl);
-      }, 500);
-    }, 1600);
+    this.launchCelebration('health', `${hours}h Rest Logged`, 'Circadian Rhythm Restored 🌙');
   },
 
-  // ─── 5. MAGIC WAND STARBURST PHYSICS (Task) ─────────────────
-  magicTask(title = 'Task') {
-    this.playSound('wand');
-
-    const wandEl = document.createElement('div');
-    wandEl.className = 'action-magic-wand';
-    wandEl.innerHTML = `
-      <div class="wand-icon">🪄</div>
-      <div class="starburst-ring"></div>
-    `;
-
-    const startX = window.innerWidth / 2;
-    const startY = window.innerHeight / 2;
-
-    wandEl.style.cssText = `
-      position: fixed;
-      left: ${startX - 20}px;
-      top: ${startY - 20}px;
-      font-size: 36px;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-    `;
-
-    document.body.appendChild(wandEl);
-
-    requestAnimationFrame(() => {
-      wandEl.style.transform = 'scale(1.5) rotate(-20deg)';
-    });
-
-    setTimeout(() => {
-      wandEl.style.transform = 'scale(0.2) rotate(45deg)';
-      wandEl.style.opacity = '0';
-      setTimeout(() => {
-        if (wandEl.parentNode) wandEl.parentNode.removeChild(wandEl);
-      }, 400);
-    }, 800);
+  magicTask(title = 'Task Complete') {
+    this.launchCelebration('work', title, 'Execution Velocity +20 XP 🏆');
   },
 
-  // ─── 6. 3D GRADUATION CAP LAUNCH PHYSICS (College Portal) ────
   gradCapLaunch(name = 'Institute') {
-    this.playSound('sloth');
-
-    const cap = document.createElement('div');
-    cap.className = 'action-grad-cap-3d';
-    cap.innerHTML = `🎓✨`;
-
-    const startX = window.innerWidth / 2 - 30;
-    const startY = window.innerHeight / 2 + 50;
-
-    cap.style.cssText = `
-      position: fixed;
-      left: ${startX}px;
-      top: ${startY}px;
-      font-size: 56px;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
-    `;
-
-    document.body.appendChild(cap);
-
-    requestAnimationFrame(() => {
-      cap.style.transform = 'translate3d(0, -180px, 0) scale(1.4) rotate(360deg)';
-    });
-
-    setTimeout(() => {
-      cap.style.opacity = '0';
-      setTimeout(() => {
-        if (cap.parentNode) cap.parentNode.removeChild(cap);
-      }, 400);
-    }, 900);
+    this.launchCelebration('student', name, 'NIRF Academic Target Updated 🎓');
   },
 
-  // ─── 7. 3D GOLD TROPHY SHINE PHYSICS (Scholarship Portal) ───
-  trophyShine(name = 'Scholarship', amount = '') {
-    this.playSound('sloth');
-
-    const trophy = document.createElement('div');
-    trophy.className = 'action-trophy-3d';
-    trophy.innerHTML = `
-      <div style="font-size:64px;">🏆</div>
-      <div style="font-size:14px;font-weight:800;color:#fbbf24;margin-top:4px;">${name}</div>
-      ${amount ? `<div style="font-size:12px;color:#10b981;font-weight:700;">${amount}</div>` : ''}
-    `;
-
-    trophy.style.cssText = `
-      position: fixed;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: rgba(15, 23, 42, 0.9);
-      border: 2px solid #fbbf24;
-      border-radius: 20px;
-      padding: 20px 30px;
-      text-align: center;
-      pointer-events: none;
-      z-index: 10000;
-      box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
-      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
-    `;
-
-    document.body.appendChild(trophy);
-
-    requestAnimationFrame(() => {
-      trophy.style.transform = 'translate(-50%, -50%) scale(1.2)';
-    });
-
-    setTimeout(() => {
-      trophy.style.transform = 'translate(-50%, -50%) scale(0) rotate(15deg)';
-      trophy.style.opacity = '0';
-      setTimeout(() => {
-        if (trophy.parentNode) trophy.parentNode.removeChild(trophy);
-      }, 400);
-    }, 1400);
+  trophyReward(title = 'Achievement') {
+    this.launchCelebration('life', title, 'Master Badge Unlocked 🏆');
   },
 
-  // ─── 6. LIVE INTERACTIVE TYPING FEEDBACK FOR MODALS ──────────
+  // ─── Live Typing Audio & Particle Feedback ─────────────────
   attachTypingFeedback(formEl) {
     if (!formEl) return;
     const inputs = formEl.querySelectorAll('input[type="text"], input[type="number"], textarea, select');
 
     inputs.forEach(input => {
       input.addEventListener('keydown', (e) => {
-        // Ignore non-printable keys
         if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Tab') return;
-
         this.playSound('type');
 
-        // Spawn tiny typing spark particle near active field
         const rect = input.getBoundingClientRect();
         const spark = document.createElement('div');
         spark.className = 'typing-spark-particle';
-
         const x = rect.left + Math.random() * (rect.width - 20) + 10;
         const y = rect.top + rect.height / 2;
 
@@ -591,11 +571,10 @@ const ActionPhysics = {
           background: #38bdf8;
           border-radius: 50%;
           pointer-events: none;
-          z-index: 10000;
+          z-index: 1000000;
           box-shadow: 0 0 8px #38bdf8;
           transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         `;
-
         document.body.appendChild(spark);
 
         requestAnimationFrame(() => {
@@ -608,292 +587,7 @@ const ActionPhysics = {
         }, 350);
       });
     });
-  },
-
-  // ─── 7. SUPERNOVA CELESTIAL PARTICLE BURST (Career & Skills) ──
-  supernovaBurst(type = 'skill', label = 'Skill Mastered!') {
-    this.playSound('wand');
-    const container = document.createElement('div');
-    container.className = 'action-supernova-burst';
-    container.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    `;
-
-    // Center Aura Ring
-    const aura = document.createElement('div');
-    aura.style.cssText = `
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(0,242,254,0.8) 0%, rgba(99,102,241,0.4) 50%, transparent 75%);
-      box-shadow: 0 0 60px rgba(0,242,254,0.8), inset 0 0 40px #6366f1;
-      animation: pulse-scale 0.8s ease-out forwards;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
-    `;
-    aura.innerHTML = `🚀`;
-    container.appendChild(aura);
-
-    // Dynamic Title Badge
-    const badge = document.createElement('div');
-    badge.style.cssText = `
-      margin-top: 14px;
-      background: rgba(15,23,42,0.95);
-      border: 1.5px solid #00f2fe;
-      border-radius: 999px;
-      padding: 8px 20px;
-      font-size: 15px;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 0 25px rgba(0,242,254,0.6);
-      white-space: nowrap;
-    `;
-    badge.innerHTML = `✨ ${label}`;
-    container.appendChild(badge);
-
-    document.body.appendChild(container);
-
-    // Spawn 32 Radial Sparkles
-    const colors = ['#00f2fe', '#6366f1', '#a855f7', '#38bdf8', '#fbbf24', '#fff'];
-    for (let i = 0; i < 32; i++) {
-      const angle = (i / 32) * Math.PI * 2;
-      const dist = 120 + Math.random() * 100;
-      const p = document.createElement('div');
-      p.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: ${Math.random() * 8 + 4}px;
-        height: ${Math.random() * 8 + 4}px;
-        background: ${colors[Math.floor(Math.random() * colors.length)]};
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 10001;
-        box-shadow: 0 0 12px currentColor;
-        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out;
-      `;
-      document.body.appendChild(p);
-
-      requestAnimationFrame(() => {
-        const tx = Math.cos(angle) * dist;
-        const ty = Math.sin(angle) * dist;
-        p.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
-        p.style.opacity = '0';
-      });
-
-      setTimeout(() => {
-        if (p.parentNode) p.parentNode.removeChild(p);
-      }, 850);
-    }
-
-    setTimeout(() => {
-      container.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      container.style.opacity = '0';
-      container.style.transform = 'translate(-50%, -50%) scale(0.6)';
-      setTimeout(() => {
-        if (container.parentNode) container.parentNode.removeChild(container);
-      }, 400);
-    }, 1500);
-  },
-
-  // ─── 8. 3D GOLDEN COIN RAIN & WEALTH SHOCKWAVE (Finance) ─────
-  goldCoinShower(amount = '₹25,000') {
-    this.playSound('coinDrop');
-
-    // Central Wealth Shockwave Ring
-    const ring = document.createElement('div');
-    ring.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.1);
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      border: 3px solid #f59e0b;
-      box-shadow: 0 0 50px rgba(245,158,11,0.8), inset 0 0 30px #fbbf24;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(15,23,42,0.9);
-    `;
-    ring.innerHTML = `
-      <div style="font-size:42px;">💰</div>
-      <div style="font-size:16px; font-weight:900; color:#10b981; margin-top:4px;">${amount}</div>
-      <div style="font-size:11px; font-weight:700; color:#fbbf24;">Compound Compounding!</div>
-    `;
-    document.body.appendChild(ring);
-
-    requestAnimationFrame(() => {
-      ring.style.transform = 'translate(-50%, -50%) scale(1.3)';
-    });
-
-    // Spawn 18 Golden Coins falling
-    for (let i = 0; i < 18; i++) {
-      const coin = document.createElement('div');
-      const startLeft = Math.random() * window.innerWidth;
-      coin.style.cssText = `
-        position: fixed;
-        top: -40px;
-        left: ${startLeft}px;
-        font-size: ${Math.random() * 16 + 22}px;
-        pointer-events: none;
-        z-index: 10001;
-        transition: transform ${1.0 + Math.random() * 0.6}s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.4s ease;
-      `;
-      coin.innerHTML = `🪙`;
-      document.body.appendChild(coin);
-
-      const destY = window.innerHeight - 60 - Math.random() * 100;
-      requestAnimationFrame(() => {
-        coin.style.transform = `translate3d(${(Math.random() - 0.5) * 120}px, ${destY}px, 0) rotate(${Math.random() * 720}deg)`;
-      });
-
-      setTimeout(() => {
-        coin.style.opacity = '0';
-        setTimeout(() => {
-          if (coin.parentNode) coin.parentNode.removeChild(coin);
-        }, 400);
-      }, 1200);
-    }
-
-    setTimeout(() => {
-      ring.style.opacity = '0';
-      setTimeout(() => {
-        if (ring.parentNode) ring.parentNode.removeChild(ring);
-      }, 400);
-    }, 1800);
-  },
-
-  // ─── 9. EMERALD VITALITY BIOLUMINESCENCE PULSE (Health) ──────
-  emeraldPulse(label = 'Health Synchronized') {
-    this.playSound('waterSplash');
-
-    const pulseEl = document.createElement('div');
-    pulseEl.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.2);
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(16,185,129,0.85) 0%, rgba(6,182,212,0.4) 60%, transparent 80%);
-      box-shadow: 0 0 60px rgba(16,185,129,0.9), inset 0 0 35px #10b981;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    `;
-    pulseEl.innerHTML = `
-      <div style="font-size:46px;">💧</div>
-      <div style="font-size:14px; font-weight:800; color:#fff; margin-top:4px; text-shadow:0 2px 8px rgba(0,0,0,0.8);">${label}</div>
-    `;
-    document.body.appendChild(pulseEl);
-
-    requestAnimationFrame(() => {
-      pulseEl.style.transform = 'translate(-50%, -50%) scale(1.4)';
-    });
-
-    // Spawn 24 Emerald Droplets
-    for (let i = 0; i < 24; i++) {
-      const angle = (i / 24) * Math.PI * 2;
-      const dist = 100 + Math.random() * 80;
-      const drop = document.createElement('div');
-      drop.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 8px;
-        height: 8px;
-        background: ${i % 2 === 0 ? '#10b981' : '#00f2fe'};
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 10001;
-        box-shadow: 0 0 10px #10b981;
-        transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
-      `;
-      document.body.appendChild(drop);
-
-      requestAnimationFrame(() => {
-        const tx = Math.cos(angle) * dist;
-        const ty = Math.sin(angle) * dist;
-        drop.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
-        drop.style.opacity = '0';
-      });
-
-      setTimeout(() => {
-        if (drop.parentNode) drop.parentNode.removeChild(drop);
-      }, 750);
-    }
-
-    setTimeout(() => {
-      pulseEl.style.opacity = '0';
-      setTimeout(() => {
-        if (pulseEl.parentNode) pulseEl.parentNode.removeChild(pulseEl);
-      }, 400);
-    }, 1400);
-  },
-
-  // ─── 10. QUANTUM VORTEX FOCUS PORTAL (Work & Tasks) ─────────
-  quantumPortal(title = 'Task Scheduled') {
-    this.playSound('wand');
-
-    const portal = document.createElement('div');
-    portal.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      border: 3px dashed #38bdf8;
-      box-shadow: 0 0 50px rgba(56,189,248,0.8), inset 0 0 40px #6366f1;
-      pointer-events: none;
-      z-index: 10000;
-      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(15,23,42,0.9);
-      animation: spin 3s linear infinite;
-    `;
-    portal.innerHTML = `
-      <div style="font-size:42px;">⚡</div>
-      <div style="font-size:13px; font-weight:800; color:#38bdf8; margin-top:4px;">${title}</div>
-    `;
-    document.body.appendChild(portal);
-
-    requestAnimationFrame(() => {
-      portal.style.transform = 'translate(-50%, -50%) scale(1.3)';
-    });
-
-    setTimeout(() => {
-      portal.style.transform = 'translate(-50%, -50%) scale(0) rotate(180deg)';
-      portal.style.opacity = '0';
-      setTimeout(() => {
-        if (portal.parentNode) portal.parentNode.removeChild(portal);
-      }, 400);
-    }, 1300);
   }
 };
+
+window.ActionPhysics = ActionPhysics;

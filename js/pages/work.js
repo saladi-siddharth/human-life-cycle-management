@@ -217,7 +217,7 @@ function toggleTaskDone(id) {
   Store.set('scores.work', score);
 
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.magicTask('Task Done! 🏆');
+    ActionPhysics.launchCelebration('work', 'Task Completed! 🏆', 'Execution Velocity +20 XP');
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(20, 'Completed Scheduled Priority Task');
@@ -325,7 +325,7 @@ function saveTaskForm(e) {
   Store.sendEmailNotification(`⏰ New Task Scheduled: ${title} (${formattedTime})`, htmlBody, userEmail);
 
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.quantumPortal(title);
+    ActionPhysics.launchCelebration('work', title, `Priority Due at ${formattedTime} ⚡`);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(15, `Scheduled Task: ${title}`);

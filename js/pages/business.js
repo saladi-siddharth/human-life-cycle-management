@@ -274,7 +274,9 @@ function openAddInvestorModal() {
 function saveInvestorForm(e) {
   e.preventDefault();
   UI.closeModal();
-  if (typeof ActionPhysics !== 'undefined') ActionPhysics.playSound('coinDrop');
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.launchCelebration('business', 'Investor Deal Recorded', 'Venture Pipeline & Cap Table Updated 🤝');
+  }
   UI.toast('success', 'Investor Logged 💰', 'Added to Venture Fundraising CRM.');
   Router.render();
 }
