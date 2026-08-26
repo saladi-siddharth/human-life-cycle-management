@@ -851,59 +851,234 @@
   box-shadow: 0 6px 18px rgba(251, 191, 36, 0.4) !important;
 }
 
-/* ─── 3D Rocket Launch Styles ─── */
-.action-rocket-3d {
+/* ═══════════════════════════════════════════════════════════════════
+   10 HANDCRAFTED DOMAIN SUBMISSION ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 1. 🚀 Career: Supernova Celestial Burst */
+.action-supernova-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.supernova-center {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #00f2fe 0%, #6366f1 50%, transparent 75%);
+  box-shadow: 0 0 80px #00f2fe, inset 0 0 50px #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 54px;
+  animation: supernovaPulse 1s ease-out forwards;
+}
+@keyframes supernovaPulse {
+  0% { transform: scale(0.2); opacity: 0; }
+  50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 30px #00f2fe); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 2. 🚀 Career: 3D Rocket Launch */
+.action-rocket-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+}
+.rocket-launch-vehicle {
+  position: fixed;
+  bottom: -120px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: rocketAscend 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
-.rocket-flame {
-  width: 16px;
-  height: 30px;
-  background: linear-gradient(180deg, #f59e0b, #ef4444);
+.rocket-flame-exhaust {
+  width: 22px;
+  height: 48px;
+  background: linear-gradient(180deg, #f59e0b, #ef4444, transparent);
   border-radius: 50%;
-  filter: drop-shadow(0 0 14px #ef4444);
-  animation: flameFlicker 0.1s infinite alternate;
+  filter: drop-shadow(0 0 20px #ef4444);
+  animation: flameFlicker 0.08s infinite alternate;
+}
+@keyframes rocketAscend {
+  0% { transform: translateX(-50%) translateY(0) scale(0.8); }
+  30% { transform: translateX(-50%) translateY(-25vh) scale(1.1); }
+  100% { transform: translateX(-50%) translateY(-125vh) scale(1.4); }
 }
 @keyframes flameFlicker {
-  0% { transform: scaleY(1); }
-  100% { transform: scaleY(1.3); }
+  0% { transform: scaleY(0.9) scaleX(0.9); }
+  100% { transform: scaleY(1.4) scaleX(1.2); }
 }
 
-/* ─── Dumbbell Flex Styles ─── */
-.action-flex-dumbbell {
-  background: rgba(16, 185, 129, 0.2);
-  backdrop-filter: blur(12px);
-  border: 2px solid #10b981;
-  padding: 20px 32px;
-  border-radius: var(--radius-2xl);
+/* 3. 💪 Health: Dumbbell Power Flex */
+.action-flex-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-power-card {
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  border: 2.5px solid #10b981;
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.6), inset 0 0 30px rgba(16, 185, 129, 0.3);
+  padding: 24px 44px;
+  border-radius: 28px;
   text-align: center;
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+  animation: flexPowerPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-.flex-icon { font-size: 56px; }
-.flex-label { color: #ffffff; font-weight: 800; font-size: 16px; margin-top: 8px; }
+@keyframes flexPowerPop {
+  0% { transform: scale(0.3); opacity: 0; }
+  70% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
-/* ─── Moon Sleep Float Styles ─── */
-.action-moon-sleep {
-  position: relative;
-  font-size: 64px;
+/* 4. 💧 Health: Emerald Bioluminescence Pulse */
+.action-emerald-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.zzz-bubble {
-  position: absolute;
-  color: #a855f7;
-  font-weight: 900;
-  font-family: var(--font-mono);
-  animation: zzzFloat 1.5s infinite ease-out;
+.emerald-ripple-core {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.9) 0%, rgba(0, 242, 254, 0.4) 60%, transparent 75%);
+  box-shadow: 0 0 70px #10b981, inset 0 0 40px #00f2fe;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: emeraldWave 1.4s ease-out forwards;
 }
-.zzz-bubble.z1 { top: -10px; right: 0; font-size: 20px; animation-delay: 0s; }
-.zzz-bubble.z2 { top: -30px; right: -20px; font-size: 26px; animation-delay: 0.4s; }
-.zzz-bubble.z3 { top: -50px; right: -40px; font-size: 32px; animation-delay: 0.8s; }
+@keyframes emeraldWave {
+  0% { transform: scale(0.2); opacity: 0; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.95; }
+}
 
-@keyframes zzzFloat {
-  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translate(30px, -40px) scale(1.2); opacity: 0; }
+/* 5. 🌙 Health: Lunar Circadian Rest */
+.action-moon-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.moon-sphere {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #c084fc 50%, #4c1d95 100%);
+  box-shadow: 0 0 60px #c084fc, inset 0 0 30px #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  animation: moonFloat 2s ease-in-out infinite alternate;
+}
+@keyframes moonFloat {
+  0% { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(-16px) rotate(4deg); }
+}
+
+/* 6. 🪙 Finance: 3D Gold Coin Rain */
+.action-coin-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+}
+.gold-coin-falling {
+  position: fixed;
+  font-size: 32px;
+  filter: drop-shadow(0 6px 14px rgba(251, 191, 36, 0.7));
+  animation: coinDropBounce 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes coinDropBounce {
+  0% { transform: translateY(-100px) rotateY(0deg) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  75% { transform: translateY(85vh) rotateY(1080deg) scale(1); }
+  85% { transform: translateY(78vh) rotateY(1200deg) scale(1); }
+  100% { transform: translateY(85vh) rotateY(1440deg) scale(0.9); opacity: 0; }
+}
+
+/* 7. 💰 Finance: Wealth Shockwave Ring */
+.wealth-shockwave-ring {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px solid #fbbf24;
+  box-shadow: 0 0 80px #fbbf24, inset 0 0 60px #f59e0b;
+  pointer-events: none;
+  z-index: 999998;
+  animation: wealthShockwaveExpand 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes wealthShockwaveExpand {
+  0% { width: 40px; height: 40px; opacity: 1; border-width: 8px; }
+  100% { width: 140vw; height: 140vw; opacity: 0; border-width: 1px; }
+}
+
+/* 8. ⚡ Work: Quantum Vortex Focus Portal */
+.quantum-vortex-portal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 3px dashed #38bdf8;
+  box-shadow: 0 0 60px rgba(56, 189, 248, 0.8), inset 0 0 40px #6366f1;
+  background: rgba(15, 23, 42, 0.94);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  animation: vortexSpin 2.5s linear infinite;
+}
+@keyframes vortexSpin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 9. 🪄 Work: Magic Wand Starburst */
+.wand-starburst-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 58px;
+  z-index: 999999;
+  filter: drop-shadow(0 0 35px #a855f7);
+  animation: wandSparkle 1.2s ease-out forwards;
+}
+@keyframes wandSparkle {
+  0% { transform: translate(-50%, -50%) scale(0.2) rotate(-45deg); opacity: 0; }
+  40% { transform: translate(-50%, -50%) scale(1.3) rotate(15deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
 
 
 

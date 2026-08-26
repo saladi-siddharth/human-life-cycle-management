@@ -161,9 +161,9 @@
     },
     "scores": {
       "life": 65,
-      "career": 43,
+      "career": 41,
       "health": 78,
-      "finance": 95,
+      "finance": 94,
       "work": 50,
       "success": 60
     },
@@ -236,6 +236,14 @@
       "emergencyFund": 180000,
       "emergencyFundTarget": 300000,
       "transactions": [
+        {
+          "id": "tx-1787773292087",
+          "date": "2026-08-26",
+          "category": "Housing & Rent",
+          "note": "64521",
+          "type": "expense",
+          "amount": 654
+        },
         {
           "id": "tx-1787772757932",
           "date": "2026-08-26",
@@ -679,6 +687,14 @@
       ],
       "workoutLogs": [
         {
+          "id": "wo_1787773197480",
+          "type": "Resistance Training (Gym)",
+          "duration": 45,
+          "muscle": "Chest & Triceps",
+          "intensity": "High",
+          "date": "2026-08-26"
+        },
+        {
           "id": "wo_1787772745316",
           "type": "Resistance Training (Gym)",
           "duration": 45,
@@ -734,6 +750,24 @@
     },
     "career": {
       "skills": [
+        {
+          "id": "sk_1787773280436",
+          "name": "sdsd",
+          "category": "Core Systems",
+          "expYears": 2,
+          "level": 3,
+          "target": 5,
+          "proofUrl": "https://github.com/saladi-siddharth/human-life-cycle-management"
+        },
+        {
+          "id": "sk_1787773188609",
+          "name": "sdsd",
+          "category": "Core Systems",
+          "expYears": 2,
+          "level": 3,
+          "target": 5,
+          "proofUrl": "https://github.com/saladi-siddharth/human-life-cycle-management"
+        },
         {
           "name": "Data Structures & Algorithms",
           "level": 4,
@@ -836,6 +870,14 @@
     },
     "notifications": [
       {
+        "type": "career",
+        "icon": "🚀",
+        "title": "Email Sent: Skill Matrix Update: Added New Skill \"sdsd\"",
+        "text": "Dispatched to saladisiddharath@gmail.com via Gmail SMTP (Skill Portfolio Modification (Added New Skill))",
+        "time": "Just now",
+        "unread": true
+      },
+      {
         "type": "student",
         "icon": "🇮🇳",
         "title": "PM Internship Scheme 2026 Open",
@@ -862,8 +904,35 @@
     ],
     "theme": "dark",
     "sidebarOpen": false,
-    "_updatedAt": 1787772757932,
+    "_updatedAt": 1787773292087,
     "emailLogs": [
+      {
+        "id": "em_1787773280454",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Career] Skill Matrix Update: Added New Skill \"sdsd\"",
+        "purpose": "Skill Portfolio Modification (Added New Skill)",
+        "category": "Career",
+        "timestamp": "8/27/2026, 1:11:20 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1787773197487",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Health] Health Telemetry Logged: Physical Workout (45 Minutes)",
+        "purpose": "Daily Habit Telemetry Update (Physical Workout)",
+        "category": "Health",
+        "timestamp": "8/27/2026, 1:09:57 AM",
+        "status": "sent"
+      },
+      {
+        "id": "em_1787773188626",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Career] Skill Matrix Update: Added New Skill \"sdsd\"",
+        "purpose": "Skill Portfolio Modification (Added New Skill)",
+        "category": "Career",
+        "timestamp": "8/27/2026, 1:09:48 AM",
+        "status": "sent"
+      },
       {
         "id": "em_1787772745321",
         "to": "saladisiddharath@gmail.com",
@@ -1111,8 +1180,8 @@
     "hasSeenTour": true,
     "isNewUser": false,
     "gamification": {
-      "xp": 450,
-      "level": 3,
+      "xp": 500,
+      "level": 4,
       "streakDays": 6,
       "lastActiveDate": "2026-08-26",
       "unlockedBadges": [
@@ -1121,7 +1190,8 @@
         "b_sattvic"
       ],
       "joinedPods": [
-        "pod_iit"
+        "pod_iit",
+        "pod_founders"
       ]
     },
     "accountAggregator": {

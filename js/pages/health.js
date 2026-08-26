@@ -809,7 +809,8 @@ function saveWorkoutForm(e) {
 
   UI.closeModal();
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.launchCelebration('health', `${dur}m ${type}`, 'Workout & Vitality Synchronized 💪');
+    ActionPhysics.dumbbellFlex(type);
+    ActionPhysics.emeraldPulse(`💪 ${dur}m ${type}`);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(25, 'Completed Daily Physical Training');
@@ -818,3 +819,47 @@ function saveWorkoutForm(e) {
   Router.render();
 }
 window.saveWorkoutForm = saveWorkoutForm;
+
+function openSleepModal() {
+  const html = `
+    <h3>🌙 Log Circadian Sleep Session</h3>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Track restorative deep sleep hours, REM cycles, and bedtime consistency.</p>
+    <form onsubmit="saveSleepForm(event)" style="display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Total Sleep Duration (Hours)</label>
+        <input type="number" id="s-hours" class="chat-input" value="8" min="3" max="14" step="0.5" required>
+      </div>
+      <div>
+        <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Rest Quality Score</label>
+        <select id="s-quality" class="chat-input">
+          <option value="Deep & Restorative (100%)" selected>✨ Deep, Restorative & Uninterrupted</option>
+          <option value="Good (85%)">👍 Good Sleep</option>
+          <option value="Restless (60%)">😴 Restless / Light Interrupted</option>
+        </select>
+      </div>
+      ${UI.pillButton({ text: 'Log Circadian Rest', icon: '<i class="fas fa-moon"></i>', theme: 'purple', type: 'submit' })}
+    </form>
+  `;
+  UI.modal(html);
+}
+window.openSleepModal = openSleepModal;
+
+function saveSleepForm(e) {
+  e.preventDefault();
+  const hours = parseFloat(document.getElementById('s-hours')?.value || 8);
+  const healthData = Store.get('health') || {};
+  if (!healthData.sleepLogs) healthData.sleepLogs = [];
+  healthData.sleepLogs.unshift({ hours, date: new Date().toISOString() });
+  Store.set('health', healthData);
+
+  UI.closeModal();
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.moonSleep(hours);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(20, 'Logged Optimal Restorative Sleep');
+  }
+  UI.toast('success', 'Rest Logged 🌙', `Logged ${hours} hours of restorative sleep.`);
+  Router.render();
+}
+window.saveSleepForm = saveSleepForm;

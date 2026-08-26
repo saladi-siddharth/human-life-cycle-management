@@ -479,7 +479,8 @@ function saveIncomeForm(e) {
     PredictiveEngine.emitAction('finance', 1.2);
   }
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.launchCelebration('finance', `Income: ₹${val.toLocaleString()}`, 'Monthly Wealth & 50/30/20 Recalculated 💰');
+    ActionPhysics.wealthShockwave(`₹${val.toLocaleString()}`);
+    ActionPhysics.goldCoinShower(`₹${val.toLocaleString()}`);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(30, 'Recalculated Monthly Wealth Matrix');
@@ -555,7 +556,7 @@ function saveTransactionForm(e) {
     PredictiveEngine.emitAction('finance', 1.0);
   }
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.launchCelebration('finance', `₹${amount.toLocaleString()} Recorded`, `Logged ${type} to Ledger 🪙`);
+    ActionPhysics.goldCoinShower(`₹${amount.toLocaleString()}`);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(15, `Logged ${type} of ₹${amount.toLocaleString()}`);

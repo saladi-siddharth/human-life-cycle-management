@@ -437,7 +437,7 @@ function saveNewSkill(e) {
 
   UI.closeModal();
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.launchCelebration('career', `Skill Added: ${name}`, 'Career Skills Matrix Level Up 🚀');
+    ActionPhysics.supernovaBurst('skill', `Skill Added: ${name}`);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(15, `Added ${name} to Career Skills Matrix`);
@@ -976,7 +976,7 @@ function saveJobForm(e) {
   });
 
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.launchCelebration('career', `${role} @ ${company}`, 'Application Tracked & Launched 🚀');
+    ActionPhysics.rocketLaunch(company, role);
   }
   UI.toast('success', 'Application Tracked 🚀', `Tracked ${role} at ${company}. Sent email alert.`);
   Router.render();

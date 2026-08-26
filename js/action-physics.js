@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   BIOVERSE CELESTIAL ACTION PHYSICS & CANVAS CELEBRATION ENGINE
+   BIOVERSE CELESTIAL ACTION PHYSICS & 10 HANDCRAFTED DOMAIN ANIMATIONS
    Ultra-Smooth 60FPS Full-Screen Particle Physics, Audio DSP & Micro-Interactions
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -216,7 +216,6 @@ const ActionPhysics = {
   // 🌟 HIGH-PERFORMANCE 60FPS FULL-SCREEN CANVAS CELEBRATION ENGINE 🌟
   // ═══════════════════════════════════════════════════════════════════
   launchCelebration(preset = 'career', title = 'Action Completed!', subtitle = 'Synchronized with BioVerse Matrix') {
-    // 1. Play Sound
     const soundMap = {
       career: 'wand',
       health: 'flex',
@@ -228,7 +227,6 @@ const ActionPhysics = {
     };
     this.playSound(soundMap[preset] || 'wand');
 
-    // 2. Setup Fullscreen Canvas
     let canvas = document.getElementById('bioverse-celebration-canvas');
     if (!canvas) {
       canvas = document.createElement('canvas');
@@ -252,7 +250,6 @@ const ActionPhysics = {
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
-    // 3. Theme Color Palettes & Iconography
     const themeConfig = {
       career: {
         colors: ['#00f2fe', '#4facfe', '#6366f1', '#a855f7', '#fbbf24', '#ffffff'],
@@ -307,7 +304,6 @@ const ActionPhysics = {
 
     const cfg = themeConfig[preset] || themeConfig.career;
 
-    // 4. Spawn 90 Kinetic Physics Particles
     const particles = [];
     const originX = width / 2;
     const originY = height / 2;
@@ -340,25 +336,23 @@ const ActionPhysics = {
       });
     }
 
-    // 5. Central 3D Kinetic Glass Badge State
     const badge = {
       scale: 0.1,
       targetScale: 1.0,
       opacity: 1.0,
       shockwaveRadius: 10,
-      shockwaveAlpha: 1.0,
-      iconY: 0
+      shockwaveAlpha: 1.0
     };
 
     let animationFrameId = null;
     const startTime = performance.now();
-    const duration = 2200; // 2.2 seconds celebration
+    const duration = 2200;
 
     function animate(currentTime) {
       const elapsed = currentTime - startTime;
       ctx.clearRect(0, 0, width, height);
 
-      // A. Draw Shockwave Expanding Ring
+      // Expanding Shockwave Ring
       if (badge.shockwaveAlpha > 0) {
         badge.shockwaveRadius += (width * 0.55 - badge.shockwaveRadius) * 0.08;
         badge.shockwaveAlpha = Math.max(0, 1 - (badge.shockwaveRadius / (width * 0.45)));
@@ -375,7 +369,7 @@ const ActionPhysics = {
         ctx.restore();
       }
 
-      // B. Render Particles with Kinetic Physics
+      // Kinetic Physics Particles
       particles.forEach(p => {
         if (p.alpha <= 0) return;
 
@@ -394,7 +388,7 @@ const ActionPhysics = {
         ctx.globalAlpha = Math.max(0, p.alpha);
 
         if (p.isCoin) {
-          // 🪙 3D Spinning Coin Ellipse
+          // 🪙 3D Spinning Coin
           const coinWidth = p.size * 1.8 * Math.cos(p.wobble);
           ctx.beginPath();
           ctx.ellipse(0, 0, Math.abs(coinWidth) + 1, p.size * 1.4, 0, 0, Math.PI * 2);
@@ -414,7 +408,7 @@ const ActionPhysics = {
           ctx.shadowBlur = 6;
           ctx.fillRect(-ribbonW / 2, -Math.abs(ribbonH) / 2, ribbonW, Math.abs(ribbonH) + 1);
         } else {
-          // ✨ Glowing Starburst / Energy Orb
+          // ✨ Starburst / Orb
           ctx.beginPath();
           ctx.arc(0, 0, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
@@ -425,7 +419,7 @@ const ActionPhysics = {
         ctx.restore();
       });
 
-      // C. Render Floating 3D Central Glass Badge
+      // Floating 3D Central Glass Badge
       badge.scale += (badge.targetScale - badge.scale) * 0.15;
       if (elapsed > 1600) {
         badge.opacity = Math.max(0, 1 - (elapsed - 1600) / 500);
@@ -437,12 +431,10 @@ const ActionPhysics = {
         ctx.scale(badge.scale, badge.scale);
         ctx.globalAlpha = badge.opacity;
 
-        // Glowing Background Card
         const cardW = Math.min(width - 40, 360);
         const cardH = 110;
         const radius = 22;
 
-        // Card Glow
         ctx.shadowColor = cfg.auraGlow;
         ctx.shadowBlur = 35;
         ctx.fillStyle = 'rgba(7, 10, 20, 0.94)';
@@ -450,31 +442,26 @@ const ActionPhysics = {
         ctx.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, radius);
         ctx.fill();
 
-        // Card Hairline Border
         ctx.shadowBlur = 0;
         ctx.strokeStyle = cfg.badgeBorder;
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Icon
         ctx.font = '36px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(cfg.icon, -cardW / 2 + 45, 0);
 
-        // Title Text
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 16px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'alphabetic';
         ctx.fillText(title.length > 26 ? title.substring(0, 24) + '...' : title, -cardW / 2 + 82, -8);
 
-        // Subtitle Text
         ctx.fillStyle = cfg.badgeBorder;
         ctx.font = '600 12px "Inter", -apple-system, BlinkMacSystemFont, sans-serif';
         ctx.fillText(subtitle, -cardW / 2 + 82, 14);
 
-        // XP / Status Badge Chip
         ctx.fillStyle = cfg.badgeBg;
         ctx.beginPath();
         ctx.roundRect(-cardW / 2 + 82, 24, 150, 18, 9);
@@ -501,43 +488,371 @@ const ActionPhysics = {
     animationFrameId = requestAnimationFrame(animate);
   },
 
-  // ─── Backwards-Compatible Specialized Trigger Wrappers ─────
+  // ═══════════════════════════════════════════════════════════════════
+  // 🎨 10 HANDCRAFTED DOMAIN SUBMISSION ANIMATION RENDERERS 🎨
+  // ═══════════════════════════════════════════════════════════════════
+
+  // 1. 🚀 Career: Supernova Celestial Burst (32 glowing radial particles)
   supernovaBurst(type = 'skill', label = 'Skill Mastered!') {
-    this.launchCelebration('career', label, 'Career Matrix Level Up 🚀');
+    this.launchCelebration('career', label, 'Career Skills Matrix Level Up 🚀');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-supernova-overlay';
+    overlay.innerHTML = `
+      <div class="supernova-center">
+        <span>🚀</span>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const colors = ['#00f2fe', '#6366f1', '#a855f7', '#38bdf8', '#fbbf24', '#ffffff'];
+    for (let i = 0; i < 32; i++) {
+      const angle = (i / 32) * Math.PI * 2;
+      const dist = 140 + Math.random() * 110;
+      const p = document.createElement('div');
+      p.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: ${Math.random() * 8 + 4}px;
+        height: ${Math.random() * 8 + 4}px;
+        background: ${colors[i % colors.length]};
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000000;
+        box-shadow: 0 0 14px currentColor;
+        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease-out;
+      `;
+      document.body.appendChild(p);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        p.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        p.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (p.parentNode) p.parentNode.removeChild(p);
+      }, 900);
+    }
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1200);
   },
 
-  goldCoinShower(amount = '₹25,000') {
-    this.launchCelebration('finance', `${amount} Recorded`, 'Compounding Wealth Multiplier 💰');
-  },
-
-  emeraldPulse(label = 'Health Synchronized') {
-    this.launchCelebration('health', label, 'Vitality & Hydration Compounded 💪');
-  },
-
-  quantumPortal(title = 'Task Scheduled') {
-    this.launchCelebration('work', title, 'Priority Scheduled in Focus Matrix ⚡');
-  },
-
-  slothCelebration(goalTitle = 'New Milestone') {
-    this.launchCelebration('life', goalTitle, '5-Pillar Equilibrium Achieved 🌟');
-  },
-
+  // 2. 🚀 Career: 3D Rocket Launch
   rocketLaunch(company = 'Top Company', role = 'Role') {
-    this.launchCelebration('career', `${role} @ ${company}`, 'Application Tracked & Launched 🚀');
+    this.launchCelebration('career', `${role} @ ${company}`, 'Opportunity Tracked & Launched 🚀');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-rocket-overlay';
+    overlay.innerHTML = `
+      <div class="rocket-launch-vehicle">
+        <div style="font-size:56px;filter:drop-shadow(0 0 20px #00f2fe);">🚀</div>
+        <div class="rocket-flame-exhaust"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
   },
 
+  // 3. 💪 Health: Dumbbell Power Flex
   dumbbellFlex(workoutType = 'Workout') {
     this.launchCelebration('health', `${workoutType} Complete`, 'Muscle Hypertrophy & Vitality 💪');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-flex-overlay';
+    overlay.innerHTML = `
+      <div class="flex-power-card">
+        <div style="font-size:58px;filter:drop-shadow(0 0 25px #10b981);">🏋️‍♂️</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;">POWER FLEX COMPLETE!</div>
+        <div style="font-size:13px;color:#10b981;font-weight:700;">+25 Physical Vitality XP</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1400);
   },
 
+  // 4. 💧 Health: Emerald Bioluminescence Pulse (24 droplets)
+  emeraldPulse(label = 'Health Synchronized') {
+    this.launchCelebration('health', label, 'Hydration & Vitality Compounded 💧');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-emerald-overlay';
+    overlay.innerHTML = `
+      <div class="emerald-ripple-core">
+        <div style="font-size:46px;">💧</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    for (let i = 0; i < 24; i++) {
+      const angle = (i / 24) * Math.PI * 2;
+      const dist = 110 + Math.random() * 90;
+      const drop = document.createElement('div');
+      drop.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background: ${i % 2 === 0 ? '#10b981' : '#00f2fe'};
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000000;
+        box-shadow: 0 0 12px #10b981;
+        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.75s ease;
+      `;
+      document.body.appendChild(drop);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        drop.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        drop.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (drop.parentNode) drop.parentNode.removeChild(drop);
+      }, 800);
+    }
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1400);
+  },
+
+  // 5. 🌙 Health: Lunar Circadian Rest
   moonSleep(hours = 8) {
     this.launchCelebration('health', `${hours}h Rest Logged`, 'Circadian Rhythm Restored 🌙');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-moon-overlay';
+    overlay.innerHTML = `
+      <div class="moon-sphere">
+        <span>🌙</span>
+        <span class="zzz-bubble z1">Z</span>
+        <span class="zzz-bubble z2">z</span>
+        <span class="zzz-bubble z3">z</span>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
   },
 
+  // 6. 🪙 Finance: 3D Gold Coin Rain (18 coins)
+  goldCoinShower(amount = '₹25,000') {
+    this.launchCelebration('finance', `${amount} Recorded`, 'Compounding Wealth Multiplier 💰');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-coin-overlay';
+    document.body.appendChild(overlay);
+
+    for (let i = 0; i < 18; i++) {
+      const coin = document.createElement('div');
+      coin.className = 'gold-coin-falling';
+      const startLeft = Math.random() * (window.innerWidth - 60) + 30;
+      const delay = Math.random() * 0.4;
+      coin.style.left = `${startLeft}px`;
+      coin.style.animationDelay = `${delay}s`;
+      coin.innerHTML = '🪙';
+      overlay.appendChild(coin);
+    }
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
+  },
+
+  // 7. 💰 Finance: Wealth Shockwave Ring
+  wealthShockwave(amount = '₹1,00,000') {
+    this.launchCelebration('finance', `${amount} Compounding`, 'Wealth Boundary Shockwave 🪙');
+
+    const ring = document.createElement('div');
+    ring.className = 'wealth-shockwave-ring';
+    document.body.appendChild(ring);
+
+    setTimeout(() => {
+      if (ring.parentNode) ring.parentNode.removeChild(ring);
+    }, 1600);
+  },
+
+  // 8. ⚡ Work: Quantum Vortex Focus Portal
+  quantumPortal(title = 'Task Scheduled') {
+    this.launchCelebration('work', title, 'Priority Scheduled in Focus Matrix ⚡');
+
+    const portal = document.createElement('div');
+    portal.className = 'quantum-vortex-portal';
+    portal.innerHTML = `
+      <div style="font-size:46px;">⚡</div>
+      <div style="font-size:12px;font-weight:800;color:#38bdf8;margin-top:6px;">FOCUS PORTAL</div>
+    `;
+    document.body.appendChild(portal);
+
+    setTimeout(() => {
+      portal.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+      portal.style.transform = 'translate(-50%, -50%) scale(0)';
+      portal.style.opacity = '0';
+      setTimeout(() => {
+        if (portal.parentNode) portal.parentNode.removeChild(portal);
+      }, 400);
+    }, 1400);
+  },
+
+  // 9. 🪄 Work: Magic Wand Starburst
   magicTask(title = 'Task Complete') {
     this.launchCelebration('work', title, 'Execution Velocity +20 XP 🏆');
+
+    const wand = document.createElement('div');
+    wand.className = 'wand-starburst-center';
+    wand.innerHTML = '🪄✨';
+    document.body.appendChild(wand);
+
+    for (let i = 0; i < 24; i++) {
+      const angle = (i / 24) * Math.PI * 2;
+      const dist = 100 + Math.random() * 80;
+      const spark = document.createElement('div');
+      spark.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background: #a855f7;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000000;
+        box-shadow: 0 0 10px #c084fc;
+        transition: transform 0.65s ease-out, opacity 0.65s ease-out;
+      `;
+      document.body.appendChild(spark);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        spark.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        spark.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (spark.parentNode) spark.parentNode.removeChild(spark);
+      }, 700);
+    }
+
+    setTimeout(() => {
+      if (wand.parentNode) wand.parentNode.removeChild(wand);
+    }, 1200);
   },
 
+  // 10. 🌟 Life: Cute Sloth "Hurray!" Party Mascot (35 confetti pieces)
+  slothCelebration(goalTitle = 'New Milestone') {
+    this.playSound('sloth');
+    this.launchCelebration('life', goalTitle, '5-Pillar Equilibrium Achieved 🌟');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sloth-celebration-overlay';
+    overlay.innerHTML = `
+      <div class="sloth-modal-card">
+        <div class="confetti-container-sloth" id="sloth-confetti-box"></div>
+        
+        <!-- Celebratory Speech Bubble -->
+        <div class="sloth-speech-bubble">
+          <span>🎉 HURRAY! GOAL UNLOCKED! 🦥</span>
+          <span class="sloth-goal-title">${goalTitle}</span>
+        </div>
+
+        <!-- Animated SVG Sloth Wearing Party Hat with Waving Arms -->
+        <div class="sloth-character-wrapper">
+          <svg class="cute-sloth-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="100" cy="130" rx="55" ry="45" fill="#8B5A2B"/>
+            <ellipse cx="100" cy="135" rx="38" ry="32" fill="#D2B48C"/>
+            
+            <circle cx="100" cy="75" r="42" fill="#8B5A2B"/>
+            <ellipse cx="100" cy="80" rx="34" ry="26" fill="#F5DEB3"/>
+            
+            <ellipse cx="82" cy="74" rx="12" ry="7" fill="#5C3A21" transform="rotate(-15 82 74)"/>
+            <ellipse cx="118" cy="74" rx="12" ry="7" fill="#5C3A21" transform="rotate(15 118 74)"/>
+            
+            <circle cx="82" cy="74" r="4" fill="#000"/>
+            <circle cx="118" cy="74" r="4" fill="#000"/>
+            <circle cx="80" cy="72" r="1.5" fill="#FFF"/>
+            <circle cx="116" cy="72" r="1.5" fill="#FFF"/>
+            
+            <ellipse cx="100" cy="84" rx="7" ry="5" fill="#3D2314"/>
+            <path d="M 94 90 Q 100 96 106 90" stroke="#3D2314" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="72" cy="84" r="5" fill="#FFB6C1" opacity="0.6"/>
+            <circle cx="128" cy="84" r="5" fill="#FFB6C1" opacity="0.6"/>
+            
+            <!-- Festive Party Cone Hat -->
+            <polygon points="100,20 80,55 120,55" fill="#EC4899"/>
+            <polygon points="100,20 88,55 112,55" fill="#FBBF24"/>
+            <circle cx="100" cy="18" r="6" fill="#00F2FE"/>
+            
+            <!-- Celebratory Left Waving Arm -->
+            <g class="sloth-arm-left">
+              <path d="M 60 110 Q 30 75 25 50" stroke="#8B5A2B" stroke-width="18" stroke-linecap="round" fill="none"/>
+              <path d="M 25 50 L 22 42 M 25 50 L 27 40 M 25 50 L 32 43" stroke="#D2B48C" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            
+            <!-- Celebratory Right Waving Arm -->
+            <g class="sloth-arm-right">
+              <path d="M 140 110 Q 170 75 175 50" stroke="#8B5A2B" stroke-width="18" stroke-linecap="round" fill="none"/>
+              <path d="M 175 50 L 178 42 M 175 50 L 173 40 M 175 50 L 168 43" stroke="#D2B48C" stroke-width="3" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+
+        <button class="btn sloth-close-btn" onclick="this.closest('.sloth-celebration-overlay').remove()">
+          Awesome, Let's Keep Growing! 🚀
+        </button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Spawn 35 Colorful Confetti Ribbons
+    const confettiBox = overlay.querySelector('#sloth-confetti-box');
+    if (confettiBox) {
+      const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#00f2fe', '#ffd700'];
+      for (let i = 0; i < 35; i++) {
+        const piece = document.createElement('div');
+        piece.style.cssText = `
+          position: absolute;
+          width: ${Math.random() * 8 + 6}px;
+          height: ${Math.random() * 12 + 8}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          top: -20px;
+          left: ${Math.random() * 100}%;
+          border-radius: 2px;
+          animation: confettiDrop ${1.2 + Math.random() * 1.5}s linear infinite;
+          animation-delay: ${Math.random() * 0.8}s;
+        `;
+        confettiBox.appendChild(piece);
+      }
+    }
+
+    setTimeout(() => {
+      if (overlay.parentNode) {
+        overlay.style.transition = 'opacity 0.4s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 400);
+      }
+    }, 4500);
+  },
+
+  // ─── Extra Helpers ─────────────────────────────────────────
   gradCapLaunch(name = 'Institute') {
     this.launchCelebration('student', name, 'NIRF Academic Target Updated 🎓');
   },
