@@ -102,6 +102,9 @@ const GamificationEngine = {
   },
 
   celebrateLevelUp(level) {
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.levelUpBlast(level);
+    }
     UI.toast('success', `🎉 LEVEL UP: LEVEL ${level}!`, 'You unlocked higher prestige and new milestone perks.');
 
     if (typeof ContinuumBridge !== 'undefined' && ContinuumBridge.onTelemetryAction) {

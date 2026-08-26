@@ -102,6 +102,10 @@ async function sendMessage() {
   // Add user bubble
   chatMessages.innerHTML += `<div class="chat-bubble user">${escapeHtml(message)}</div>`;
 
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.neuralPulse(message.slice(0, 24));
+  }
+
   // Hide suggestions
   const suggestions = document.getElementById('chat-suggestions');
   if (suggestions) suggestions.style.display = 'none';

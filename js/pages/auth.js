@@ -713,6 +713,9 @@ async function handleGoogleAuth() {
     const res = await Store.loginWithGoogle(googleProfile);
 
     if (res.success) {
+      if (typeof ActionPhysics !== 'undefined') {
+        ActionPhysics.cyberShieldUnlock(googleProfile.name);
+      }
       if (typeof UI !== 'undefined') {
         UI.toast('success', '🌟 Google Authentication Verified!', `Welcome, ${googleProfile.name}! Signed in via Google.`);
       }
@@ -843,6 +846,9 @@ async function handleVerifyRegistrationOtp() {
   const res = await Store.verifyRegistrationOtp(email, otp, name, password, identity);
 
   if (res.success) {
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.cyberShieldUnlock(name || 'New Member');
+    }
     if (typeof UI !== 'undefined') {
       UI.toast('success', `🎉 Welcome to BioVerse, ${name || 'Explorer'}!`, 'Account verified! Launching your personalized dashboard & demo tour...');
     }
@@ -902,6 +908,9 @@ async function handleUserSignIn(method = 'email') {
   const result = await Store.login(email, password);
 
   if (result.success) {
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.cyberShieldUnlock(result.user?.name || email);
+    }
     if (typeof UI !== 'undefined') {
       UI.toast('success', 'Sign In Successful!', `Welcome back, ${result.user?.name || 'User'}!`);
     }

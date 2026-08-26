@@ -218,6 +218,9 @@ const AccountAggregator = {
     }
 
     UI.closeModal();
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.vaultSync('HDFC Bank & Zerodha Demat');
+    }
     UI.toast('success', '🏦 Account Aggregator Synced!', `Linked ${linkedAccounts.length} institutions. Discovered ₹${totalDiscovered.toLocaleString('en-IN')} live Net Worth.`);
 
     if (typeof Router !== 'undefined' && Router.render && Router.currentRoute === '/dashboard/finance') {

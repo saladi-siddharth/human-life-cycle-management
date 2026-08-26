@@ -187,6 +187,9 @@ const LifeAuditExporter = {
     };
 
     try {
+      if (typeof ActionPhysics !== 'undefined') {
+        ActionPhysics.dossierScan();
+      }
       await html2pdf().set(opt).from(container).save();
       UI.toast('success', 'Dossier Downloaded', 'Your Life Audit PDF has been saved successfully.');
     } catch (err) {

@@ -852,13 +852,184 @@ const ActionPhysics = {
     }, 4500);
   },
 
-  // ─── Extra Helpers ─────────────────────────────────────────
+  // ─── Extended Ecosystem Handcrafted Animation Helpers ─────
+  
+  // 11. 🎓 Student: Graduation Cap Tossing Vortex
   gradCapLaunch(name = 'Institute') {
     this.launchCelebration('student', name, 'NIRF Academic Target Updated 🎓');
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'action-gradcap-overlay';
+    document.body.appendChild(overlay);
+
+    for (let i = 0; i < 14; i++) {
+      const cap = document.createElement('div');
+      cap.className = 'grad-cap-toss';
+      cap.innerHTML = '🎓';
+      cap.style.left = `${Math.random() * 85 + 5}%`;
+      cap.style.animationDelay = `${Math.random() * 0.4}s`;
+      overlay.appendChild(cap);
+    }
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
   },
 
-  trophyReward(title = 'Achievement') {
-    this.launchCelebration('life', title, 'Master Badge Unlocked 🏆');
+  // 12. 🏆 Student: Scholarship Golden Trophy Award
+  trophyReward(title = 'Scholarship Awarded') {
+    this.launchCelebration('student', title, 'Academic Scheme & Grant Synchronized 🏆');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-trophy-overlay';
+    overlay.innerHTML = `
+      <div class="golden-trophy-card">
+        <div style="font-size:64px;filter:drop-shadow(0 0 25px #fbbf24);">🏆</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;">SCHOLARSHIP VERIFIED!</div>
+        <div style="font-size:13px;color:#fbbf24;font-weight:700;">+50 Merit Grant XP</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1600);
+  },
+
+  trophyShine(title = 'Scholarship', amount = '') {
+    this.trophyReward(`${title} ${amount ? '(' + amount + ')' : ''}`);
+  },
+
+  // 13. 🦄 Business: Unicorn Surge
+  unicornSurge(valuation = 'Seed Scale') {
+    this.launchCelebration('business', valuation, 'Venture Valuation & Term Sheet Active 🦄');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-unicorn-overlay';
+    overlay.innerHTML = `
+      <div class="unicorn-rocket-surge">🦄✨</div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
+  },
+
+  // 14. 🧠 Coach: Quantum Neural Synapse Spark
+  neuralPulse(query = 'AI Life Coach') {
+    this.playSound('wand');
+    this.launchCelebration('work', query, 'Gemini Neural Co-Pilot Synchronized 🧠');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-neural-overlay';
+    overlay.innerHTML = `
+      <div class="neural-brain-synapse">
+        <span>🧠</span>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1400);
+  },
+
+  // 15. 🛡️ Auth: Biometric Cyber Shield Unlock
+  cyberShieldUnlock(user = 'Authenticated') {
+    this.playSound('victory');
+    this.launchCelebration('career', `Access Granted: ${user}`, 'TLS 1.2 Cryptographic Session Active 🛡️');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-shield-overlay';
+    overlay.innerHTML = `
+      <div class="cyber-shield-card">
+        <div style="font-size:60px;filter:drop-shadow(0 0 25px #10b981);">🛡️</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;">SESSION SECURED</div>
+        <div style="font-size:13px;color:#10b981;font-weight:700;">DPDP & GDPR Vault Active</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1600);
+  },
+
+  // 16. 🎆 Gamification: Level Up Master Fanfare
+  levelUpBlast(level = 2) {
+    this.playSound('victory');
+    this.launchCelebration('life', `Tier ${level} Unlocked!`, 'Master Level Progression Milestone 🎆');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-levelup-overlay';
+    overlay.innerHTML = `
+      <div class="level-up-fanfare-card">
+        <div style="font-size:68px;filter:drop-shadow(0 0 30px #fbbf24);">🎆⭐</div>
+        <div style="font-size:22px;font-weight:900;color:#fbbf24;margin-top:12px;">LEVEL UP ACHIEVED!</div>
+        <div style="font-size:14px;color:#cbd5e1;font-weight:700;margin-top:4px;">You have ascended to Level ${level} in BioVerse!</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
+  },
+
+  // 17. 🔥 Gamification: Daily Streak Flame Surge
+  streakFlameSurge(days = 7) {
+    this.playSound('flex');
+    this.launchCelebration('health', `${days} Day Streak!`, 'Unstoppable Daily Consistency 🔥');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-streak-overlay';
+    overlay.innerHTML = `
+      <div class="streak-flame-card">
+        <div style="font-size:60px;filter:drop-shadow(0 0 30px #f97316);">🔥</div>
+        <div style="font-size:19px;font-weight:900;color:#f97316;margin-top:10px;">${days} DAYS ON FIRE!</div>
+        <div style="font-size:13px;color:#cbd5e1;font-weight:700;">Daily Routine Compounding Streak</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1500);
+  },
+
+  // 18. 📑 PDF: Dossier Laser Hologram Scan
+  dossierScan() {
+    this.playSound('sparkle');
+    const overlay = document.createElement('div');
+    overlay.className = 'action-dossier-overlay';
+    overlay.innerHTML = `<div class="dossier-scanner-line"></div>`;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1600);
+  },
+
+  // 19. 🏦 Banking: RBI Cryptographic Vault Sync
+  vaultSync(bank = 'HDFC Bank') {
+    this.playSound('coinDrop');
+    this.launchCelebration('finance', `${bank} Linked`, 'RBI Account Aggregator Synced 🏦🔒');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-vault-overlay';
+    overlay.innerHTML = `
+      <div class="rbi-vault-card">
+        <div style="font-size:56px;filter:drop-shadow(0 0 25px #00f2fe);">🏦🔒</div>
+        <div style="font-size:18px;font-weight:900;color:#00f2fe;margin-top:10px;">RBI AA CONSENT VERIFIED</div>
+        <div style="font-size:13px;color:#cbd5e1;font-weight:700;">${bank} Telemetry Synchronized</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1800);
   },
 
   // ─── Live Typing Audio & Particle Feedback ─────────────────

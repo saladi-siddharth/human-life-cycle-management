@@ -1079,6 +1079,230 @@
   100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   ECOSYSTEM EXTENDED ANIMATIONS (STUDENT, BIZ, COACH, AUTH, GAMIFICATION, PDF, VAULT)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 11. 🎓 Student: Graduation Cap Tossing Vortex */
+.action-gradcap-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+}
+.grad-cap-toss {
+  position: fixed;
+  font-size: 38px;
+  filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.7));
+  animation: gradCapToss 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes gradCapToss {
+  0% { transform: translateY(100vh) rotate(0deg) scale(0.6); opacity: 0; }
+  25% { opacity: 1; }
+  60% { transform: translateY(25vh) rotate(-380deg) scale(1.3); }
+  100% { transform: translateY(-30vh) rotate(-720deg) scale(0.9); opacity: 0; }
+}
+
+/* 12. 🏆 Student: Scholarship Golden Trophy Award */
+.action-trophy-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.golden-trophy-card {
+  background: rgba(15, 23, 42, 0.94);
+  border: 2.5px solid #fbbf24;
+  box-shadow: 0 0 70px rgba(251, 191, 36, 0.8), inset 0 0 35px rgba(251, 191, 36, 0.3);
+  padding: 26px 40px;
+  border-radius: 28px;
+  text-align: center;
+  animation: trophyShine 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes trophyShine {
+  0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 13. 🦄 Business: Unicorn Surge */
+.action-unicorn-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+}
+.unicorn-rocket-surge {
+  position: fixed;
+  bottom: 15vh;
+  left: -150px;
+  font-size: 64px;
+  filter: drop-shadow(0 0 35px #ec4899);
+  animation: unicornFly 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes unicornFly {
+  0% { transform: translateX(0) translateY(0) rotate(20deg) scale(0.8); opacity: 0; }
+  20% { opacity: 1; }
+  80% { transform: translateX(110vw) translateY(-40vh) rotate(-15deg) scale(1.4); opacity: 1; }
+  100% { transform: translateX(120vw) translateY(-50vh) rotate(-25deg) scale(1.6); opacity: 0; }
+}
+
+/* 14. 🧠 Coach: Quantum Neural Synapse Spark */
+.action-neural-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.neural-brain-synapse {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.9) 0%, rgba(99, 102, 241, 0.4) 60%, transparent 75%);
+  box-shadow: 0 0 80px #00f2fe, inset 0 0 50px #6366f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 54px;
+  animation: synapsePulse 1.4s ease-out forwards;
+}
+@keyframes synapsePulse {
+  0% { transform: scale(0.2); opacity: 0; }
+  45% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #00f2fe); }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* 15. 🛡️ Auth: Biometric Cyber Shield Unlock */
+.action-shield-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cyber-shield-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2.5px solid #10b981;
+  box-shadow: 0 0 70px #10b981, inset 0 0 35px rgba(16, 185, 129, 0.4);
+  padding: 28px 48px;
+  border-radius: 30px;
+  text-align: center;
+  animation: shieldUnlock 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes shieldUnlock {
+  0% { transform: scale(0.4); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 16. 🎆 Gamification: Level Up Master Fanfare */
+.action-levelup-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.level-up-fanfare-card {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 3px solid #fbbf24;
+  box-shadow: 0 0 90px rgba(251, 191, 36, 0.9), inset 0 0 45px rgba(251, 191, 36, 0.35);
+  padding: 32px 52px;
+  border-radius: 32px;
+  text-align: center;
+  animation: levelUpPop 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes levelUpPop {
+  0% { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+  45% { transform: scale(1.25) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 17. 🔥 Gamification: Daily Streak Flame Surge */
+.action-streak-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.streak-flame-card {
+  background: rgba(15, 23, 42, 0.94);
+  border: 2.5px solid #f97316;
+  box-shadow: 0 0 70px rgba(249, 115, 22, 0.8), inset 0 0 35px rgba(249, 115, 22, 0.3);
+  padding: 24px 44px;
+  border-radius: 28px;
+  text-align: center;
+  animation: flameRoar 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes flameRoar {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 18. 📑 PDF: Dossier Laser Hologram Scan */
+.action-dossier-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+}
+.dossier-scanner-line {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #10b981, #00f2fe, #10b981, transparent);
+  box-shadow: 0 0 25px #10b981, 0 0 50px #00f2fe;
+  animation: laserScanVertical 1.6s ease-in-out forwards;
+}
+@keyframes laserScanVertical {
+  0% { top: 0vh; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 100vh; opacity: 0; }
+}
+
+/* 19. 🏦 Banking: RBI Cryptographic Vault Sync */
+.action-vault-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rbi-vault-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 2.5px solid #00f2fe;
+  box-shadow: 0 0 80px rgba(0, 242, 254, 0.8), inset 0 0 40px rgba(99, 102, 241, 0.4);
+  padding: 28px 46px;
+  border-radius: 30px;
+  text-align: center;
+  animation: vaultWheelSpin 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes vaultWheelSpin {
+  0% { transform: scale(0.3) rotate(-45deg); opacity: 0; }
+  50% { transform: scale(1.15) rotate(15deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+
 
 
 
