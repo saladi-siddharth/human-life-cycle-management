@@ -91,6 +91,10 @@ const Router = {
   },
 
   _initPage(path) {
+    if (typeof ContinuumBridge !== 'undefined' && ContinuumBridge.syncToRoute) {
+      ContinuumBridge.syncToRoute(path);
+    }
+
     if (typeof DeleteEngine !== 'undefined' && DeleteEngine.updateVisibility) {
       DeleteEngine.updateVisibility(path);
     }

@@ -53,12 +53,15 @@ function LandingPage() {
           NIRF college intelligence, and financial growth tracking.
         </p>
 
-        <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:28px;">
-          <button class="editorial-manifesto-btn liquid-glass-v2" onclick="document.getElementById('editorial-journey')?.scrollIntoView({behavior:'smooth'})" style="border-radius:9999px;">
-            <i class="fas fa-feather-alt" style="opacity:0.7;"></i> Our Manifesto
+        <div style="display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:28px;">
+          <button class="editorial-manifesto-btn liquid-glass-v2" onclick="openQuickSimulationModal()" style="border-radius:9999px; background:linear-gradient(135deg, rgba(0,242,254,0.3) 0%, rgba(16,185,129,0.3) 100%); border:1px solid rgba(0,242,254,0.7); box-shadow:0 8px 30px rgba(0,242,254,0.3); color:#fff; font-weight:800;">
+            <i class="fas fa-magic" style="color:#00f2fe;"></i> Instant Life Simulation (3-Click Preview)
           </button>
-          <button class="editorial-manifesto-btn liquid-glass-v2" onclick="handleGoToDashboard()" style="border-radius:9999px; background:linear-gradient(135deg, rgba(0,242,254,0.3) 0%, rgba(79,70,229,0.3) 100%); border:1px solid rgba(0,242,254,0.6); box-shadow:0 8px 30px rgba(0,242,254,0.25); color:#fff; font-weight:700;">
-            <i class="fas fa-chart-line" style="color:#00f2fe;"></i> Go to Dashboard <i class="fas fa-arrow-right" style="font-size:11px; margin-left:4px;"></i>
+          <a href="/continuum.html" class="editorial-manifesto-btn liquid-glass-v2" style="border-radius:9999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+            <i class="fas fa-cube" style="color:#a855f7;"></i> 3D Continuum Pavilion
+          </a>
+          <button class="editorial-manifesto-btn liquid-glass-v2" onclick="handleGoToDashboard()" style="border-radius:9999px; border:1px solid rgba(255,255,255,0.2);">
+            <i class="fas fa-chart-line" style="color:#00f2fe;"></i> Dashboard
           </button>
         </div>
       </section>
@@ -440,6 +443,113 @@ function handleGoToDashboard() {
     Router.navigate('/auth/login');
   }
 }
-
 window.handleGoToDashboard = handleGoToDashboard;
+
+// ─── 3-CLICK ZERO-FRICTION SIMULATION PREVIEW MODAL ─────────
+
+function openQuickSimulationModal() {
+  const html = `
+    <div style="text-align:center; padding:10px;">
+      <div style="font-size:36px; margin-bottom:8px;">⚡</div>
+      <h3 style="margin:0 0 6px 0; font-size:22px; font-weight:800; color:#fff;">Instant Life GPS Simulation</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 20px 0;">3 clicks to generate your personalized life trajectory before registration.</p>
+
+      <div style="display:flex; flex-direction:column; gap:16px; text-align:left;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#00f2fe; display:block; margin-bottom:6px;">1. Select Your Current Track</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <button type="button" class="btn btn-outline btn-sm quick-sim-track active" onclick="setSimTrack(this, 'student')" style="font-size:11.5px; padding:8px;">🎓 Student</button>
+            <button type="button" class="btn btn-outline btn-sm quick-sim-track" onclick="setSimTrack(this, 'employee')" style="font-size:11.5px; padding:8px;">💼 Employee</button>
+            <button type="button" class="btn btn-outline btn-sm quick-sim-track" onclick="setSimTrack(this, 'business')" style="font-size:11.5px; padding:8px;">🏢 Founder</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#10b981; display:block; margin-bottom:6px;">2. Top Growth Objective</label>
+          <select id="quick-sim-goal" class="chat-input" style="font-size:13px;" onchange="updateSimPreview()">
+            <option value="tier1_sde">Tier-1 SDE Placement & ₹25+ LPA Package</option>
+            <option value="staff_promo">Promotion to Staff / Principal Engineer</option>
+            <option value="scale_arr">Scale Startup to ₹1 Crore ARR & Seed Round</option>
+            <option value="lean_muscle">Lean Muscle Hypertrophy & 15% Bodyfat</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#f59e0b; display:block; margin-bottom:6px;">3. Dietary & Vitality Preference</label>
+          <select id="quick-sim-diet" class="chat-input" style="font-size:13px;" onchange="updateSimPreview()">
+            <option value="veg">Pure Vegetarian / Sattvic Indian (~2,300 kcal, 150g Protein)</option>
+            <option value="eggetarian">Eggetarian (~2,300 kcal, 155g Protein)</option>
+            <option value="nonveg">High-Protein Non-Veg (~2,350 kcal, 160g Protein)</option>
+            <option value="vegan">Plant-Powered Vegan (~2,250 kcal, 140g Protein)</option>
+            <option value="jain">Jain Nutrition Protocol (~2,280 kcal, 145g Protein)</option>
+            <option value="keto">Ketogenic Lean (~2,100 kcal, 130g Protein)</option>
+          </select>
+        </div>
+
+        <!-- Real-Time Simulated Output Box -->
+        <div id="sim-preview-box" style="background:rgba(15,23,42,0.9); border:1px solid rgba(0,242,254,0.3); border-radius:14px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:#00f2fe; font-size:13px;">Estimated Life Score Horizon</strong>
+            <span class="badge badge-success" style="font-size:11px;">84 / 100 Potential</span>
+          </div>
+          <div style="font-size:12px; color:#cbd5e1; line-height:1.5;">
+            🎯 <strong>Career Velocity:</strong> 92/100 (Tier-1 SDE Roadmap active)<br>
+            🥗 <strong>Calibrated Nutrition:</strong> ~2,300 kcal | 150g Protein | 6 Meals/day<br>
+            💰 <strong>Wealth Projection:</strong> ₹1.75 Cr in 15 yrs via ₹25k Index SIP
+          </div>
+        </div>
+
+        <div style="margin-top:6px; display:flex; gap:10px;">
+          <button class="btn btn-primary btn-full" onclick="claimSimulatedPlan()" style="font-weight:800; padding:12px; font-size:14px; border-radius:12px;">
+            <i class="fas fa-rocket"></i> Claim My Tailored Roadmap (1-Click)
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  UI.modal(html);
+}
+window.openQuickSimulationModal = openQuickSimulationModal;
+
+let currentSimTrack = 'student';
+function setSimTrack(btn, track) {
+  currentSimTrack = track;
+  document.querySelectorAll('.quick-sim-track').forEach(b => {
+    b.classList.remove('active');
+    b.style.borderColor = 'rgba(255,255,255,0.1)';
+  });
+  btn.classList.add('active');
+  btn.style.borderColor = '#00f2fe';
+  updateSimPreview();
+}
+window.setSimTrack = setSimTrack;
+
+function updateSimPreview() {
+  const goal = document.getElementById('quick-sim-goal')?.value || 'tier1_sde';
+  const diet = document.getElementById('quick-sim-diet')?.value || 'veg';
+  const box = document.getElementById('sim-preview-box');
+  if (!box) return;
+
+  const scoreMap = { student: '86 / 100 Potential', employee: '89 / 100 Potential', business: '92 / 100 Potential' };
+  box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <strong style="color:#00f2fe; font-size:13px;">Estimated Life Score Horizon</strong>
+      <span class="badge badge-success" style="font-size:11px;">${scoreMap[currentSimTrack] || '88 / 100 Potential'}</span>
+    </div>
+    <div style="font-size:12px; color:#cbd5e1; line-height:1.5;">
+      🎯 <strong>Role Track:</strong> ${currentSimTrack.toUpperCase()}<br>
+      🥗 <strong>Nutrition Protocol:</strong> ${diet.toUpperCase()} (~2,300 kcal, ~150g Protein)<br>
+      ⚡ <strong>Daily Biometric Routine:</strong> 6 Scheduled Timings + Circadian Sleep Sync
+    </div>
+  `;
+}
+window.updateSimPreview = updateSimPreview;
+
+function claimSimulatedPlan() {
+  Store.set('identity', currentSimTrack);
+  UI.closeModal();
+  Router.navigate('/auth/login');
+}
+window.claimSimulatedPlan = claimSimulatedPlan;
+
 

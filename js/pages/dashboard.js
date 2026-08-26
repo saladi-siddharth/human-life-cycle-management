@@ -200,6 +200,9 @@ function DashboardPage() {
         </div>
       </div>
 
+      <!-- AI Lifestyle Predictor & Burnout Early-Warning Widget -->
+      ${typeof PredictiveEngine !== 'undefined' ? PredictiveEngine.renderBurnoutWidget() : ''}
+
       <!-- DYNAMIC AUDIENCE PERSONA CONTENT -->
       ${identity === 'student' ? renderStudentView() : identity === 'employee' ? renderEmployeeView() : renderBusinessView()}
 

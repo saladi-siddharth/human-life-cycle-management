@@ -60,6 +60,11 @@ function initBioVerseApp() {
     }, 500);
   }
 
+  // Initialize Persistent 3D Continuum Background Pavilion
+  if (typeof ContinuumBridge !== 'undefined') {
+    ContinuumBridge.init();
+  }
+
   // Cursify Custom Cursor Glow Overlay
   if (!document.getElementById('cursor-glow') && document.body) {
     const cursorGlow = document.createElement('div');
