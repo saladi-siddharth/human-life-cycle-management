@@ -713,6 +713,13 @@ function quickAddWater(amount) {
     }
   });
 
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.emeraldPulse(`💧 Hydrated +${amount}ml`);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(10, 'Logged Clean Hydration');
+  }
+
   UI.toast('success', `💧 +${amount}ml Logged`, `Total today: ${healthData.waterIntake}ml.`);
   Router.render();
 }
@@ -801,6 +808,13 @@ function saveWorkoutForm(e) {
   });
 
   UI.closeModal();
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.dumbbellFlex(type);
+    ActionPhysics.emeraldPulse(`💪 ${dur}m ${type}`);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(25, 'Completed Daily Physical Training');
+  }
   UI.toast('success', 'Workout Logged! 🔥', `Recorded ${dur} mins of ${type} (${muscle}).`);
   Router.render();
 }

@@ -216,6 +216,13 @@ function toggleTaskDone(id) {
   const score = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 75;
   Store.set('scores.work', score);
 
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.magicTask('Task Done! 🏆');
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(20, 'Completed Scheduled Priority Task');
+  }
+
   UI.toast('success', 'Task Updated', 'Live Work Score and 5-Pillar matrix synchronized.');
   Router.render();
 }
@@ -316,6 +323,13 @@ function saveTaskForm(e) {
     </div>
   `;
   Store.sendEmailNotification(`⏰ New Task Scheduled: ${title} (${formattedTime})`, htmlBody, userEmail);
+
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.quantumPortal(title);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(15, `Scheduled Task: ${title}`);
+  }
 
   UI.toast('success', 'Task Scheduled & Alert Sent ⚡', `Scheduled "${title}" at ${formattedTime}.`);
   Router.render();

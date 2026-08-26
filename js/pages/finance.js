@@ -478,6 +478,12 @@ function saveIncomeForm(e) {
   if (typeof PredictiveEngine !== 'undefined') {
     PredictiveEngine.emitAction('finance', 1.2);
   }
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.goldCoinShower(`₹${val.toLocaleString()}`);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(30, 'Recalculated Monthly Wealth Matrix');
+  }
 
   UI.toast('success', 'Income Updated', `Monthly income set to ₹${val.toLocaleString()}`);
   Router.render();
@@ -547,6 +553,12 @@ function saveTransactionForm(e) {
 
   if (typeof PredictiveEngine !== 'undefined') {
     PredictiveEngine.emitAction('finance', 1.0);
+  }
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.goldCoinShower(`₹${amount.toLocaleString()}`);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(15, `Logged ${type} of ₹${amount.toLocaleString()}`);
   }
 
   UI.toast('success', 'Entry Recorded', `Logged ${type} of ₹${amount.toLocaleString()}`);

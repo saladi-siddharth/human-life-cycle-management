@@ -608,5 +608,292 @@ const ActionPhysics = {
         }, 350);
       });
     });
+  },
+
+  // ─── 7. SUPERNOVA CELESTIAL PARTICLE BURST (Career & Skills) ──
+  supernovaBurst(type = 'skill', label = 'Skill Mastered!') {
+    this.playSound('wand');
+    const container = document.createElement('div');
+    container.className = 'action-supernova-burst';
+    container.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    // Center Aura Ring
+    const aura = document.createElement('div');
+    aura.style.cssText = `
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,242,254,0.8) 0%, rgba(99,102,241,0.4) 50%, transparent 75%);
+      box-shadow: 0 0 60px rgba(0,242,254,0.8), inset 0 0 40px #6366f1;
+      animation: pulse-scale 0.8s ease-out forwards;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    `;
+    aura.innerHTML = `🚀`;
+    container.appendChild(aura);
+
+    // Dynamic Title Badge
+    const badge = document.createElement('div');
+    badge.style.cssText = `
+      margin-top: 14px;
+      background: rgba(15,23,42,0.95);
+      border: 1.5px solid #00f2fe;
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 0 25px rgba(0,242,254,0.6);
+      white-space: nowrap;
+    `;
+    badge.innerHTML = `✨ ${label}`;
+    container.appendChild(badge);
+
+    document.body.appendChild(container);
+
+    // Spawn 32 Radial Sparkles
+    const colors = ['#00f2fe', '#6366f1', '#a855f7', '#38bdf8', '#fbbf24', '#fff'];
+    for (let i = 0; i < 32; i++) {
+      const angle = (i / 32) * Math.PI * 2;
+      const dist = 120 + Math.random() * 100;
+      const p = document.createElement('div');
+      p.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: ${Math.random() * 8 + 4}px;
+        height: ${Math.random() * 8 + 4}px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10001;
+        box-shadow: 0 0 12px currentColor;
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out;
+      `;
+      document.body.appendChild(p);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        p.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        p.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (p.parentNode) p.parentNode.removeChild(p);
+      }, 850);
+    }
+
+    setTimeout(() => {
+      container.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      container.style.opacity = '0';
+      container.style.transform = 'translate(-50%, -50%) scale(0.6)';
+      setTimeout(() => {
+        if (container.parentNode) container.parentNode.removeChild(container);
+      }, 400);
+    }, 1500);
+  },
+
+  // ─── 8. 3D GOLDEN COIN RAIN & WEALTH SHOCKWAVE (Finance) ─────
+  goldCoinShower(amount = '₹25,000') {
+    this.playSound('coinDrop');
+
+    // Central Wealth Shockwave Ring
+    const ring = document.createElement('div');
+    ring.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.1);
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 3px solid #f59e0b;
+      box-shadow: 0 0 50px rgba(245,158,11,0.8), inset 0 0 30px #fbbf24;
+      pointer-events: none;
+      z-index: 10000;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15,23,42,0.9);
+    `;
+    ring.innerHTML = `
+      <div style="font-size:42px;">💰</div>
+      <div style="font-size:16px; font-weight:900; color:#10b981; margin-top:4px;">${amount}</div>
+      <div style="font-size:11px; font-weight:700; color:#fbbf24;">Compound Compounding!</div>
+    `;
+    document.body.appendChild(ring);
+
+    requestAnimationFrame(() => {
+      ring.style.transform = 'translate(-50%, -50%) scale(1.3)';
+    });
+
+    // Spawn 18 Golden Coins falling
+    for (let i = 0; i < 18; i++) {
+      const coin = document.createElement('div');
+      const startLeft = Math.random() * window.innerWidth;
+      coin.style.cssText = `
+        position: fixed;
+        top: -40px;
+        left: ${startLeft}px;
+        font-size: ${Math.random() * 16 + 22}px;
+        pointer-events: none;
+        z-index: 10001;
+        transition: transform ${1.0 + Math.random() * 0.6}s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.4s ease;
+      `;
+      coin.innerHTML = `🪙`;
+      document.body.appendChild(coin);
+
+      const destY = window.innerHeight - 60 - Math.random() * 100;
+      requestAnimationFrame(() => {
+        coin.style.transform = `translate3d(${(Math.random() - 0.5) * 120}px, ${destY}px, 0) rotate(${Math.random() * 720}deg)`;
+      });
+
+      setTimeout(() => {
+        coin.style.opacity = '0';
+        setTimeout(() => {
+          if (coin.parentNode) coin.parentNode.removeChild(coin);
+        }, 400);
+      }, 1200);
+    }
+
+    setTimeout(() => {
+      ring.style.opacity = '0';
+      setTimeout(() => {
+        if (ring.parentNode) ring.parentNode.removeChild(ring);
+      }, 400);
+    }, 1800);
+  },
+
+  // ─── 9. EMERALD VITALITY BIOLUMINESCENCE PULSE (Health) ──────
+  emeraldPulse(label = 'Health Synchronized') {
+    this.playSound('waterSplash');
+
+    const pulseEl = document.createElement('div');
+    pulseEl.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16,185,129,0.85) 0%, rgba(6,182,212,0.4) 60%, transparent 80%);
+      box-shadow: 0 0 60px rgba(16,185,129,0.9), inset 0 0 35px #10b981;
+      pointer-events: none;
+      z-index: 10000;
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    `;
+    pulseEl.innerHTML = `
+      <div style="font-size:46px;">💧</div>
+      <div style="font-size:14px; font-weight:800; color:#fff; margin-top:4px; text-shadow:0 2px 8px rgba(0,0,0,0.8);">${label}</div>
+    `;
+    document.body.appendChild(pulseEl);
+
+    requestAnimationFrame(() => {
+      pulseEl.style.transform = 'translate(-50%, -50%) scale(1.4)';
+    });
+
+    // Spawn 24 Emerald Droplets
+    for (let i = 0; i < 24; i++) {
+      const angle = (i / 24) * Math.PI * 2;
+      const dist = 100 + Math.random() * 80;
+      const drop = document.createElement('div');
+      drop.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background: ${i % 2 === 0 ? '#10b981' : '#00f2fe'};
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10001;
+        box-shadow: 0 0 10px #10b981;
+        transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
+      `;
+      document.body.appendChild(drop);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        drop.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        drop.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (drop.parentNode) drop.parentNode.removeChild(drop);
+      }, 750);
+    }
+
+    setTimeout(() => {
+      pulseEl.style.opacity = '0';
+      setTimeout(() => {
+        if (pulseEl.parentNode) pulseEl.parentNode.removeChild(pulseEl);
+      }, 400);
+    }, 1400);
+  },
+
+  // ─── 10. QUANTUM VORTEX FOCUS PORTAL (Work & Tasks) ─────────
+  quantumPortal(title = 'Task Scheduled') {
+    this.playSound('wand');
+
+    const portal = document.createElement('div');
+    portal.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 3px dashed #38bdf8;
+      box-shadow: 0 0 50px rgba(56,189,248,0.8), inset 0 0 40px #6366f1;
+      pointer-events: none;
+      z-index: 10000;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15,23,42,0.9);
+      animation: spin 3s linear infinite;
+    `;
+    portal.innerHTML = `
+      <div style="font-size:42px;">⚡</div>
+      <div style="font-size:13px; font-weight:800; color:#38bdf8; margin-top:4px;">${title}</div>
+    `;
+    document.body.appendChild(portal);
+
+    requestAnimationFrame(() => {
+      portal.style.transform = 'translate(-50%, -50%) scale(1.3)';
+    });
+
+    setTimeout(() => {
+      portal.style.transform = 'translate(-50%, -50%) scale(0) rotate(180deg)';
+      portal.style.opacity = '0';
+      setTimeout(() => {
+        if (portal.parentNode) portal.parentNode.removeChild(portal);
+      }, 400);
+    }, 1300);
   }
 };

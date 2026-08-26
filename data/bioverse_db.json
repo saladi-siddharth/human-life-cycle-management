@@ -160,9 +160,9 @@
       "fundingStatus": "Startup India Incubated"
     },
     "scores": {
-      "life": 64,
+      "life": 66,
       "career": 43,
-      "health": 68,
+      "health": 78,
       "finance": 99,
       "work": 50,
       "success": 60
@@ -671,6 +671,14 @@
       ],
       "workoutLogs": [
         {
+          "id": "wo_1787771907214",
+          "type": "Resistance Training (Gym)",
+          "duration": 45,
+          "muscle": "Chest & Triceps",
+          "intensity": "High",
+          "date": "2026-08-26"
+        },
+        {
           "id": "wo_1787771601742",
           "type": "Resistance Training (Gym)",
           "duration": 45,
@@ -804,6 +812,14 @@
     },
     "notifications": [
       {
+        "type": "health",
+        "icon": "💪",
+        "title": "Email Sent: Health Telemetry Logged: Physical Workout (45 Minutes)",
+        "text": "Dispatched to saladisiddharath@gmail.com via Gmail SMTP (Daily Habit Telemetry Update (Physical Workout))",
+        "time": "Just now",
+        "unread": true
+      },
+      {
         "type": "student",
         "icon": "🇮🇳",
         "title": "PM Internship Scheme 2026 Open",
@@ -830,8 +846,17 @@
     ],
     "theme": "dark",
     "sidebarOpen": false,
-    "_updatedAt": 1787771901686,
+    "_updatedAt": 1787771912197,
     "emailLogs": [
+      {
+        "id": "em_1787771907222",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Health] Health Telemetry Logged: Physical Workout (45 Minutes)",
+        "purpose": "Daily Habit Telemetry Update (Physical Workout)",
+        "category": "Health",
+        "timestamp": "8/27/2026, 12:48:27 AM",
+        "status": "sent"
+      },
       {
         "id": "em_1787771601757",
         "to": "saladisiddharath@gmail.com",

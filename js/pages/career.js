@@ -436,6 +436,12 @@ function saveNewSkill(e) {
   });
 
   UI.closeModal();
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.supernovaBurst('skill', `Skill Added: ${name}`);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(15, `Added ${name} to Career Skills Matrix`);
+  }
   UI.toast('success', 'Skill Added & Dispatched!', `Added "${name}" to your matrix and sent email notification.`);
   Router.render();
 }

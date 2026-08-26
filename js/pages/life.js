@@ -129,6 +129,12 @@ function LifePage() {
 
 function toggleGoalDone(id) {
   Store.toggleLifeGoal(id);
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.slothCelebration('Milestone Achieved! 🏆');
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(50, 'Achieved Lifetime Goal Milestone');
+  }
   Router.render();
 }
 window.toggleGoalDone = toggleGoalDone;
@@ -182,6 +188,14 @@ function saveLifeGoalForm(e) {
 
   Store.addLifeGoal({ title, category, targetYear, progress: 10, completed: false });
   UI.closeModal();
+
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.slothCelebration(title);
+  }
+  if (typeof GamificationEngine !== 'undefined') {
+    GamificationEngine.awardXP(30, `Set Milestone: ${title}`);
+  }
+
   UI.toast('success', 'Life Goal Milestone Set 🌟', `Added "${title}" to your Life Success Matrix!`);
   Router.render();
 }
