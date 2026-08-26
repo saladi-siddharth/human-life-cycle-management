@@ -110,13 +110,19 @@ function SettingsPage() {
           </div>
         </div>
 
-        <!-- 5. Printable Audit Report -->
-        <div class="card card-glass">
-          <h3 style="margin:0 0 16px 0;display:flex;align-items:center;gap:8px;"><i class="fas fa-file-pdf" style="color:var(--purple);"></i> Life Audit & PDF Report</h3>
+        <!-- 5. DPDP Act 2023 & GDPR Privacy Compliance Vault -->
+        <div class="card card-glass" style="border:1px solid rgba(16,185,129,0.3); background:linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(15,23,42,0.95) 100%);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-shield-alt" style="color:var(--emerald);"></i> Privacy & DPDP Vault</h3>
+            <span class="badge badge-success" style="font-size:10px;">DPDP 2023 Compliant</span>
+          </div>
           <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
-            Generate a print-ready document containing 5 domain scores, health logs, double-entry ledger, and goals.
+            Complete data portability & right-to-erasure under the Indian DPDP Act 2023 and GDPR Article 17.
           </p>
-          <button class="btn btn-accent" style="width:100%;" onclick="window.print()"><i class="fas fa-print"></i> Print / Download PDF</button>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="LifeAuditExporter.exportPDF()"><i class="fas fa-file-pdf"></i> Export Life Audit Dossier (PDF)</button>
+            <button class="btn btn-ghost btn-sm" style="color:var(--rose); border:1px solid rgba(244,63,94,0.3);" onclick="confirmPurgeAccount()"><i class="fas fa-user-slash"></i> Purge All My Personal Data</button>
+          </div>
         </div>
 
         <!-- 5. Live Email Dispatch Activity Log -->
@@ -213,10 +219,33 @@ async function checkTiDBHealth() {
   }
 }
 
+async function confirmPurgeAccount() {
+  if (!confirm('⚠️ WARNING: This will permanently delete your account, personal data, and biometrics in compliance with the DPDP Act 2023. This action CANNOT be undone. Proceed?')) {
+    return;
+  }
+
+  try {
+    const email = Store.get('user.email') || 'user@bioverse.ai';
+    await fetch('/api/user/purge-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    localStorage.clear();
+    UI.toast('info', 'Account Purged', 'All personal data has been erased. Signing out...');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1200);
+  } catch (e) {
+    UI.toast('error', 'Purge Error', e.message);
+  }
+}
+
 window.saveGeminiKey = saveGeminiKey;
 window.toggleKeyVisibility = toggleKeyVisibility;
 window.handleJSONImport = handleJSONImport;
 window.forceTiDBSync = forceTiDBSync;
 window.checkTiDBHealth = checkTiDBHealth;
+window.confirmPurgeAccount = confirmPurgeAccount;
 
 

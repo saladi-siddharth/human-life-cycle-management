@@ -61,6 +61,49 @@ function EmployeeSalaryPage() {
 
     <div class="grid-dashboard">
       <div>
+        <!-- 📈 Interactive ESOP & Startup Equity Wealth Modeler 📈 -->
+        <div class="card card-glass" style="margin-bottom:16px; padding:22px; border:1px solid rgba(16,185,129,0.3); background:linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(15,23,42,0.95) 100%);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0; font-size:16px; display:flex; align-items:center; gap:8px;">
+              <span>📈</span> ESOP & Stock Equity Wealth Modeler
+            </h4>
+            <span class="badge badge-success" style="font-size:12px;">Estimated Value: <strong id="esop-total-val" style="color:#00f2fe;">₹42,50,000</strong></span>
+          </div>
+          <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">
+            Simulate your equity vesting trajectory, strike price upside, and future liquidity value at series funding rounds or IPO.
+          </p>
+
+          <div class="grid grid-3" style="gap:14px; margin-bottom:16px;">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                <span style="color:#94a3b8;">Vested Options</span>
+                <strong style="color:#fff;" id="esop-options-txt">5,000 Options</strong>
+              </div>
+              <input type="range" class="bio-slider" min="1000" max="25000" step="500" value="5000" oninput="updateESOPModeler('options', this.value)">
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                <span style="color:#94a3b8;">Strike Price (Grant)</span>
+                <strong style="color:#fff;" id="esop-strike-txt">₹150 / share</strong>
+              </div>
+              <input type="range" class="bio-slider" min="10" max="1000" step="10" value="150" oninput="updateESOPModeler('strike', this.value)">
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                <span style="color:#94a3b8;">Future Fair Market Val</span>
+                <strong style="color:#10b981;" id="esop-fmv-txt">₹1,000 / share</strong>
+              </div>
+              <input type="range" class="bio-slider" min="200" max="5000" step="50" value="1000" oninput="updateESOPModeler('fmv', this.value)">
+            </div>
+          </div>
+
+          <div style="background:#070a14; border:1px solid #1e293b; border-radius:10px; padding:12px 16px; font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>Exercise Cost: <strong id="esop-cost-txt">₹7,50,000</strong></div>
+            <div>Gross Pre-Tax Profit: <strong style="color:#10b981;" id="esop-profit-txt">₹42,50,000</strong></div>
+            <div style="color:#00f2fe;">Net Post-Tax LTCG (12.5%): <strong id="esop-net-txt">₹37,18,750</strong></div>
+          </div>
+        </div>
+
         <div class="chart-container" style="margin-bottom:16px;">
           <div class="chart-header"><span class="chart-title">Salary & Total Compensation Growth Trajectory (INR Lakhs)</span></div>
           <div class="chart-canvas-wrap"><canvas id="salary-chart"></canvas></div>
@@ -229,7 +272,27 @@ function EmployeeMobilityPage() {
   return UI.dashboardLayout('/employee/mobility', content);
 }
 
+let esopState = { options: 5000, strike: 150, fmv: 1000 };
+
+function updateESOPModeler(key, val) {
+  esopState[key] = Number(val);
+  if (key === 'options') document.getElementById('esop-options-txt').textContent = `${Number(val).toLocaleString()} Options`;
+  if (key === 'strike') document.getElementById('esop-strike-txt').textContent = `₹${val} / share`;
+  if (key === 'fmv') document.getElementById('esop-fmv-txt').textContent = `₹${Number(val).toLocaleString()} / share`;
+
+  const cost = esopState.options * esopState.strike;
+  const grossValue = esopState.options * esopState.fmv;
+  const profit = Math.max(0, grossValue - cost);
+  const netLTCG = Math.round(profit * 0.875); // 12.5% LTCG tax (India Budget 2024)
+
+  document.getElementById('esop-total-val').textContent = `₹${profit.toLocaleString('en-IN')}`;
+  document.getElementById('esop-cost-txt').textContent = `₹${cost.toLocaleString('en-IN')}`;
+  document.getElementById('esop-profit-txt').textContent = `₹${profit.toLocaleString('en-IN')}`;
+  document.getElementById('esop-net-txt').textContent = `₹${netLTCG.toLocaleString('en-IN')}`;
+}
+
 window.quickApplyJob = quickApplyJob;
 window.openSalaryNegotiationModal = openSalaryNegotiationModal;
 window.calculateOfferComp = calculateOfferComp;
+window.updateESOPModeler = updateESOPModeler;
 

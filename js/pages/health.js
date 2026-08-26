@@ -39,7 +39,8 @@ function HealthPage() {
       ${UI.sectionHeader(
         'Health & Longevity Protocol',
         'Personalized precision nutrition plans, single-entry circadian recovery tracking, 3D fluid hydration, and automated health telemetry.',
-        `<div style="display:flex;gap:10px;">
+        `<div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="VisionEngine.openMealScanner()"><i class="fas fa-camera"></i> Snap Meal Photo (AI Vision)</button>
           <button class="btn btn-primary btn-sm" onclick="openWorkoutModal()"><i class="fas fa-plus"></i> Log Workout</button>
         </div>`
       )}

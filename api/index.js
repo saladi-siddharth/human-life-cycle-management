@@ -10,22 +10,36 @@ let mysql = null;
 try {
   mysql = require('mysql2/promise');
 } catch (e) {}
+let bcrypt = null;
+try {
+  bcrypt = require('bcryptjs');
+} catch (e) {}
+let jwt = null;
+try {
+  jwt = require('jsonwebtoken');
+} catch (e) {}
 
-const EMAIL_USER = process.env.EMAIL_USER || 'mahisiddharth721@gmail.com';
-const EMAIL_PASS = process.env.EMAIL_PASS || 'mqoqiqzpcfcqvnzp';
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+const JWT_SECRET = process.env.JWT_SECRET || 'bioverse_dev_jwt_secret_change_in_production';
+const BCRYPT_ROUNDS = 12;
 
 // ─── TiDB Cloud Database Pool ─────────────────────────────────────────
 let dbPool = null;
 
 if (mysql) {
   try {
+    const TIDB_HOST = process.env.TIDB_HOST;
+    const TIDB_USER = process.env.TIDB_USER;
+    const TIDB_PASSWORD = process.env.TIDB_PASSWORD;
+    const TIDB_DATABASE = process.env.TIDB_DATABASE || 'test';
     dbPool = mysql.createPool({
-      host: process.env.TIDB_HOST || 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
+      host: TIDB_HOST || 'localhost',
       port: Number(process.env.TIDB_PORT) || 4000,
-      user: process.env.TIDB_USER || '3aposv8BwtQq1iQ.root',
-      password: process.env.TIDB_PASSWORD || 'iV5raMCYdId3skvO',
-      database: process.env.TIDB_DATABASE || 'test',
-      ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true },
+      user: TIDB_USER || 'root',
+      password: TIDB_PASSWORD || '',
+      database: TIDB_DATABASE,
+      ssl: TIDB_HOST ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
       waitForConnections: true,
       connectionLimit: 5,
       enableKeepAlive: true,
@@ -445,21 +459,27 @@ module.exports = async function handler(req, res) {
     }
 
     const userId = 'usr_' + Date.now();
-    const userData = { id: userId, email: cleanEmail, name: name || cleanEmail.split('@')[0], password, profile: profile || {} };
+    // Hash password with bcrypt before storage
+    const hashedPassword = bcrypt ? await bcrypt.hash(password, BCRYPT_ROUNDS) : password;
+    const userData = { id: userId, email: cleanEmail, name: name || cleanEmail.split('@')[0], password: hashedPassword, profile: profile || {} };
 
     if (dbPool) {
       try {
         await dbPool.query(
           'INSERT INTO bv_users (id, email, name, password, profile_json) VALUES (?, ?, ?, ?, ?)',
-          [userId, cleanEmail, userData.name, password, JSON.stringify(userData.profile)]
+          [userId, cleanEmail, userData.name, hashedPassword, JSON.stringify(userData.profile)]
         );
       } catch (err) {}
     }
 
     inMemoryStore.users.push(userData);
+
+    // Generate JWT token on registration
+    const token = jwt ? jwt.sign({ userId, email: cleanEmail }, JWT_SECRET, { expiresIn: '7d' }) : null;
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
       success: true,
+      token,
       user: { id: userId, email: cleanEmail, name: userData.name }
     }));
   }
@@ -481,14 +501,38 @@ module.exports = async function handler(req, res) {
       user = inMemoryStore.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
     }
 
-    if (!user || user.password !== password) {
+    // Secure password comparison: bcrypt hash check with fallback for legacy plaintext
+    let isValid = false;
+    if (user) {
+      if (bcrypt && user.password && user.password.startsWith('$2')) {
+        // Password is bcrypt hashed
+        isValid = await bcrypt.compare(password, user.password);
+      } else {
+        // Legacy plaintext comparison — auto-upgrade to hash on success
+        isValid = user.password === password;
+        if (isValid && bcrypt) {
+          const upgradedHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+          user.password = upgradedHash;
+          if (dbPool) {
+            try {
+              await dbPool.query('UPDATE bv_users SET password = ? WHERE id = ?', [upgradedHash, user.id]);
+            } catch (err) {}
+          }
+        }
+      }
+    }
+
+    if (!isValid) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ success: false, error: 'Invalid email or password.' }));
     }
 
+    // Generate JWT session token
+    const token = jwt ? jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' }) : null;
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
       success: true,
+      token,
       user: { id: user.id, email: user.email, name: user.name }
     }));
   }

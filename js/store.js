@@ -227,9 +227,11 @@ const Store = {
     apiSettings: { geminiKey: '' },
     notifications: [],
     theme: 'dark',
-    sidebarOpen: false
+    sidebarOpen: false,
+    _updatedAt: Date.now()
   },
   _listeners: [],
+  _channel: typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('bioverse_state_sync') : null,
 
   getState() { return this._state; },
   get(key) { return key.split('.').reduce((obj, k) => obj?.[k], this._state); },
@@ -242,16 +244,20 @@ const Store = {
       obj = obj[keys[i]];
     }
     obj[keys[keys.length - 1]] = value;
+    this._state._updatedAt = Date.now();
     this.recalculateScores();
     this._save();
     this._notify();
+    this._broadcast({ type: 'STATE_KEY_UPDATE', key, value, timestamp: this._state._updatedAt });
   },
 
   update(partial) {
     Object.assign(this._state, partial);
+    this._state._updatedAt = Date.now();
     this.recalculateScores();
     this._save();
     this._notify();
+    this._broadcast({ type: 'STATE_PARTIAL_UPDATE', partial, timestamp: this._state._updatedAt });
   },
 
   subscribe(fn) {
@@ -261,6 +267,7 @@ const Store = {
 
   _notify() { this._listeners.forEach(fn => fn(this._state)); },
   _save() {
+    this._state._updatedAt = Date.now();
     try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
     this.syncWithBackend();
   },
@@ -272,6 +279,48 @@ const Store = {
         Object.assign(this._state, data);
       }
     } catch (e) {}
+  },
+  _broadcast(payload) {
+    try {
+      if (this._channel) {
+        this._channel.postMessage({ ...payload, senderId: this._instanceId });
+      }
+    } catch (e) {}
+  },
+  _initSync() {
+    this._instanceId = 'tab_' + Math.random().toString(36).substring(2, 9);
+    if (this._channel) {
+      this._channel.onmessage = (event) => {
+        const data = event.data;
+        if (!data || data.senderId === this._instanceId) return;
+
+        if (data.type === 'STATE_KEY_UPDATE' && data.key) {
+          const keys = data.key.split('.');
+          let obj = this._state;
+          for (let i = 0; i < keys.length - 1; i++) {
+            if (!obj[keys[i]]) obj[keys[i]] = {};
+            obj = obj[keys[i]];
+          }
+          obj[keys[keys.length - 1]] = data.value;
+          this._state._updatedAt = data.timestamp || Date.now();
+          this.recalculateScores();
+          try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
+          this._notify();
+          if (typeof Router !== 'undefined' && Router.render && Router.currentRoute) {
+            Router.render();
+          }
+        } else if (data.type === 'STATE_PARTIAL_UPDATE' && data.partial) {
+          Object.assign(this._state, data.partial);
+          this._state._updatedAt = data.timestamp || Date.now();
+          this.recalculateScores();
+          try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
+          this._notify();
+          if (typeof Router !== 'undefined' && Router.render && Router.currentRoute) {
+            Router.render();
+          }
+        }
+      };
+    }
   },
   async syncWithBackend() {
     try {
@@ -1161,5 +1210,6 @@ const Store = {
 };
 
 Store._load();
+Store._initSync();
 Store.recalculateScores();
 Store.generateNotifications();

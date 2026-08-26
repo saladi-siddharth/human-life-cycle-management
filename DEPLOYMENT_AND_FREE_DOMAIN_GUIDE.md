@@ -13,14 +13,15 @@ Your repository is pre-configured for instant one-click zero-config deployment o
 2. Click **"Add New..."** ➔ **"Project"**.
 3. Import your repository: `saladi-siddharth/human-life-cycle-management`.
 4. Leave build settings as default (the included `vercel.json` will automatically configure Node.js serverless functions & static assets).
-5. (Optional) Add your Environment Variables if needed:
-   - `EMAIL_USER`: `mahisiddharth721@gmail.com`
-   - `EMAIL_PASS`: `mqoqiqzpcfcqvnzp`
-   - `TIDB_HOST`: `gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com`
+5. Configure your Environment Variables in the project settings:
+   - `EMAIL_USER`: `your_gmail_address@gmail.com`
+   - `EMAIL_PASS`: `your_gmail_16_char_app_password`
+   - `TIDB_HOST`: `your_tidb_cluster_host.alicloud.tidbcloud.com`
    - `TIDB_PORT`: `4000`
-   - `TIDB_USER`: `3aposv8BwtQq1iQ.root`
-   - `TIDB_PASSWORD`: `iV5raMCYdId3skvO`
+   - `TIDB_USER`: `your_tidb_user.root`
+   - `TIDB_PASSWORD`: `your_tidb_password`
    - `TIDB_DATABASE`: `test`
+   - `JWT_SECRET`: `your_random_secure_jwt_secret_key`
 6. Click **Deploy**. Your app will be live at `https://human-life-cycle-management.vercel.app` (or similar)!
 
 ---

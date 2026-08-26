@@ -174,7 +174,8 @@ function DashboardPage() {
       ${UI.sectionHeader(
         `Welcome, ${profile.name || 'Saladi Siddharth'}! 👋`,
         `Your personalized command center is configured for the <strong>${roleTitleMap[identity] || 'BioVerse Life Track'}</strong>. Master Life Score is ${scores.life || 78}/100.`,
-        `<div style="display:flex; gap:10px;">
+        `<div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="LifeAuditExporter.exportPDF()" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700;"><i class="fas fa-file-pdf"></i> Export Life Audit PDF</button>
           <button class="btn btn-outline btn-sm" onclick="Router.navigate('/dashboard/career')"><i class="fas fa-file-invoice"></i> Analyze Resume ATS</button>
           <button class="btn btn-primary btn-sm" onclick="Router.navigate('/dashboard/coach')"><i class="fas fa-robot"></i> AI Life Coach</button>
         </div>`
@@ -199,6 +200,12 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <!-- AI Daily Spoken Audio Podcast Briefing -->
+      ${typeof MorningBriefEngine !== 'undefined' ? MorningBriefEngine.renderDashboardWidget() : ''}
+
+      <!-- Gamification, XP, Streaks & Peer Accountability Pods -->
+      ${typeof GamificationEngine !== 'undefined' ? GamificationEngine.renderDashboardWidget() : ''}
 
       <!-- AI Lifestyle Predictor & Burnout Early-Warning Widget -->
       ${typeof PredictiveEngine !== 'undefined' ? PredictiveEngine.renderBurnoutWidget() : ''}

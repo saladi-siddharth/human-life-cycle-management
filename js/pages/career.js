@@ -36,7 +36,8 @@ function CareerPage() {
       ${UI.sectionHeader(
         'Career Intelligence & AI Resume Engine',
         'Master verified skills with detailed metrics, explore tailored AI learning roadmaps, validate resumes with real-time ATS scanning, and manage your pipeline.',
-        `<div style="display:flex;gap:10px;">
+        `<div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="VisionEngine.openResumeScanner()"><i class="fas fa-file-upload"></i> Upload Resume File (ATS Scan)</button>
           <button class="btn btn-outline btn-sm" onclick="openAddSkillModal()"><i class="fas fa-plus"></i> Add New Skill</button>
           <button class="btn btn-primary btn-sm" onclick="openJobModal()"><i class="fas fa-briefcase"></i> Track Opportunity</button>
         </div>`

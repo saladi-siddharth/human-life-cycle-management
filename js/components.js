@@ -103,7 +103,8 @@ const UI = {
           <a class="topbar-link" onclick="Router.navigate('/pricing')">Pricing</a>
           <a class="topbar-link" onclick="Router.navigate('/auth/login')">Login</a>
         </div>
-        <div class="topbar-actions">
+        <div class="topbar-actions" style="display:flex; align-items:center; gap:8px;">
+          ${typeof i18n !== 'undefined' ? i18n.renderLanguageSwitcher() : ''}
           <button class="btn btn-primary btn-sm" onclick="Router.navigate('/auth/register')">
             Get Started Free
           </button>
@@ -151,6 +152,14 @@ const UI = {
           <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/dashboard')" data-tooltip="Dashboard Overview" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;">
             <i class="fas fa-th-large"></i> <span>Overview</span>
           </button>
+
+          <!-- 3D Continuum Launch -->
+          <a href="/continuum.html" target="_blank" class="btn btn-ghost btn-sm" data-tooltip="Launch 3D Continuum Pavilion" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; color:#c084fc; border:1px solid rgba(192,132,252,0.3); border-radius:999px; padding:4px 12px; text-decoration:none;">
+            <i class="fas fa-cube" style="color:#c084fc;"></i> <span>3D Continuum</span>
+          </a>
+
+          <!-- Pan-India Language Switcher -->
+          ${typeof i18n !== 'undefined' ? i18n.renderLanguageSwitcher() : ''}
 
           <!-- Notifications Tray -->
           <button class="btn btn-ghost btn-icon btn-sm" onclick="Router.navigate('/dashboard/notifications')" data-tooltip="Notifications" style="position:relative;">
@@ -223,14 +232,16 @@ const UI = {
 
     const toolLinks = [
       { path: '/dashboard/coach', icon: 'fas fa-robot', label: 'AI Coach' },
+      { href: '/continuum.html', icon: 'fas fa-cube', label: '3D Continuum', target: '_blank', badge: '3D', color: '#c084fc' },
       { path: '/dashboard/notifications', icon: 'fas fa-bell', label: 'Notifications', badge: unread },
       { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
     ];
 
     const renderLink = (l) => l.href ? `
-      <a class="sidebar-link" href="${l.href}" style="color: var(--gold, #ead9b8);">
-        <i class="link-icon ${l.icon}" style="color: var(--gold, #ead9b8);"></i>
+      <a class="sidebar-link" href="${l.href}" ${l.target ? `target="${l.target}"` : ''} style="color: ${l.color || 'var(--gold, #ead9b8)'};">
+        <i class="link-icon ${l.icon}" style="color: ${l.color || 'var(--gold, #ead9b8)'};"></i>
         <span>${l.label}</span>
+        ${l.badge ? `<span class="link-badge" style="background:rgba(192,132,252,0.25); color:#c084fc; border:1px solid rgba(192,132,252,0.4);">${l.badge}</span>` : ''}
       </a>
     ` : `
       <a class="sidebar-link ${activePath === l.path ? 'active' : ''}" onclick="Router.navigate('${l.path}')">

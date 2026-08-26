@@ -50,11 +50,15 @@ function FinancePage() {
       ${UI.sectionHeader(
         'Financial Freedom & Real-Time Ledger',
         'Dynamic double-entry ledger tracking live income, expenses, Indian tax regime optimization, and compound growth.',
-        `<div style="display:flex;gap:8px;">
+        `<div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="AccountAggregator.openConsentModal()"><i class="fas fa-university"></i> Link Bank / Demat (AA)</button>
           <button class="btn btn-outline btn-sm" onclick="openIncomeModal()"><i class="fas fa-edit"></i> Edit Income (₹${totalIncome.toLocaleString()})</button>
           <button class="btn btn-primary btn-sm" onclick="openTransactionModal()"><i class="fas fa-plus"></i> Add Transaction</button>
         </div>`
       )}
+
+      <!-- Live Indian Account Aggregator (AA) Open Banking Hub -->
+      ${typeof AccountAggregator !== 'undefined' ? AccountAggregator.renderFinanceWidget() : ''}
 
       <!-- Financial Wisdom Quotation Card -->
       <div class="card card-glass" style="margin-bottom:20px; padding:18px 22px; border-radius:16px; border:1px solid rgba(251,191,36,0.3); background:linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(15,23,42,0.95) 100%);">

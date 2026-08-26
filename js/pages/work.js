@@ -101,6 +101,9 @@ function WorkPage() {
           <div style="font-size:11.5px;color:var(--text-muted);border-top:1px solid var(--glass-border);padding-top:10px;">
             ⚡ 25 minutes of unbroken single-tasking accelerates cognitive output by 300%.
           </div>
+
+          <!-- Binaural Audio Soundscape Synthesizer -->
+          ${typeof AudioSoundscape !== 'undefined' ? AudioSoundscape.renderPomodoroAudioWidget() : ''}
         </div>
 
         <!-- 2. Real-Time Scheduled To-Do List with Times -->
@@ -383,6 +386,23 @@ function togglePomodoro() {
         clearInterval(pomoInterval);
         pomoRunning = false;
         if (typeof UI !== 'undefined') UI.toast('success', 'Focus Session Completed! 🏆', 'Great work! Take a 5-minute restorative rest.');
+        
+        // 1. Play Harmonic Zen Singing Bowl Chime
+        if (typeof AudioSoundscape !== 'undefined') {
+          AudioSoundscape.playZenBowlChime();
+        }
+
+        // 2. Award Gamification XP
+        if (typeof GamificationEngine !== 'undefined') {
+          GamificationEngine.awardXP(25, 'Completed 25-Min Deep Focus Sprint');
+        }
+
+        // 3. Dispatch Web Push Notification
+        if (typeof PushNotificationEngine !== 'undefined') {
+          PushNotificationEngine.sendNotification('⚡ Focus Sprint Finished', {
+            body: 'Great focus session! Take a 5-minute restorative stretch.'
+          });
+        }
       }
     }, 1000);
   }

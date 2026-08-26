@@ -31,16 +31,16 @@ function PricingPage() {
                 <h3>Starter</h3>
                 <p>For individuals starting their journey</p>
                 <div class="pricing-price">
-                  <span class="currency">$</span><span class="amount">0</span><span class="period">/mo</span>
+                  <span class="currency">₹</span><span class="amount">0</span><span class="period">/mo</span>
                 </div>
               </div>
               <div class="pricing-features">
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Basic Life Score</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 1 Active Goal per Domain</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Manual Tracker</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Basic Life Score (0-100)</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Manual Tracker & Daily Habits</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 5 AI Coach Queries / day</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Community Support</div>
-                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> AI Coach Access</div>
-                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> Advanced Analytics</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> Resume ATS Scanner</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> Camera Nutrition Vision</div>
               </div>
               <button class="btn btn-outline btn-full" onclick="Router.navigate('/auth/register')">Get Started Free</button>
             </div>
@@ -49,41 +49,45 @@ function PricingPage() {
             <div class="pricing-card popular">
               <div class="pricing-badge">Most Popular</div>
               <div class="pricing-header">
-                <h3>Growth</h3>
-                <p>For professionals seeking serious growth</p>
+                <h3>BioVerse Pro</h3>
+                <p>For students & professionals seeking rapid growth</p>
                 <div class="pricing-price">
-                  <span class="currency">$</span><span class="amount price-val" data-monthly="9.99" data-annual="7.99">9.99</span><span class="period">/mo</span>
+                  <span class="currency">₹</span><span class="amount price-val" data-monthly="299" data-annual="249">299</span><span class="period">/mo</span>
                 </div>
               </div>
               <div class="pricing-features">
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Advanced Life Score</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Unlimited Goals</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> AI Coach (100 msgs/mo)</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Automated Tracking</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Smart Alerts</div>
-                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> 1-on-1 Human Coaching</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Unlimited AI Life Coach & Vision</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Resume ATS Keyword Matcher</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Camera Meal Nutrition Scanner</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Client-Side PDF Life Audit Export</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> All-India College NIRF Telemetry</div>
+                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> 3D Spatial Pavilion Continuum</div>
               </div>
-              <button class="btn btn-primary btn-full" onclick="Router.navigate('/auth/register')">Start 14-Day Free Trial</button>
+              <button class="btn btn-primary btn-full" onclick="BillingEngine.openCheckout('pro', document.getElementById('billing-toggle')?.checked ? 'annual' : 'monthly')">
+                <i class="fas fa-bolt"></i> Upgrade to Pro (₹299)
+              </button>
             </div>
 
-            <!-- Elite Plan -->
+            <!-- Sovereign Plan -->
             <div class="pricing-card">
               <div class="pricing-header">
-                <h3>Elite</h3>
-                <p>For high-achievers and business owners</p>
+                <h3>BioVerse Sovereign</h3>
+                <p>For high-achievers, founders, and business owners</p>
                 <div class="pricing-price">
-                  <span class="currency">$</span><span class="amount price-val" data-monthly="29.99" data-annual="23.99">29.99</span><span class="period">/mo</span>
+                  <span class="currency">₹</span><span class="amount price-val" data-monthly="699" data-annual="580">699</span><span class="period">/mo</span>
                 </div>
               </div>
               <div class="pricing-features">
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Everything in Growth</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Unlimited AI Coach</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Priority Support</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Custom Data Integrations</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Advanced Market Intel</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 1-on-1 Quarterly Review</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Everything in Pro</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 3D Spatial Pavilion Continuum</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Indian Tax Regime Optimizer (Old vs New)</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Peer Accountability Pod Leadership</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Automated Daily Web Push Affirmations</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Priority WhatsApp VIP Support</div>
               </div>
-              <button class="btn btn-outline btn-full" onclick="Router.navigate('/auth/register')">Upgrade to Elite</button>
+              <button class="btn btn-outline btn-full" onclick="BillingEngine.openCheckout('sovereign', document.getElementById('billing-toggle')?.checked ? 'annual' : 'monthly')">
+                <i class="fas fa-crown"></i> Activate Sovereign (₹699)
+              </button>
             </div>
           </div>
           

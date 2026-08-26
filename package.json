@@ -17,8 +17,10 @@
   "author": "BioVerse Team",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "docx": "^9.7.1",
     "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.23.3"
   }
 }

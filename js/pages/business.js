@@ -151,6 +151,59 @@ function BusinessFundraisingPage() {
       ${UI.statCard('📊', 'Pipeline Total', '₹18.5 Cr', 'In discussions', 'up', '#06b6d4')}
       ${UI.statCard('✅', 'Soft Committed', '₹4.5 Cr', '56% of target', 'up', '#10b981')}
       ${UI.statCard('📞', 'Partner Pitches', '14', 'This month', 'up', '#f59e0b')}
+    <!-- 📊 Interactive Cap Table & Round Dilution Simulator 📊 -->
+    <div class="card card-glass" style="margin-bottom:20px; padding:22px; border:1px solid rgba(99,102,241,0.3); background:linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(15,23,42,0.95) 100%);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <h4 style="margin:0; font-size:16px; display:flex; align-items:center; gap:8px;">
+          <span>📊</span> Cap Table & Round Dilution Simulator
+        </h4>
+        <span class="badge badge-primary" style="font-size:12px;">Post-Money: <strong id="cap-post-money-txt" style="color:#00f2fe;">₹40.0 Cr</strong></span>
+      </div>
+      <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">
+        Simulate pre-money valuation, target check size, and ESOP pool expansion to dynamically model founder equity retention.
+      </p>
+
+      <div class="grid grid-3" style="gap:14px; margin-bottom:16px;">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+            <span style="color:#94a3b8;">Pre-Money Valuation</span>
+            <strong style="color:#fff;" id="cap-pre-txt">₹32.0 Cr</strong>
+          </div>
+          <input type="range" class="bio-slider" min="100000000" max="1000000000" step="20000000" value="320000000" oninput="updateCapTableSim('pre', this.value)">
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+            <span style="color:#94a3b8;">Investment Round Size</span>
+            <strong style="color:#10b981;" id="cap-invest-txt">₹8.0 Cr</strong>
+          </div>
+          <input type="range" class="bio-slider" min="20000000" max="250000000" step="10000000" value="80000000" oninput="updateCapTableSim('invest', this.value)">
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+            <span style="color:#94a3b8;">ESOP Pool Creation</span>
+            <strong style="color:#f59e0b;" id="cap-esop-txt">10.0%</strong>
+          </div>
+          <input type="range" class="bio-slider" min="5" max="20" step="1" value="10" oninput="updateCapTableSim('esop', this.value)">
+        </div>
+      </div>
+
+      <div class="grid grid-3" style="gap:10px;">
+        <div style="background:#070a14; border:1px solid #1e293b; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:11px; color:#94a3b8;">Founder Ownership</div>
+          <div style="font-size:18px; font-weight:900; color:#10b981; margin-top:2px;" id="cap-founder-pct">72.0%</div>
+          <div style="font-size:10.5px; color:#64748b;" id="cap-founder-val">Value: ₹28.8 Cr</div>
+        </div>
+        <div style="background:#070a14; border:1px solid #1e293b; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:11px; color:#94a3b8;">New Investor Stake</div>
+          <div style="font-size:18px; font-weight:900; color:#00f2fe; margin-top:2px;" id="cap-invest-pct">20.0%</div>
+          <div style="font-size:10.5px; color:#64748b;">Round: ₹8.0 Cr</div>
+        </div>
+        <div style="background:#070a14; border:1px solid #1e293b; border-radius:10px; padding:12px; text-align:center;">
+          <div style="font-size:11px; color:#94a3b8;">Employee ESOP Pool</div>
+          <div style="font-size:18px; font-weight:900; color:#f59e0b; margin-top:2px;" id="cap-esop-pct">8.0%</div>
+          <div style="font-size:10.5px; color:#64748b;" id="cap-esop-val">Value: ₹3.2 Cr</div>
+        </div>
+      </div>
     </div>
 
     <div class="card card-glass">
@@ -264,7 +317,36 @@ function BusinessTeamPage() {
   return UI.dashboardLayout('/business/team', content);
 }
 
+let capTableState = { pre: 320000000, invest: 80000000, esop: 10 };
+
+function updateCapTableSim(key, val) {
+  capTableState[key] = Number(val);
+  const pre = capTableState.pre;
+  const invest = capTableState.invest;
+  const esopPct = capTableState.esop;
+
+  const postMoney = pre + invest;
+  const investorPct = (invest / postMoney) * 100;
+  const founderPct = (100 - investorPct) * (1 - esopPct / 100);
+  const actualEsopPct = 100 - investorPct - founderPct;
+
+  const founderVal = (postMoney * founderPct) / 100;
+  const esopVal = (postMoney * actualEsopPct) / 100;
+
+  if (key === 'pre') document.getElementById('cap-pre-txt').textContent = `₹${(pre / 10000000).toFixed(1)} Cr`;
+  if (key === 'invest') document.getElementById('cap-invest-txt').textContent = `₹${(invest / 10000000).toFixed(1)} Cr`;
+  if (key === 'esop') document.getElementById('cap-esop-txt').textContent = `${esopPct.toFixed(1)}%`;
+
+  document.getElementById('cap-post-money-txt').textContent = `₹${(postMoney / 10000000).toFixed(1)} Cr`;
+  document.getElementById('cap-founder-pct').textContent = `${founderPct.toFixed(1)}%`;
+  document.getElementById('cap-founder-val').textContent = `Value: ₹${(founderVal / 10000000).toFixed(1)} Cr`;
+  document.getElementById('cap-invest-pct').textContent = `${investorPct.toFixed(1)}%`;
+  document.getElementById('cap-esop-pct').textContent = `${actualEsopPct.toFixed(1)}%`;
+  document.getElementById('cap-esop-val').textContent = `Value: ₹${(esopVal / 10000000).toFixed(1)} Cr`;
+}
+
 window.updateRunwaySim = updateRunwaySim;
+window.updateCapTableSim = updateCapTableSim;
 window.openAddInvestorModal = openAddInvestorModal;
 window.saveInvestorForm = saveInvestorForm;
 

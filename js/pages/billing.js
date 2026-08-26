@@ -3,21 +3,38 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 function BillingPage() {
+  const state = Store.getState();
+  const currentTier = BillingEngine.getCurrentTier();
+  const sub = state.subscription || {
+    tier: 'pro',
+    active: true,
+    billingCycle: 'monthly',
+    renewsOn: '30 Sep 2026',
+    invoices: [
+      { id: 'BV-INV-99021', date: '01 Aug 2026', amount: '₹353', status: 'Paid', tier: 'pro' },
+      { id: 'BV-INV-88102', date: '01 Jul 2026', amount: '₹353', status: 'Paid', tier: 'pro' }
+    ]
+  };
+
+  const invoices = sub.invoices || [];
+
   const content = `
-    ${UI.sectionHeader('💳 Billing & Subscription', 'Manage your plan and payment methods')}
+    ${UI.sectionHeader('💳 Billing & Subscription', 'Manage your SaaS plan, Razorpay payment rails, and GST tax invoices')}
 
     <!-- Current Plan -->
-    <div class="plan-card">
+    <div class="plan-card" style="background:linear-gradient(135deg, rgba(0,242,254,0.12) 0%, rgba(99,102,241,0.15) 100%); border:1px solid rgba(0,242,254,0.35); border-radius:16px; padding:24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
       <div class="plan-info">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <h3>Growth Plan</h3>
-          <span class="badge badge-primary">Current</span>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <h2 style="margin:0; font-size:22px; font-weight:800;">${currentTier.name}</h2>
+          <span class="badge badge-success" style="font-weight:700;">Active via Razorpay UPI</span>
         </div>
-        <p style="font-size:14px;color:var(--text-muted);">$9.99/month · Billed monthly · Renews Aug 1, 2026</p>
+        <p style="font-size:13px;color:var(--text-muted); margin:0;">
+          ₹${currentTier.priceMonthlyINR}/month · Billed ${sub.billingCycle || 'monthly'} · Next billing date: <strong>${sub.renewsOn || '30 Sep 2026'}</strong>
+        </p>
       </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="Router.navigate('/pricing')">Upgrade</button>
-        <button class="btn btn-ghost btn-sm">Cancel</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary btn-sm" onclick="Router.navigate('/pricing')"><i class="fas fa-arrow-up"></i> Change Plan</button>
+        <button class="btn btn-secondary btn-sm" onclick="BillingEngine.downloadInvoicePDF('${invoices[0]?.id || 'BV-INV-99021'}')"><i class="fas fa-file-pdf"></i> Download Tax Receipt</button>
       </div>
     </div>
 
@@ -25,38 +42,38 @@ function BillingPage() {
       <div>
         <!-- Payment Method -->
         <div class="card-glass" style="margin-bottom:16px;">
-          <h4 style="margin-bottom:16px;">💳 Payment Methods</h4>
-          <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
-            <div style="font-size:24px;">💳</div>
+          <h4 style="margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+            <span>💳</span> Active Payment Rails
+          </h4>
+          <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px; border:1px solid #1e293b;">
+            <div style="font-size:26px;">📱</div>
             <div style="flex:1;">
-              <div style="font-weight:600;font-size:14px;">Visa ending in 4242</div>
-              <div style="font-size:12px;color:var(--text-muted);">Expires 12/2028</div>
+              <div style="font-weight:700;font-size:14px; color:#fff;">Unified Payments Interface (UPI AutoPay)</div>
+              <div style="font-size:12px;color:var(--text-muted);">VPA: ${state.profile?.email ? state.profile.email.split('@')[0] + '@okaxis' : 'saladi@okaxis'}</div>
             </div>
-            <span class="badge badge-success">Default</span>
+            <span class="badge badge-success">Primary Rail</span>
           </div>
-          <button class="btn btn-sm btn-secondary"><i class="fas fa-plus"></i> Add Payment Method</button>
+          <button class="btn btn-sm btn-secondary" onclick="BillingEngine.openCheckout('${currentTier.id}')"><i class="fas fa-plus"></i> Add New Payment Method</button>
         </div>
 
         <!-- Invoices -->
         <div class="card-glass">
-          <h4 style="margin-bottom:16px;">📄 Invoice History</h4>
+          <h4 style="margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+            <span>📄</span> GST Tax Invoices History
+          </h4>
           <div class="invoice-list">
-            ${[
-              { date: 'Jul 1, 2026', amount: '$9.99', status: 'Paid', id: 'INV-2026-007' },
-              { date: 'Jun 1, 2026', amount: '$9.99', status: 'Paid', id: 'INV-2026-006' },
-              { date: 'May 1, 2026', amount: '$9.99', status: 'Paid', id: 'INV-2026-005' },
-              { date: 'Apr 1, 2026', amount: '$9.99', status: 'Paid', id: 'INV-2026-004' },
-              { date: 'Mar 1, 2026', amount: '$9.99', status: 'Paid', id: 'INV-2026-003' },
-            ].map(inv => `
-              <div class="invoice-item">
+            ${invoices.map(inv => `
+              <div class="invoice-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
                 <div>
-                  <div style="font-size:13px;font-weight:500;">${inv.id}</div>
-                  <div style="font-size:12px;color:var(--text-muted);">${inv.date}</div>
+                  <div style="font-size:13.5px;font-weight:700; color:#fff;">${inv.id}</div>
+                  <div style="font-size:11.5px;color:var(--text-muted);">${inv.date} • ${inv.tier ? inv.tier.toUpperCase() : 'PRO'} SUBSCRIPTION</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-family:var(--font-mono);font-weight:600;">${inv.amount}</span>
+                  <span style="font-family:var(--font-mono);font-weight:700; color:#00f2fe;">${inv.amount}</span>
                   <span class="badge badge-success">${inv.status}</span>
-                  <button class="btn btn-ghost btn-sm btn-icon"><i class="fas fa-download"></i></button>
+                  <button class="btn btn-ghost btn-sm btn-icon" title="Download GST PDF Invoice" onclick="BillingEngine.downloadInvoicePDF('${inv.id}')">
+                    <i class="fas fa-download" style="color:#00f2fe;"></i>
+                  </button>
                 </div>
               </div>
             `).join('')}

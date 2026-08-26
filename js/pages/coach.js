@@ -67,6 +67,9 @@ function CoachPage() {
 
       <div class="chat-input-area" style="display:flex;gap:12px;align-items:center;">
         <input type="text" class="chat-input" id="coach-input" placeholder="Ask your AI Life Coach (e.g., 'How do I optimize my IIT placement or Nifty SIP?')..." onkeydown="if(event.key==='Enter')sendMessage()" style="flex:1;">
+        <button type="button" class="btn btn-ghost btn-icon" id="coach-mic-btn" onclick="toggleVoiceRecognition()" title="Voice Input (Speech to Text)" style="color:#00f2fe; border:1px solid rgba(0,242,254,0.3); border-radius:12px; width:44px; height:44px;">
+          <i class="fas fa-microphone" id="coach-mic-icon"></i>
+        </button>
         <div class="pill pill--cyan" data-state="idle" onclick="sendMessage()" style="min-width:130px;height:46px;">
           <span class="pill__cta">
             <svg class="pill__coil"></svg>
@@ -235,6 +238,71 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+let _coachRecognition = null;
+let _isRecordingVoice = false;
+
+function toggleVoiceRecognition() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    UI.toast('warning', 'Voice Not Supported', 'Your browser does not support Web Speech Recognition. Please try Chrome, Edge, or Safari.');
+    return;
+  }
+
+  const micBtn = document.getElementById('coach-mic-btn');
+  const micIcon = document.getElementById('coach-mic-icon');
+  const inputEl = document.getElementById('coach-input');
+
+  if (_isRecordingVoice && _coachRecognition) {
+    _coachRecognition.stop();
+    _isRecordingVoice = false;
+    if (micBtn) micBtn.style.background = 'transparent';
+    if (micIcon) micIcon.style.color = '#00f2fe';
+    return;
+  }
+
+  try {
+    _coachRecognition = new SpeechRec();
+    _coachRecognition.lang = 'en-IN';
+    _coachRecognition.continuous = false;
+    _coachRecognition.interimResults = true;
+
+    _coachRecognition.onstart = () => {
+      _isRecordingVoice = true;
+      if (micBtn) micBtn.style.background = 'rgba(239,68,68,0.2)';
+      if (micIcon) micIcon.style.color = '#ef4444';
+      UI.toast('info', 'Listening...', 'Speak now into your microphone.');
+    };
+
+    _coachRecognition.onresult = (event) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        transcript += event.results[i][0].transcript;
+      }
+      if (inputEl) inputEl.value = transcript;
+    };
+
+    _coachRecognition.onerror = (event) => {
+      console.warn('Speech Recognition notice:', event.error);
+      _isRecordingVoice = false;
+      if (micBtn) micBtn.style.background = 'transparent';
+      if (micIcon) micIcon.style.color = '#00f2fe';
+    };
+
+    _coachRecognition.onend = () => {
+      _isRecordingVoice = false;
+      if (micBtn) micBtn.style.background = 'transparent';
+      if (micIcon) micIcon.style.color = '#00f2fe';
+      if (inputEl && inputEl.value.trim().length > 0) {
+        UI.toast('success', 'Voice Captured', 'Press Send or Enter to query your coach.');
+      }
+    };
+
+    _coachRecognition.start();
+  } catch (err) {
+    console.error('Speech recognition error:', err);
+  }
+}
+
 window.sendSuggestion = sendSuggestion;
 window.sendMessage = sendMessage;
 window.convertAIToTask = convertAIToTask;
@@ -242,6 +310,7 @@ window.clearChat = clearChat;
 window.submitMLFeedback = submitMLFeedback;
 window.showMLMetricsModal = showMLMetricsModal;
 window.toggleCoachVoice = toggleCoachVoice;
+window.toggleVoiceRecognition = toggleVoiceRecognition;
 window.quickAddHabitFromAI = quickAddHabitFromAI;
 
 

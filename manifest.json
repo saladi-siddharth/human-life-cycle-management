@@ -1,0 +1,18 @@
+{
+  "name": "BioVerse — Intelligent Life Management Platform",
+  "short_name": "BioVerse",
+  "description": "Master your Career, Health, Finance, and Life Success in one unified platform.",
+  "start_url": "/#/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070a14",
+  "theme_color": "#00f2fe",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

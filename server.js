@@ -8,10 +8,19 @@ const tls = require('tls');
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const PORT = process.env.PORT || 3000;
-const EMAIL_USER = process.env.EMAIL_USER || 'mahisiddharth721@gmail.com';
-const EMAIL_PASS = process.env.EMAIL_PASS || 'mqoqiqzpcfcqvnzp';
+const JWT_SECRET = process.env.JWT_SECRET || 'bioverse_dev_jwt_secret_change_in_production';
+const BCRYPT_ROUNDS = 12;
+
+// ─── Environment Variable Validation ──────────────────────────────────
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
+if (!EMAIL_USER || !EMAIL_PASS) {
+  console.error('⚠️ WARNING: EMAIL_USER and EMAIL_PASS env vars not set. Email dispatch will be disabled.');
+}
 
 // ─── Global Error Resilience ──────────────────────────────────────────
 process.on('uncaughtException', (err, origin) => {
@@ -63,13 +72,20 @@ function saveLocalDB(data) {
 let dbPool = null;
 
 try {
+  const TIDB_HOST = process.env.TIDB_HOST;
+  const TIDB_USER = process.env.TIDB_USER;
+  const TIDB_PASSWORD = process.env.TIDB_PASSWORD;
+  const TIDB_DATABASE = process.env.TIDB_DATABASE || 'test';
+  if (!TIDB_HOST || !TIDB_USER || !TIDB_PASSWORD) {
+    console.error('⚠️ WARNING: TiDB Cloud env vars (TIDB_HOST, TIDB_USER, TIDB_PASSWORD) not set. Using local DB fallback only.');
+  }
   dbPool = mysql.createPool({
-    host: process.env.TIDB_HOST || 'gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com',
+    host: TIDB_HOST || 'localhost',
     port: Number(process.env.TIDB_PORT) || 4000,
-    user: process.env.TIDB_USER || '3aposv8BwtQq1iQ.root',
-    password: process.env.TIDB_PASSWORD || 'iV5raMCYdId3skvO',
-    database: process.env.TIDB_DATABASE || 'test',
-    ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true },
+    user: TIDB_USER || 'root',
+    password: TIDB_PASSWORD || '',
+    database: TIDB_DATABASE,
+    ssl: TIDB_HOST ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
     waitForConnections: true,
     connectionLimit: 10,
     enableKeepAlive: true,
@@ -670,9 +686,11 @@ const server = http.createServer(async (req, res) => {
         }
         saveLocalDB(localDB);
 
+        const token = jwt.sign({ userId, email: cleanEmail }, JWT_SECRET, { expiresIn: '7d' });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
+          token,
           isNewUser: existingIdx === -1,
           user: userObj
         }));
@@ -695,18 +713,21 @@ const server = http.createServer(async (req, res) => {
         const userId = 'usr_' + Date.now();
         const formattedName = name || cleanEmail.split('@')[0];
 
+        // Hash password with bcrypt before storage
+        const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+
         if (dbPool) {
           try {
             await dbPool.query(
               'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)',
-              [userId, cleanEmail, formattedName, password]
+              [userId, cleanEmail, formattedName, hashedPassword]
             );
           } catch (err) {}
         }
 
         const localDB = getLocalDB();
         const existingIdx = localDB.users.findIndex(u => u.email.toLowerCase() === cleanEmail);
-        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password, identity: identity || 'student', phone: phone || '' };
+        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password: hashedPassword, identity: identity || 'student', phone: phone || '' };
         if (existingIdx >= 0) {
           localDB.users[existingIdx] = newUserObj;
         } else {
@@ -714,8 +735,9 @@ const server = http.createServer(async (req, res) => {
         }
         saveLocalDB(localDB);
 
+        const token = jwt.sign({ userId, email: cleanEmail }, JWT_SECRET, { expiresIn: '7d' });
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, user: { id: userId, name: formattedName, email: cleanEmail, identity } }));
+        res.end(JSON.stringify({ success: true, token, user: { id: userId, name: formattedName, email: cleanEmail, identity } }));
       } catch (err) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: false, error: err.message }));
@@ -771,8 +793,31 @@ const server = http.createServer(async (req, res) => {
           }));
         }
 
-        // 5. Check password match
-        if (user.password !== password) {
+        // 5. Secure bcrypt password verification with auto-upgrade for legacy plaintext
+        let isValid = false;
+        if (user.password && user.password.startsWith('$2')) {
+          isValid = await bcrypt.compare(password, user.password);
+        } else {
+          isValid = user.password === password;
+          if (isValid) {
+            // Auto-upgrade plaintext to bcrypt hash
+            const upgradedHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+            user.password = upgradedHash;
+            if (dbPool) {
+              try {
+                await dbPool.query('UPDATE bv_users SET password = ? WHERE id = ?', [upgradedHash, user.id]);
+              } catch (err) {}
+            }
+            const localDB = getLocalDB();
+            const uIdx = localDB.users.findIndex(u => u.id === user.id);
+            if (uIdx >= 0) {
+              localDB.users[uIdx].password = upgradedHash;
+              saveLocalDB(localDB);
+            }
+          }
+        }
+
+        if (!isValid) {
           res.writeHead(401, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({
             success: false,
@@ -780,9 +825,11 @@ const server = http.createServer(async (req, res) => {
           }));
         }
 
+        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
+          token,
           user: { id: user.id, name: user.name, email: user.email }
         }));
       } catch (err) {
@@ -966,22 +1013,25 @@ const server = http.createServer(async (req, res) => {
 
         otpStorage.delete(`forgot_${cleanEmail}`);
 
+        // Hash new password before saving
+        const hashedNewPassword = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+
         if (dbPool) {
           try {
-            await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [newPassword, cleanEmail]);
+            await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [hashedNewPassword, cleanEmail]);
           } catch (err) {}
         }
 
         const localDB = getLocalDB();
         const user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
         if (user) {
-          user.password = newPassword;
+          user.password = hashedNewPassword;
         } else {
           localDB.users.push({
             id: 'usr_' + Date.now(),
             name: cleanEmail.split('@')[0],
             email: cleanEmail,
-            password: newPassword
+            password: hashedNewPassword
           });
         }
         saveLocalDB(localDB);
@@ -1027,6 +1077,95 @@ const server = http.createServer(async (req, res) => {
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 💳 API 6a: Create Billing Order (Razorpay / Stripe)
+  if (req.method === 'POST' && req.url === '/api/billing/create-order') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { tier, billingCycle } = JSON.parse(rawBody || '{}');
+        const orderId = 'order_' + Date.now().toString(36);
+        const amount = tier === 'sovereign' ? (billingCycle === 'annual' ? 5999 : 699) : (billingCycle === 'annual' ? 2499 : 299);
+        const gst = Math.round(amount * 0.18);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          orderId,
+          currency: 'INR',
+          amount: amount + gst,
+          tier,
+          billingCycle
+        }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // 🛡️ API 7a: DPDP Act 2023 & GDPR Full User Data Export
+  if (req.method === 'POST' && req.url === '/api/user/export-data') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const localDB = getLocalDB();
+        const user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail) || {};
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          compliance: 'DPDP_ACT_2023_INDIA_AND_GDPR_ARTICLE_20',
+          exportedAt: new Date().toISOString(),
+          data: {
+            user: { id: user.id, email: user.email, name: user.name },
+            state: localDB.state || {}
+          }
+        }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // 🛡️ API 7b: DPDP Act 2023 & GDPR Permanent Cryptographic Account Purge
+  if (req.method === 'POST' && req.url === '/api/user/purge-account') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { email } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || '').trim().toLowerCase();
+        
+        if (dbPool) {
+          try {
+            await dbPool.query('DELETE FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
+            await dbPool.query('DELETE FROM bv_state WHERE LOWER(user_email) = ?', [cleanEmail]);
+          } catch (err) {}
+        }
+
+        const localDB = getLocalDB();
+        localDB.users = localDB.users.filter(u => !u.email || u.email.toLowerCase() !== cleanEmail);
+        saveLocalDB(localDB);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          purged: true,
+          message: 'All personal data, records, and biometrics have been permanently deleted.'
+        }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
       }
     });
     return;

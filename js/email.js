@@ -7,7 +7,6 @@
 const EmailService = {
   config: {
     user: 'mahisiddharth721@gmail.com',
-    pass: 'mqoqiqzpcfcqvnzp',
     smtpHost: 'smtp.gmail.com',
     smtpPort: 465,
     senderName: 'BioVerse Life Intelligence Platform'
