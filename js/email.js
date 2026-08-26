@@ -6,7 +6,7 @@
 
 const EmailService = {
   config: {
-    user: 'mahisiddharth721@gmail.com',
+    user: (typeof Store !== 'undefined' ? Store.get('profile.email') : '') || 'support@bioverse.ai',
     smtpHost: 'smtp.gmail.com',
     smtpPort: 465,
     senderName: 'BioVerse Life Intelligence Platform'

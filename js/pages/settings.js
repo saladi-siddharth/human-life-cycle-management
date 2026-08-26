@@ -49,7 +49,7 @@ function SettingsPage() {
             </div>
             <div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg-tertiary);border-radius:6px;">
               <span>User Email:</span>
-              <strong style="font-family:var(--font-mono);color:var(--emerald);">mahisiddharth721@gmail.com</strong>
+              <strong style="font-family:var(--font-mono);color:var(--emerald);">${Store.get('profile.email') || 'support@bioverse.ai'}</strong>
             </div>
 
             <button class="btn btn-success btn-sm" style="margin-top:6px;" onclick="EmailService.sendTestEmail()">
@@ -67,7 +67,7 @@ function SettingsPage() {
             <span class="badge badge-success"><i class="fas fa-check-circle"></i> Connected & Active</span>
           </div>
           <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
-            All reactive life metrics, double-entry financial ledgers, health logs, task matrices, and profile data for <strong>Rohan Sharma</strong> are automatically synchronized to TiDB Cloud over TLS 1.2 SSL.
+            All reactive life metrics, double-entry financial ledgers, health logs, task matrices, and profile data for <strong>${Store.get('profile.name') || 'Saladi Siddharth'}</strong> are automatically synchronized to TiDB Cloud over TLS 1.2 SSL.
           </p>
 
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;font-size:12px;">

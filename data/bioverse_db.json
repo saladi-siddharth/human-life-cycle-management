@@ -160,10 +160,10 @@
       "fundingStatus": "Startup India Incubated"
     },
     "scores": {
-      "life": 66,
+      "life": 65,
       "career": 43,
       "health": 78,
-      "finance": 99,
+      "finance": 95,
       "work": 50,
       "success": 60
     },
@@ -236,6 +236,14 @@
       "emergencyFund": 180000,
       "emergencyFundTarget": 300000,
       "transactions": [
+        {
+          "id": "tx-1787772757932",
+          "date": "2026-08-26",
+          "category": "Housing & Rent",
+          "note": "3w",
+          "type": "expense",
+          "amount": 5200
+        },
         {
           "id": "f4",
           "type": "expense",
@@ -671,6 +679,22 @@
       ],
       "workoutLogs": [
         {
+          "id": "wo_1787772745316",
+          "type": "Resistance Training (Gym)",
+          "duration": 45,
+          "muscle": "Chest & Triceps",
+          "intensity": "High",
+          "date": "2026-08-26"
+        },
+        {
+          "id": "wo_1787772738597",
+          "type": "Resistance Training (Gym)",
+          "duration": 45,
+          "muscle": "Chest & Triceps",
+          "intensity": "High",
+          "date": "2026-08-26"
+        },
+        {
           "id": "wo_1787771907214",
           "type": "Resistance Training (Gym)",
           "duration": 45,
@@ -812,14 +836,6 @@
     },
     "notifications": [
       {
-        "type": "health",
-        "icon": "💪",
-        "title": "Email Sent: Health Telemetry Logged: Physical Workout (45 Minutes)",
-        "text": "Dispatched to saladisiddharath@gmail.com via Gmail SMTP (Daily Habit Telemetry Update (Physical Workout))",
-        "time": "Just now",
-        "unread": true
-      },
-      {
         "type": "student",
         "icon": "🇮🇳",
         "title": "PM Internship Scheme 2026 Open",
@@ -846,8 +862,26 @@
     ],
     "theme": "dark",
     "sidebarOpen": false,
-    "_updatedAt": 1787771912197,
+    "_updatedAt": 1787772757932,
     "emailLogs": [
+      {
+        "id": "em_1787772745321",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Health] Health Telemetry Logged: Physical Workout (45 Minutes)",
+        "purpose": "Daily Habit Telemetry Update (Physical Workout)",
+        "category": "Health",
+        "timestamp": "8/27/2026, 1:02:25 AM",
+        "status": "simulated"
+      },
+      {
+        "id": "em_1787772738607",
+        "to": "saladisiddharath@gmail.com",
+        "subject": "[BioVerse Health] Health Telemetry Logged: Physical Workout (45 Minutes)",
+        "purpose": "Daily Habit Telemetry Update (Physical Workout)",
+        "category": "Health",
+        "timestamp": "8/27/2026, 1:02:18 AM",
+        "status": "simulated"
+      },
       {
         "id": "em_1787771907222",
         "to": "saladisiddharath@gmail.com",
