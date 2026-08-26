@@ -15,11 +15,12 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'bioverse_dev_jwt_secret_change_in_production';
 const BCRYPT_ROUNDS = 12;
 
-// ─── Environment Variable Validation ──────────────────────────────────
+// ─── Environment Variable Validation & Production Security ────────────
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
-if (!EMAIL_USER || !EMAIL_PASS) {
-  console.error('⚠️ WARNING: EMAIL_USER and EMAIL_PASS env vars not set. Email dispatch will be disabled.');
+const TIDB_PASSWORD = process.env.TIDB_PASSWORD;
+if (!EMAIL_PASS || !TIDB_PASSWORD) {
+  console.warn("⚠️ Warning: Production secrets missing from environment variables.");
 }
 
 // ─── Global Error Resilience ──────────────────────────────────────────
@@ -500,7 +501,8 @@ const server = http.createServer(async (req, res) => {
         const name = payload.name || 'Saladi Siddharth';
         const scores = payload.scores || { life: 78, career: 75, health: 82, finance: 70, work: 80 };
 
-        const digestHtml = `
+          const appBaseUrl = process.env.APP_URL || (req.headers.host && !req.headers.host.includes('localhost') ? `https://${req.headers.host}` : 'https://bioverse.vercel.app');
+          const digestHtml = `
           <h3 style="color:#00f2fe;margin-bottom:8px;">Daily BioVerse Performance Digest for ${name}</h3>
           <p style="font-size:13px;color:#94a3b8;margin-bottom:16px;">Here is your real-time life synchronization summary across all active pillars:</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
@@ -509,7 +511,7 @@ const server = http.createServer(async (req, res) => {
             <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Career Matrix:</strong> <span style="color:#6366f1;">${scores.career}/100</span></div>
             <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Finance & SIP:</strong> <span style="color:#fbbf24;">${scores.finance}/100</span></div>
           </div>
-          <p style="font-size:12px;color:#94a3b8;">Keep up the streak! Log in to your <a href="http://${req.headers.host || `localhost:${PORT}`}/#dashboard" style="color:#00f2fe;">BioVerse Dashboard</a> or explore your <a href="http://${req.headers.host || `localhost:${PORT}`}/continuum.html" style="color:#a855f7;">3D Life Journey</a>.</p>
+          <p style="font-size:12px;color:#94a3b8;">Keep up the streak! Log in to your <a href="${appBaseUrl}/#dashboard" style="color:#00f2fe;">BioVerse Dashboard</a> or explore your <a href="${appBaseUrl}/continuum.html" style="color:#a855f7;">3D Life Journey</a>.</p>
         `;
 
         const result = await sendGmailSMTP({

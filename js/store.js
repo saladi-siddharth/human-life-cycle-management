@@ -2,6 +2,8 @@
    LIFEGPS STORE — Reactive State Engine, Indian Ecosystem & Financial Analytics
    ═══════════════════════════════════════════════════════════════════ */
 
+const bioChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('bioverse_sync') : null;
+
 const Store = {
   _state: {
     user: { id: 'usr_saladi_siddharth', name: 'Saladi Siddharth', email: 'saladisiddharath@gmail.com' },
@@ -269,6 +271,12 @@ const Store = {
   _save() {
     this._state._updatedAt = Date.now();
     try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
+    
+    // Broadcast multi-tab real-time state update
+    if (typeof bioChannel !== 'undefined' && bioChannel) {
+      bioChannel.postMessage({ type: 'STATE_UPDATED', state: this._state });
+    }
+    
     this.syncWithBackend();
   },
   _load() {
@@ -285,10 +293,28 @@ const Store = {
       if (this._channel) {
         this._channel.postMessage({ ...payload, senderId: this._instanceId });
       }
+      if (typeof bioChannel !== 'undefined' && bioChannel) {
+        bioChannel.postMessage({ type: 'STATE_UPDATED', state: this._state });
+      }
     } catch (e) {}
   },
   _initSync() {
     this._instanceId = 'tab_' + Math.random().toString(36).substring(2, 9);
+    
+    // Listen on primary bioChannel
+    if (typeof bioChannel !== 'undefined' && bioChannel) {
+      bioChannel.onmessage = (event) => {
+        if (event.data?.type === 'STATE_UPDATED' && event.data.state) {
+          this._state = event.data.state;
+          try { localStorage.setItem('bioverse_state', JSON.stringify(this._state)); } catch (e) {}
+          this._notify();
+          if (typeof Router !== 'undefined' && Router.render && Router.currentRoute) {
+            Router.render();
+          }
+        }
+      };
+    }
+
     if (this._channel) {
       this._channel.onmessage = (event) => {
         const data = event.data;

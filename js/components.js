@@ -232,7 +232,7 @@ const UI = {
 
     const toolLinks = [
       { path: '/dashboard/coach', icon: 'fas fa-robot', label: 'AI Coach' },
-      { href: '/continuum.html', icon: 'fas fa-cube', label: '3D Continuum', target: '_blank', badge: '3D', color: '#c084fc' },
+      { href: '/continuum.html', icon: 'fas fa-cubes', label: '3D Continuum', target: '_blank', badge: '3D', color: '#c084fc' },
       { path: '/dashboard/notifications', icon: 'fas fa-bell', label: 'Notifications', badge: unread },
       { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },
     ];
