@@ -127,6 +127,24 @@ function LoginPage() {
               <p style="color:#94a3b8; font-size:12px; margin-top:2px;">Turn lamp ON to activate sign in or register</p>
             </div>
 
+            <!-- 🌟 Google OAuth SSO Component 🌟 -->
+            <div style="margin-bottom: 14px;">
+              <button type="button" class="btn-google-oauth" id="google-auth-btn" onclick="handleGoogleAuth()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:11px 16px; color:#fff; font-size:13.5px; font-weight:700; cursor:pointer; transition:all 0.25s ease; backdrop-filter:blur(10px); box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+                <svg viewBox="0 0 48 48" width="20" height="20">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.79l7.97-6.2z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                <span id="google-btn-text">Sign in with Google</span>
+              </button>
+              <div style="display:flex; align-items:center; gap:10px; margin:12px 0 10px 0;">
+                <div style="flex:1; height:1px; background:rgba(255,255,255,0.1);"></div>
+                <span style="font-size:10px; color:#94a3b8; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;">or continue with email</span>
+                <div style="flex:1; height:1px; background:rgba(255,255,255,0.1);"></div>
+              </div>
+            </div>
+
             <!-- Mode Tabs -->
             <div class="lamp-auth-tabs" style="padding:3px; margin-bottom:16px;">
               <button class="lamp-auth-tab active" id="tab-btn-email" onclick="switchAuthMode('email')" style="padding:8px 6px; font-size:12px;">
@@ -639,6 +657,12 @@ function switchAuthMode(mode) {
   if (tabBtn) tabBtn.classList.add('active');
   if (modeContent) modeContent.style.display = 'block';
 
+  // Synchronize Google SSO Button Text
+  const googleBtnText = document.getElementById('google-btn-text');
+  if (googleBtnText) {
+    googleBtnText.textContent = mode === 'register' ? 'Sign up with Google' : 'Sign in with Google';
+  }
+
   // Synchronize Top Bar Mode Switcher
   const topText = document.getElementById('top-auth-switch-text');
   const topBtn = document.getElementById('top-auth-switch-btn');
@@ -659,6 +683,69 @@ function switchAuthMode(mode) {
   }
 }
 window.switchAuthMode = switchAuthMode;
+
+/* ═══════════════════════════════════════════════════════════════════
+   GOOGLE OAUTH / SSO SIMULATOR & AUTHENTICATOR
+   ═══════════════════════════════════════════════════════════════════ */
+async function handleGoogleAuth() {
+  const btn = document.getElementById('google-auth-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Connecting to Google Accounts...</span>`;
+  }
+
+  const panda = document.getElementById('panda-avatar');
+  if (panda) {
+    panda.style.transform = 'translateY(-12px) scale(1.08)';
+    panda.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  }
+
+  try {
+    // Simulated Google OAuth Verified Identity Token
+    const googleProfile = {
+      name: 'Saladi Siddharth',
+      email: 'saladisiddharath@gmail.com',
+      googleId: 'goog_oauth_' + Date.now(),
+      picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+    };
+
+    const res = await Store.loginWithGoogle(googleProfile);
+
+    if (res.success) {
+      if (typeof UI !== 'undefined') {
+        UI.toast('success', '🌟 Google Authentication Verified!', `Welcome, ${googleProfile.name}! Signed in via Google.`);
+      }
+      setTimeout(() => {
+        if (!Store.isOnboarded()) {
+          Router.navigate('/onboarding/identity');
+        } else {
+          Router.navigate('/dashboard');
+        }
+      }, 500);
+    } else {
+      if (typeof UI !== 'undefined') {
+        UI.toast('error', 'Google Auth Error', res.error || 'Failed to authenticate with Google.');
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.innerHTML = `
+          <svg viewBox="0 0 48 48" width="20" height="20">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.79l7.97-6.2z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          <span id="google-btn-text">Sign in with Google</span>
+        `;
+      }
+    }
+  } catch (err) {
+    if (typeof UI !== 'undefined') UI.toast('error', 'Authentication Failed', err.message);
+  }
+}
+window.handleGoogleAuth = handleGoogleAuth;
 
 function toggleLoginRegister() {
   const isRegister = document.getElementById('mode-register')?.style.display !== 'none';

@@ -40,6 +40,8 @@ function FinancePage() {
   const growthRecTitle = 'Compound Wealth & Smart Capital Allocation';
   const growthRecText = `Monthly Income: ₹${totalIncome.toLocaleString()} | Monthly Net Savings: ₹${netSavings.toLocaleString()} (${savingsRate}% Savings Rate). Your emergency fund covers ${emergencyMonths} months. Keep compounding via Index SIPs!`;
 
+  const finQuote = EmailService.getRandomQuote('finance');
+
   const content = `
     <div class="finance-page">
       ${UI.sectionHeader(
@@ -50,6 +52,23 @@ function FinancePage() {
           <button class="btn btn-primary btn-sm" onclick="openTransactionModal()"><i class="fas fa-plus"></i> Add Transaction</button>
         </div>`
       )}
+
+      <!-- Financial Wisdom Quotation Card -->
+      <div class="card card-glass" style="margin-bottom:20px; padding:18px 22px; border-radius:16px; border:1px solid rgba(251,191,36,0.3); background:linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(15,23,42,0.95) 100%);">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span style="font-size:28px;">💰</span>
+            <div>
+              <div style="font-size:11px; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.8px;">Financial Compounding Maxim</div>
+              <div style="font-size:14px; font-weight:600; color:#fff; font-style:italic; margin-top:2px;">"${finQuote.text}"</div>
+              <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">— <strong>${finQuote.author}</strong></div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="UI.toast('info', 'Compounding Principle', 'Save early, automate SIP investments, and let time work for you.')" style="color:#fbbf24; font-size:11.5px;">
+            <i class="fas fa-chart-line"></i> Compounding Rules
+          </button>
+        </div>
+      </div>
 
       <!-- Dynamic Real-Time Financial Growth Banner -->
       ${UI.recommendationBanner(growthRecIcon, growthRecTitle, growthRecText, 'Add Transaction / Income', 'openTransactionModal()')}
@@ -287,7 +306,7 @@ function openTransactionModal() {
         <label style="font-size:12px;color:var(--text-muted);">Note / Description</label>
         <input type="text" id="t-note" class="chat-input" placeholder="e.g. Client retainer or Rent">
       </div>
-      ${UI.pillButton({ text: 'Save Entry & Send Email Alert', icon: '<i class="fas fa-coins"></i>', theme: 'emerald', type: 'submit' })}
+      ${UI.pillButton({ text: 'Save Entry', icon: '<i class="fas fa-coins"></i>', theme: 'emerald', type: 'submit' })}
     </form>
   `;
   UI.modal(html);

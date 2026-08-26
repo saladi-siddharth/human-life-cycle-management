@@ -237,7 +237,96 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // 📬 API 3b: Daily Digest Email Summary Generator
+  // 🔕 API 3a: 1-Click Unsubscribe Endpoint
+  if (cleanPath === '/api/unsubscribe') {
+    let emailToUnsub = '';
+
+    if (req.method === 'GET') {
+      try {
+        const parsedUrl = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+        emailToUnsub = (parsedUrl.searchParams.get('email') || '').trim().toLowerCase();
+      } catch (e) {}
+
+      if (emailToUnsub && dbPool) {
+        try {
+          await dbPool.query('UPDATE bv_users SET unsubscribed = 1 WHERE email = ?', [emailToUnsub]);
+        } catch (e) {}
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Unsubscribed — BioVerse</title>
+          <style>
+            body { margin: 0; padding: 0; background: #070a14; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+            .card { background: #0f172a; border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 36px; max-width: 480px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+            .icon { font-size: 48px; margin-bottom: 12px; }
+            h2 { color: #00f2fe; margin: 0 0 10px 0; font-size: 24px; }
+            p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0; }
+            .btn { display: inline-block; background: linear-gradient(135deg, #00f2fe, #6366f1); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">🔕</div>
+            <h2>Opt-Out Confirmed</h2>
+            <p><strong>${emailToUnsub || 'Your email address'}</strong> has been successfully unsubscribed from daily automated motivational quotes.<br><br>You can opt back in anytime from your BioVerse profile settings.</p>
+            <a href="/#/dashboard" class="btn">Return to BioVerse Dashboard</a>
+          </div>
+        </body>
+        </html>
+      `);
+    } else if (req.method === 'POST') {
+      const { email } = await parseBody(req);
+      emailToUnsub = (email || '').trim().toLowerCase();
+      if (emailToUnsub && dbPool) {
+        try {
+          await dbPool.query('UPDATE bv_users SET unsubscribed = 1 WHERE email = ?', [emailToUnsub]);
+        } catch (e) {}
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ success: true, message: `Unsubscribed ${emailToUnsub} from daily quotes.` }));
+    }
+  }
+
+  // 🔑 API 3b: Google OAuth Authenticator
+  if (req.method === 'POST' && cleanPath === '/api/auth/google') {
+    const { name, email, googleId, picture, identity } = await parseBody(req);
+    const cleanEmail = (email || 'google_user@bioverse.ai').trim().toLowerCase();
+    const userId = googleId ? `goog_${googleId.substring(0, 16)}` : `usr_goog_${Date.now()}`;
+    const formattedName = name || cleanEmail.split('@')[0];
+
+    if (dbPool) {
+      try {
+        await dbPool.query(
+          'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)',
+          [userId, cleanEmail, formattedName, 'GOOGLE_OAUTH_VERIFIED']
+        );
+      } catch (err) {}
+    }
+
+    const userObj = {
+      id: userId,
+      name: formattedName,
+      email: cleanEmail,
+      password: 'GOOGLE_OAUTH_VERIFIED',
+      identity: identity || 'student',
+      picture: picture || '',
+      provider: 'google'
+    };
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({
+      success: true,
+      user: userObj
+    }));
+  }
+
+  // 📬 API 3c: Daily Digest Email Summary Generator
   if (req.method === 'POST' && cleanPath === '/api/daily-digest') {
     const payload = await parseBody(req);
     const recipient = payload.email || EMAIL_USER;

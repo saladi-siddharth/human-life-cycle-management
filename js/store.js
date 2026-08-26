@@ -647,15 +647,59 @@ const Store = {
     }
   },
 
-  loginWithGoogle() {
-    this._state.user = { email: 'siddharth@bioverse.ai', name: 'Saladi Siddharth' };
+  async loginWithGoogle(customGoogleProfile = null) {
+    const defaultProfile = {
+      name: 'Saladi Siddharth',
+      email: 'saladisiddharath@gmail.com',
+      googleId: 'google_oauth_' + Date.now(),
+      picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+    };
+    const profile = customGoogleProfile || defaultProfile;
+    const cleanEmail = (profile.email || 'saladisiddharath@gmail.com').toLowerCase();
+    const formattedName = profile.name || cleanEmail.split('@')[0];
+
+    this._state.user = {
+      id: profile.googleId || 'usr_' + Date.now(),
+      email: cleanEmail,
+      name: formattedName,
+      picture: profile.picture || ''
+    };
     this._state.isAuthenticated = true;
-    this._state.profile.name = 'Saladi Siddharth';
-    this._state.profile.email = 'siddharth@bioverse.ai';
-    this._state.onboardingComplete = true;
+    this._state.profile.name = formattedName;
+    this._state.profile.email = cleanEmail;
+    this._state.profile.avatar = profile.picture || '';
     this._save();
     this._notify();
-    this.notifyLoginSuccess('siddharth@bioverse.ai', 'Saladi Siddharth');
+
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formattedName,
+          email: cleanEmail,
+          googleId: profile.googleId,
+          picture: profile.picture,
+          identity: this._state.identity || 'student'
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        this._state.user = data.user;
+        if (data.user.identity) this._state.identity = data.user.identity;
+      }
+      if (data.isNewUser) {
+        if (typeof EmailService !== 'undefined') {
+          EmailService.sendWelcomeEmail(formattedName, cleanEmail, true);
+        }
+      }
+    } catch (e) {
+      console.warn('Google Auth backend sync notice:', e.message);
+    }
+
+    this.notifyLoginSuccess(cleanEmail, formattedName);
+    this._save();
+    this._notify();
     return { success: true, user: this._state.user };
   },
 

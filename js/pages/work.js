@@ -27,6 +27,8 @@ function WorkPage() {
   let recTitle = 'Deep Focus & Task Velocity';
   let recText = `You have ${pendingCount} active tasks (${q1Tasks.filter(t=>!t.completed).length} high priority). Adding tasks automatically dispatches scheduled email reminders to your inbox!`;
 
+  const workQuote = EmailService.getRandomQuote('work');
+
   const content = `
     <div class="work-page">
       ${UI.sectionHeader(
@@ -37,6 +39,23 @@ function WorkPage() {
           <button class="btn btn-primary btn-sm" onclick="openTaskModal()"><i class="fas fa-plus"></i> New Time Task</button>
         </div>`
       )}
+
+      <!-- Productivity Wisdom Quotation Card -->
+      <div class="card card-glass" style="margin-bottom:20px; padding:18px 22px; border-radius:16px; border:1px solid rgba(0,242,254,0.3); background:linear-gradient(135deg, rgba(0,242,254,0.08) 0%, rgba(15,23,42,0.95) 100%);">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span style="font-size:28px;">⚡</span>
+            <div>
+              <div style="font-size:11px; font-weight:800; color:#00f2fe; text-transform:uppercase; letter-spacing:0.8px;">Deep Work & Execution Maxim</div>
+              <div style="font-size:14px; font-weight:600; color:#fff; font-style:italic; margin-top:2px;">"${workQuote.text}"</div>
+              <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">— <strong>${workQuote.author}</strong></div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="startPomodoroTimer()" style="color:#00f2fe; font-size:11.5px;">
+            <i class="fas fa-play"></i> Start Deep Sprint
+          </button>
+        </div>
+      </div>
 
       <!-- Real-Time Recommendation -->
       ${UI.recommendationBanner(recIcon, recTitle, recText, 'Start 25-Min Sprint', 'startPomodoroTimer()')}
@@ -241,7 +260,7 @@ function openTaskModal() {
           <option value="q4">Q4: Eliminate (Neither)</option>
         </select>
       </div>
-      ${UI.pillButton({ text: 'Schedule Task & Send Email Alert', icon: '<i class="fas fa-calendar-check"></i>', theme: 'emerald', type: 'submit' })}
+      ${UI.pillButton({ text: 'Schedule Task', icon: '<i class="fas fa-calendar-check"></i>', theme: 'emerald', type: 'submit' })}
     </form>
   `;
   UI.modal(html);

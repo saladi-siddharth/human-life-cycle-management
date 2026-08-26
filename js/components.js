@@ -116,70 +116,66 @@ const UI = {
   },
 
   // ─── Topbar (Authenticated) ───────────────────────────
-  authTopbar() {
+  authTopbar(showSidebarToggle = true) {
     const state = Store.getState();
     const initials = Store.getInitials();
     const identity = Store.get('identity') || 'student';
-    const soundEnabled = state.soundEnabled !== false;
     const unread = state.notifications.filter(n => n.unread).length;
 
+    const roleBadgeNames = {
+      student: '🎓 Student Hub',
+      employee: '💼 Professional Hub',
+      business: '🏢 Founder & Business Hub'
+    };
+
     return `
-      <nav class="topbar" id="topbar">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button class="btn btn-ghost btn-icon btn-sm" onclick="Store.set('sidebarOpen', !Store.get('sidebarOpen')); document.getElementById('sidebar')?.classList.toggle('open')">
-            <i class="fas fa-bars"></i>
-          </button>
-          <a class="topbar-brand" onclick="Router.navigate('/dashboard')">
+      <nav class="topbar" id="topbar" style="display:flex; justify-content:space-between; align-items:center; padding:0 24px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          ${showSidebarToggle ? `
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="Store.set('sidebarOpen', !Store.get('sidebarOpen')); document.getElementById('sidebar')?.classList.toggle('open')">
+              <i class="fas fa-bars"></i>
+            </button>
+          ` : ''}
+          <a class="topbar-brand" onclick="Router.navigate('/dashboard')" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
             <span class="brand-icon">🧬</span>
             <span class="brand-text">BioVerse</span>
           </a>
+          <span class="badge badge-primary" style="font-size:11px; padding:4px 10px; border-radius:999px; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); color:var(--cyan); font-weight:700;">
+            ${roleBadgeNames[identity] || '🧬 Life Hub'}
+          </span>
         </div>
 
-        <!-- 🌟 Dynamic Persona Switcher Bar 🌟 -->
-        <div class="persona-switcher-pill">
-          <button class="persona-pill-btn ${identity === 'student' ? 'active' : ''}" onclick="switchPersonaMode('student')">
-            🎓 Student
-          </button>
-          <button class="persona-pill-btn ${identity === 'employee' ? 'active' : ''}" onclick="switchPersonaMode('employee')">
-            💼 Employee
-          </button>
-          <button class="persona-pill-btn ${identity === 'business' ? 'active' : ''}" onclick="switchPersonaMode('business')">
-            🏢 Business
-          </button>
-        </div>
-
-        <div class="topbar-actions">
-          <!-- Public Home Page Link -->
-          <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/')" data-tooltip="View Home Page" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;">
-            <i class="fas fa-home"></i> <span>Home</span>
+        <!-- Right Aligned Actions & Profile -->
+        <div class="topbar-actions" style="display:flex; align-items:center; gap:12px; margin-left:auto;">
+          <!-- Quick Return to Overview -->
+          <button class="btn btn-ghost btn-sm" onclick="Router.navigate('/dashboard')" data-tooltip="Dashboard Overview" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <i class="fas fa-th-large"></i> <span>Overview</span>
           </button>
 
-          <!-- Guided Tour Trigger -->
-          <button class="btn btn-ghost btn-sm" onclick="TourEngine.start(true)" data-tooltip="Replay Guided Tour" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;color:#00f2fe;">
-            <i class="fas fa-magic"></i> <span>Tour</span>
-          </button>
-
-          <!-- Notifications -->
+          <!-- Notifications Tray -->
           <button class="btn btn-ghost btn-icon btn-sm" onclick="Router.navigate('/dashboard/notifications')" data-tooltip="Notifications" style="position:relative;">
             <i class="fas fa-bell"></i>
-            ${unread > 0 ? `<span style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--rose);"></span>` : ''}
+            ${unread > 0 ? `<span style="position:absolute; top:4px; right:4px; width:8px; height:8px; border-radius:50%; background:var(--rose);"></span>` : ''}
           </button>
 
-          <!-- User Avatar Menu -->
+          <!-- User Avatar Menu (Neatly Aligned on the Right) -->
           <div class="dropdown">
-            <div class="avatar" style="cursor:pointer;" onclick="this.parentElement.querySelector('.dropdown-menu').classList.toggle('hidden')">${initials}</div>
-            <div class="dropdown-menu hidden">
-              <div style="padding:10px 14px;border-bottom:1px solid var(--glass-border);margin-bottom:4px;">
-                <div style="font-weight:600;font-size:14px;">${state.profile.name || 'User'}</div>
-                <div style="font-size:12px;color:var(--text-muted);">${state.profile.email || ''}</div>
-                <span class="badge badge-primary" style="font-size:10px;margin-top:4px;">Role: ${identity.toUpperCase()}</span>
+            <div class="avatar" style="cursor:pointer; background:linear-gradient(135deg, #00f2fe 0%, #6366f1 100%); color:#070a14; font-weight:800; border:2px solid rgba(255,255,255,0.2);" onclick="this.parentElement.querySelector('.dropdown-menu').classList.toggle('hidden')">
+              ${initials}
+            </div>
+            <div class="dropdown-menu hidden" style="right:0; left:auto; min-width:230px;">
+              <div style="padding:12px 14px; border-bottom:1px solid var(--glass-border); margin-bottom:4px;">
+                <div style="font-weight:700; font-size:14px; color:#fff;">${state.profile.name || 'User'}</div>
+                <div style="font-size:11.5px; color:var(--text-muted);">${state.profile.email || ''}</div>
+                <span class="badge badge-primary" style="font-size:10px; margin-top:6px; display:inline-block;">Track: ${identity.toUpperCase()}</span>
               </div>
-              <button class="dropdown-item" onclick="Router.navigate('/')"><i class="fas fa-home"></i> Home Page</button>
-              <button class="dropdown-item" onclick="TourEngine.start(true)"><i class="fas fa-magic"></i> Replay Guided Tour</button>
-              <button class="dropdown-item" onclick="Router.navigate('/dashboard/settings')"><i class="fas fa-cog"></i> Settings</button>
-              <button class="dropdown-item" onclick="Router.navigate('/dashboard/billing')"><i class="fas fa-credit-card"></i> Billing</button>
+              <button class="dropdown-item" onclick="Router.navigate('/dashboard')"><i class="fas fa-th-large"></i> Master Dashboard</button>
+              <button class="dropdown-item" onclick="Router.navigate('/dashboard/career')"><i class="fas fa-rocket"></i> Career & ATS Resume</button>
+              <button class="dropdown-item" onclick="Router.navigate('/dashboard/health')"><i class="fas fa-heartbeat"></i> Health & AI Diet</button>
+              <button class="dropdown-item" onclick="Router.navigate('/dashboard/settings')"><i class="fas fa-cog"></i> Profile Settings</button>
+              <button class="dropdown-item" onclick="Router.navigate('/dashboard/billing')"><i class="fas fa-credit-card"></i> Billing & Plans</button>
               <div class="dropdown-divider"></div>
-              <button class="dropdown-item" onclick="Store.logout(); Router.navigate('/'); UI.toast('info','Signed Out','You have been logged out.');" style="color:var(--rose);">
+              <button class="dropdown-item" onclick="Store.logout(); Router.navigate('/'); UI.toast('info','Signed Out','You have been safely logged out.');" style="color:var(--rose);">
                 <i class="fas fa-sign-out-alt"></i> Sign Out
               </button>
             </div>
@@ -194,8 +190,8 @@ const UI = {
     const identity = Store.get('identity') || 'student';
     const unread = Store.getState().notifications.filter(n => n.unread).length;
 
+    // Home is removed from sidebar links
     const mainLinks = [
-      { path: '/', icon: 'fas fa-home', label: 'Home' },
       { path: '/dashboard', icon: 'fas fa-th-large', label: 'Overview' },
       { path: '/dashboard/career', icon: 'fas fa-rocket', label: 'Career' },
       { path: '/dashboard/health', icon: 'fas fa-heartbeat', label: 'Health' },
@@ -272,8 +268,20 @@ const UI = {
 
   // ─── Dashboard Page Wrapper ───────────────────────────
   dashboardLayout(activePath, content) {
+    // If on specialized student, employee, or business dedicated hubs, completely remove the sidebar
+    const isRoleHub = activePath.startsWith('/student') || activePath.startsWith('/employee') || activePath.startsWith('/business');
+    
+    if (isRoleHub) {
+      return `
+        ${this.authTopbar(false)}
+        <main class="main-content full-cockpit-layout" style="margin-left:0; width:100%; max-width:1380px; margin:0 auto; padding:28px 24px;">
+          ${content}
+        </main>
+      `;
+    }
+
     return `
-      ${this.authTopbar()}
+      ${this.authTopbar(true)}
       ${this.sidebar(activePath)}
       <main class="main-content">
         ${content}

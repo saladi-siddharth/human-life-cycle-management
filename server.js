@@ -109,9 +109,15 @@ async function initTables() {
         name VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
         profile_json LONGTEXT,
+        unsubscribed TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Ensure column exists if table was previously created
+    try {
+      await dbPool.query(`ALTER TABLE bv_users ADD COLUMN IF NOT EXISTS unsubscribed TINYINT(1) DEFAULT 0;`);
+    } catch (e) {}
 
     await dbPool.query(`
       CREATE TABLE IF NOT EXISTS bv_state (
@@ -198,6 +204,16 @@ function sendGmailSMTP({ to, subject, body }) {
           step = 5; send(`DATA`);
         } else if (step === 5 && response.startsWith('354')) {
           step = 6;
+          const isFullHtml = (body || '').trim().toLowerCase().startsWith('<!doctype') || (body || '').trim().toLowerCase().startsWith('<html');
+          const htmlPayload = isFullHtml ? body : `
+            <html><body style="font-family:sans-serif;background:#0a0e1a;color:#f1f5f9;padding:24px;">
+            <div style="max-width:600px;margin:0 auto;background:#111827;border:1px solid #6366f1;border-radius:12px;padding:24px;">
+            <h2 style="color:#6366f1;margin-top:0;">🧬 BioVerse Alert</h2>
+            <div style="font-size:15px;line-height:1.6;">${body}</div>
+            <hr style="border-color:#1e2642;margin:20px 0;">
+            <p style="font-size:12px;color:#64748b;">Automated alert from BioVerse Platform via Gmail SMTP (${EMAIL_USER}).</p>
+            </div></body></html>
+          `;
           const emailContent = [
             `From: "BioVerse Platform" <${EMAIL_USER}>`,
             `To: <${to || EMAIL_USER}>`,
@@ -205,13 +221,7 @@ function sendGmailSMTP({ to, subject, body }) {
             `MIME-Version: 1.0`,
             `Content-Type: text/html; charset=UTF-8`,
             ``,
-            `<html><body style="font-family:sans-serif;background:#0a0e1a;color:#f1f5f9;padding:24px;">`,
-            `<div style="max-width:600px;margin:0 auto;background:#111827;border:1px solid #6366f1;border-radius:12px;padding:24px;">`,
-            `<h2 style="color:#6366f1;margin-top:0;">🧬 BioVerse Alert</h2>`,
-            `<div style="font-size:15px;line-height:1.6;">${body}</div>`,
-            `<hr style="border-color:#1e2642;margin:20px 0;">`,
-            `<p style="font-size:12px;color:#64748b;">Automated alert from BioVerse Platform via Gmail SMTP (${EMAIL_USER}).</p>`,
-            `</div></body></html>`,
+            htmlPayload,
             `.`
           ].join('\r\n');
           send(emailContent);
@@ -379,6 +389,90 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // 🔕 API 3a: 1-Click Unsubscribe Endpoint
+  if (req.url.startsWith('/api/unsubscribe')) {
+    let emailToUnsub = '';
+
+    if (req.method === 'GET') {
+      try {
+        const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+        emailToUnsub = (parsedUrl.searchParams.get('email') || '').trim().toLowerCase();
+      } catch (e) {}
+
+      if (emailToUnsub) {
+        if (dbPool) {
+          try {
+            await dbPool.query('UPDATE bv_users SET unsubscribed = 1 WHERE email = ?', [emailToUnsub]);
+          } catch (e) {}
+        }
+        const localDB = getLocalDB();
+        const uIdx = (localDB.users || []).findIndex(u => u.email && u.email.toLowerCase() === emailToUnsub);
+        if (uIdx >= 0) {
+          localDB.users[uIdx].unsubscribed = true;
+          saveLocalDB(localDB);
+        }
+      }
+
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Unsubscribed — BioVerse</title>
+          <style>
+            body { margin: 0; padding: 0; background: #070a14; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+            .card { background: #0f172a; border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 36px; max-width: 480px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+            .icon { font-size: 48px; margin-bottom: 12px; }
+            h2 { color: #00f2fe; margin: 0 0 10px 0; font-size: 24px; }
+            p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0; }
+            .btn { display: inline-block; background: linear-gradient(135deg, #00f2fe, #6366f1); color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 999px; font-weight: 700; font-size: 14px; transition: transform 0.2s; }
+            .btn:hover { transform: scale(1.03); }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="icon">🔕</div>
+            <h2>Opt-Out Confirmed</h2>
+            <p><strong>${emailToUnsub || 'Your email address'}</strong> has been successfully unsubscribed from daily automated motivational quotes.<br><br>You can opt back in anytime from your BioVerse profile settings.</p>
+            <a href="/#/dashboard" class="btn">Return to BioVerse Dashboard</a>
+          </div>
+        </body>
+        </html>
+      `);
+      return;
+    } else if (req.method === 'POST') {
+      let rawBody = '';
+      req.on('data', chunk => rawBody += chunk.toString());
+      req.on('end', async () => {
+        try {
+          const { email } = JSON.parse(rawBody || '{}');
+          emailToUnsub = (email || '').trim().toLowerCase();
+          if (emailToUnsub) {
+            if (dbPool) {
+              try {
+                await dbPool.query('UPDATE bv_users SET unsubscribed = 1 WHERE email = ?', [emailToUnsub]);
+              } catch (e) {}
+            }
+            const localDB = getLocalDB();
+            const uIdx = (localDB.users || []).findIndex(u => u.email && u.email.toLowerCase() === emailToUnsub);
+            if (uIdx >= 0) {
+              localDB.users[uIdx].unsubscribed = true;
+              saveLocalDB(localDB);
+            }
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true, message: `Unsubscribed ${emailToUnsub} from daily quotes.` }));
+        } catch (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+      return;
+    }
+  }
+
   // 📬 API 3b: Daily Digest Email Summary Generator
   if (req.method === 'POST' && req.url === '/api/daily-digest') {
     let rawBody = '';
@@ -526,6 +620,61 @@ const server = http.createServer(async (req, res) => {
           success: true,
           message: 'Account verified successfully!',
           user: { id: userId, name: formattedName, email: cleanEmail, identity: identity || 'student' }
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 🔑 API 4b-2: Google OAuth / SSO Authenticator
+  if (req.method === 'POST' && req.url === '/api/auth/google') {
+    let rawBody = '';
+    req.on('data', chunk => rawBody += chunk.toString());
+    req.on('end', async () => {
+      try {
+        const { name, email, googleId, picture, identity } = JSON.parse(rawBody || '{}');
+        const cleanEmail = (email || 'google_user@bioverse.ai').trim().toLowerCase();
+        const userId = googleId ? `goog_${googleId.substring(0, 16)}` : `usr_goog_${Date.now()}`;
+        const formattedName = name || cleanEmail.split('@')[0];
+
+        if (dbPool) {
+          try {
+            await dbPool.query(
+              'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)',
+              [userId, cleanEmail, formattedName, 'GOOGLE_OAUTH_VERIFIED']
+            );
+          } catch (err) {
+            console.warn('TiDB Google User upsert notice:', err.message);
+          }
+        }
+
+        const localDB = getLocalDB();
+        const existingIdx = localDB.users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+        const userObj = {
+          id: userId,
+          name: formattedName,
+          email: cleanEmail,
+          password: 'GOOGLE_OAUTH_VERIFIED',
+          identity: identity || (existingIdx >= 0 ? localDB.users[existingIdx].identity : 'student'),
+          picture: picture || '',
+          provider: 'google'
+        };
+
+        if (existingIdx >= 0) {
+          localDB.users[existingIdx] = { ...localDB.users[existingIdx], ...userObj };
+        } else {
+          localDB.users.push(userObj);
+        }
+        saveLocalDB(localDB);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          isNewUser: existingIdx === -1,
+          user: userObj
         }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -913,6 +1062,84 @@ server.on('error', (err) => {
     console.error('❌ Server error:', err.message);
   }
 });
+
+// ─── Automated Daily Motivational Quote Daemon ────────────────────────
+async function runDailyMotivationCron() {
+  try {
+    let users = [];
+    if (dbPool) {
+      try {
+        const [rows] = await dbPool.query('SELECT name, email FROM bv_users WHERE unsubscribed IS NULL OR unsubscribed = 0');
+        users = rows || [];
+      } catch (e) {}
+    }
+    if (!users.length) {
+      const localDB = getLocalDB();
+      users = (localDB.users || []).filter(u => !u.unsubscribed);
+    }
+
+    const quotes = [
+      { text: "Consistency in small daily habits outperforms sudden bursts of intensity. Your health, skills, and savings compound in silence.", author: "James Clear & BioVerse" },
+      { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+      { text: "The best investment you can make is in yourself. The more you learn, the more you earn.", author: "Warren Buffett" },
+      { text: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+      { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" }
+    ];
+
+    for (const u of users) {
+      if (!u.email || !u.email.includes('@')) continue;
+      const q = quotes[Math.floor(Math.random() * quotes.length)];
+      const unsubscribeUrl = `http://localhost:${PORT}/api/unsubscribe?email=${encodeURIComponent(u.email)}`;
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family:'Segoe UI',Roboto,Helvetica,sans-serif;background:#070a14;color:#f1f5f9;margin:0;padding:24px;">
+          <div style="max-width:600px;margin:0 auto;background:#0f172a;border:1px solid #6366f1;border-radius:18px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,0.5);">
+            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:14px;margin-bottom:20px;">
+              <h2 style="margin:0;color:#00f2fe;font-size:22px;">🧬 BioVerse Life Sync</h2>
+              <span style="background:rgba(99,102,241,0.2);color:#818cf8;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;">DAILY MOTIVATION</span>
+            </div>
+
+            <p style="font-size:14px;color:#cbd5e1;line-height:1.6;margin-bottom:16px;">
+              Hello <strong>${u.name || 'Member'}</strong>, here is your daily wisdom to align your actions with your highest potential:
+            </p>
+
+            <div style="background:linear-gradient(135deg, rgba(251,191,36,0.12) 0%, rgba(99,102,241,0.1) 100%);border-left:4px solid #fbbf24;padding:18px;border-radius:12px;margin:20px 0;">
+              <div style="font-size:15.5px;font-weight:600;color:#fff;font-style:italic;line-height:1.5;">"${q.text}"</div>
+              <div style="font-size:12.5px;color:#fbbf24;margin-top:8px;font-weight:700;">— ${q.author}</div>
+            </div>
+
+            <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);padding:14px 16px;border-radius:12px;margin:20px 0;font-size:12.5px;color:#cbd5e1;line-height:1.6;">
+              Thank you for choosing BioVerse as your lifelong compass to elevate, optimize, and master your human lifecycle. We are honored to accompany your journey toward peak capability and personal fulfillment.
+            </div>
+
+            <div style="text-align:center;margin-top:24px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
+              <a href="http://localhost:${PORT}/#/dashboard" style="background:linear-gradient(135deg, #00f2fe, #6366f1);color:#fff;text-decoration:none;padding:10px 22px;border-radius:999px;font-size:13px;font-weight:700;display:inline-block;">Open BioVerse Command Center</a>
+              <p style="font-size:11px;color:#64748b;margin-top:16px;">
+                Don't want to receive daily automated motivational emails? <a href="${unsubscribeUrl}" style="color:#94a3b8;text-decoration:underline;">Click here to Unsubscribe</a>
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      try {
+        await sendGmailSMTP({
+          to: u.email,
+          subject: `🌟 Daily Motivation & Life Sync for ${u.name || 'You'}`,
+          body: html
+        });
+      } catch (e) {}
+    }
+  } catch (err) {}
+}
+
+// Scheduled to run automatically every 24 hours
+setTimeout(runDailyMotivationCron, 30000);
+setInterval(runDailyMotivationCron, 24 * 60 * 60 * 1000);
 
 if (require.main === module) {
   server.listen(PORT, () => {

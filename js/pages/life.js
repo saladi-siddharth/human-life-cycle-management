@@ -11,6 +11,8 @@ function LifePage() {
   const scores = Store.get('scores') || {};
   const completedCount = goals.filter(g => g.completed).length;
 
+  const lifeQuote = EmailService.getRandomQuote('general');
+
   const content = `
     <div class="life-page">
       ${UI.sectionHeader(
@@ -26,7 +28,7 @@ function LifePage() {
           <div>
             <h3 style="margin:0;font-size:18px;color:#fff;">Daily Life Vision Motivation</h3>
             <p style="margin:4px 0 0 0;font-size:13px;color:#cbd5e1;line-height:1.5;">
-              <em>"Consistency in small daily habits outperforms sudden bursts of intensity. Your health, skills, and savings compound in silence."</em>
+              <em>"${lifeQuote.text}"</em> — <strong>${lifeQuote.author}</strong>
             </p>
           </div>
         </div>
