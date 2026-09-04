@@ -57,11 +57,8 @@ function LandingPage() {
           <button class="editorial-manifesto-btn liquid-glass-v2" onclick="openQuickSimulationModal()" style="border-radius:9999px; background:linear-gradient(135deg, rgba(0,242,254,0.3) 0%, rgba(16,185,129,0.3) 100%); border:1px solid rgba(0,242,254,0.7); box-shadow:0 8px 30px rgba(0,242,254,0.3); color:#fff; font-weight:800;">
             <i class="fas fa-magic" style="color:#00f2fe;"></i> Instant Life Simulation (3-Click Preview)
           </button>
-          <a href="/continuum.html" class="editorial-manifesto-btn liquid-glass-v2" style="border-radius:9999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
-            <i class="fas fa-cube" style="color:#a855f7;"></i> 3D Continuum Pavilion
-          </a>
           <button class="editorial-manifesto-btn liquid-glass-v2" onclick="handleGoToDashboard()" style="border-radius:9999px; border:1px solid rgba(255,255,255,0.2);">
-            <i class="fas fa-chart-line" style="color:#00f2fe;"></i> Dashboard
+            <i class="fas fa-chart-line" style="color:#00f2fe;"></i> Open Dashboard
           </button>
         </div>
       </section>
@@ -298,9 +295,6 @@ function LandingPage() {
             <button class="editorial-cta-btn" onclick="Router.navigate('/auth/register')">
               <i class="fas fa-feather-alt"></i> Start Free Today
             </button>
-            <a class="editorial-cta-btn-secondary" href="continuum.html">
-              <i class="fas fa-cube"></i> 3D Life Journey
-            </a>
             <button class="editorial-cta-btn-secondary" onclick="Router.navigate('/pricing')">
               View All Plans
             </button>
@@ -327,7 +321,6 @@ function LandingPage() {
             </div>
             <div>
               <div class="editorial-footer-title">Experiences</div>
-              <a class="editorial-footer-link" href="continuum.html">3D Life Journey</a>
               <a class="editorial-footer-link" onclick="Router.navigate('/dashboard/coach')">AI Life Coach</a>
               <a class="editorial-footer-link" onclick="Router.navigate('/dashboard')">Dashboard</a>
             </div>

@@ -91,13 +91,24 @@ const Router = {
   },
 
   _initPage(path) {
-    if (typeof ContinuumBridge !== 'undefined' && ContinuumBridge.syncToRoute) {
-      ContinuumBridge.syncToRoute(path);
-    }
-
     if (typeof DeleteEngine !== 'undefined' && DeleteEngine.updateVisibility) {
       DeleteEngine.updateVisibility(path);
     }
+
+    // Page-specific high-impact interactive animation engine hooks
+    setTimeout(() => {
+      if (path === '/dashboard/career' && typeof window.initCareerAnimations === 'function') {
+        window.initCareerAnimations();
+      } else if (path === '/dashboard/health' && typeof window.initHealthAnimations === 'function') {
+        window.initHealthAnimations();
+      } else if (path === '/dashboard/finance' && typeof window.initFinanceAnimations === 'function') {
+        window.initFinanceAnimations();
+      } else if (path === '/dashboard/work' && typeof window.initWorkAnimations === 'function') {
+        window.initWorkAnimations();
+      } else if (path === '/dashboard/life' && typeof window.initLifeAnimations === 'function') {
+        window.initLifeAnimations();
+      }
+    }, 60);
 
     // Intersection observer for reveal animations
     setTimeout(() => {

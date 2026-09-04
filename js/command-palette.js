@@ -20,7 +20,6 @@ const CommandPalette = {
     { id: 'nav_biz', category: 'Navigation', icon: 'fas fa-building', title: 'Founder & Venture Command', action: () => Router.navigate('/business/overview') },
     { id: 'nav_coach', category: 'Navigation', icon: 'fas fa-robot', title: 'AI Life Coach Co-Pilot', action: () => Router.navigate('/dashboard/coach') },
     { id: 'nav_settings', category: 'Navigation', icon: 'fas fa-cog', title: 'Settings & DPDP Vault', action: () => Router.navigate('/dashboard/settings') },
-    { id: 'nav_3d', category: 'Navigation', icon: 'fas fa-cubes', title: 'Launch 3D Life Continuum', action: () => window.open('/continuum.html', '_blank') },
 
     // ⚡ 2. Quick Actions
     { id: 'act_water', category: 'Quick Action', icon: 'fas fa-tint', color: '#00f2fe', title: 'Quick Hydrate (+250ml Water)', action: () => { quickAddWater(250); UI.toast('success', '💧 Hydrated +250ml', 'Added to daily intake.'); } },

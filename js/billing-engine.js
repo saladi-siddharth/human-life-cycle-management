@@ -59,7 +59,7 @@ const BillingEngine = {
       priceAnnualUSD: 199.99,
       features: [
         'Everything in BioVerse Pro',
-        '3D Spatial Pavilion Continuum Master View',
+        'Advanced Executive Wealth & Milestone Planning',
         'Indian New vs Old Tax Regime Optimization',
         'Priority Peer Accountability Pod Leadership',
         'Automated Daily SMS / Web Push Affirmations'
@@ -262,11 +262,6 @@ const BillingEngine = {
     UI.closeModal();
     UI.toast('success', 'Plan Activated! 🎉', `Welcome to ${this.TIERS[tierId].name}. All pro features unlocked.`);
 
-    // Trigger Continuum 3D fireworks celebration
-    if (typeof ContinuumBridge !== 'undefined' && ContinuumBridge.onTelemetryAction) {
-      ContinuumBridge.onTelemetryAction({ type: 'payment_success', tier: tierId });
-    }
-
     if (typeof Router !== 'undefined' && (Router.currentRoute === '/dashboard/billing' || Router.currentRoute === '/pricing')) {
       Router.render();
     }
@@ -348,7 +343,7 @@ const BillingEngine = {
             <tr style="border-bottom:1px solid #1e293b;">
               <td style="padding:12px 10px;">
                 <strong>${this.TIERS[invoice.tier]?.name || 'BioVerse Pro Subscription'}</strong><br>
-                <span style="font-size:11px; color:#94a3b8;">Unlimited AI Life Coach, Resume ATS Scanner & Spatial Continuum</span>
+                <span style="font-size:11px; color:#cbd5e1;">Unlimited AI Life Coach, Resume ATS Scanner & Wealth Planning</span>
               </td>
               <td style="padding:12px 10px; color:#94a3b8;">998313</td>
               <td style="padding:12px 10px; text-align:right;">₹299.00</td>

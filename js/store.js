@@ -6,14 +6,14 @@ const bioChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChanne
 
 const Store = {
   _state: {
-    user: { id: 'usr_saladi_siddharth', name: 'Saladi Siddharth', email: 'saladisiddharath@gmail.com' },
+    user: { id: 'usr_guest', name: 'Explorer', email: '' },
     isAuthenticated: true,
     identity: 'student',        // 'student' | 'employee' | 'business'
     onboardingStep: 0,
     onboardingComplete: true,
     profile: {
-      name: 'Saladi Siddharth',
-      email: 'saladisiddharath@gmail.com',
+      name: 'Explorer',
+      email: '',
       avatar: '',
       lifeStage: 'Higher Education & Career Build',
       goalIntensity: 'ambitious',
@@ -267,6 +267,18 @@ const Store = {
     return () => { this._listeners = this._listeners.filter(l => l !== fn); };
   },
 
+  _apiUrl(path) {
+    if (typeof window !== 'undefined' && window.location) {
+      const port = window.location.port;
+      const host = window.location.hostname;
+      const proto = window.location.protocol;
+      if (proto === 'file:' || (port && port !== '3000' && (host === 'localhost' || host === '127.0.0.1'))) {
+        return `http://localhost:3000${path}`;
+      }
+    }
+    return path;
+  },
+
   _notify() { this._listeners.forEach(fn => fn(this._state)); },
   _save() {
     this._state._updatedAt = Date.now();
@@ -276,7 +288,6 @@ const Store = {
     if (typeof bioChannel !== 'undefined' && bioChannel) {
       bioChannel.postMessage({ type: 'STATE_UPDATED', state: this._state });
     }
-    
     this.syncWithBackend();
   },
   _load() {
@@ -287,6 +298,18 @@ const Store = {
         Object.assign(this._state, data);
       }
     } catch (e) {}
+
+    // Ensure core collections are always initialized arrays
+    if (!this._state.tasks) this._state.tasks = [];
+    if (!this._state.lifeGoals) this._state.lifeGoals = [];
+    if (!this._state.career) this._state.career = {};
+    if (!this._state.career.skills) this._state.career.skills = [];
+    if (!this._state.career.jobApplications) this._state.career.jobApplications = [];
+    if (!this._state.finances) this._state.finances = { transactions: [] };
+    if (!this._state.finances.transactions) this._state.finances.transactions = [];
+    if (!this._state.health) this._state.health = { workoutLogs: [], sleepLogs: [] };
+    if (!this._state.health.workoutLogs) this._state.health.workoutLogs = [];
+    if (!this._state.health.sleepLogs) this._state.health.sleepLogs = [];
   },
   _broadcast(payload) {
     try {
@@ -350,7 +373,7 @@ const Store = {
   },
   async syncWithBackend() {
     try {
-      fetch('/api/state/sync', {
+      fetch(this._apiUrl('/api/state/sync'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: this._state })
@@ -359,7 +382,7 @@ const Store = {
   },
   async fetchFromBackend() {
     try {
-      const res = await fetch('/api/state/get');
+      const res = await fetch(this._apiUrl('/api/state/get'));
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.state) {
@@ -529,6 +552,137 @@ const Store = {
     this._notify();
   },
 
+  // ─── Career Job Applications ──────────────────────────────
+  addJobApplication(job) {
+    if (!this._state.career) this._state.career = {};
+    if (!this._state.career.jobApplications) this._state.career.jobApplications = [];
+    const newJob = {
+      id: 'j_' + Date.now(),
+      company: job.company || 'Company',
+      role: job.role || 'Software Engineer',
+      stage: job.stage || 'Applied',
+      salary: job.salary || '12,00,000',
+      appliedDate: job.appliedDate || new Date().toISOString().split('T')[0],
+      notes: job.notes || ''
+    };
+    this._state.career.jobApplications.unshift(newJob);
+    this.recalculateScores();
+    this._save();
+    this._notify();
+    return newJob;
+  },
+
+  deleteJobApplication(id) {
+    if (this._state.career && this._state.career.jobApplications) {
+      this._state.career.jobApplications = this._state.career.jobApplications.filter(j => j.id !== id);
+      this.recalculateScores();
+      this._save();
+      this._notify();
+    }
+  },
+
+  // ─── Student Ecosystem Helpers ───────────────────────────
+  addCollege(c) {
+    if (!this._state.indianColleges) this._state.indianColleges = [];
+    const newC = { id: 'c_' + Date.now(), ...c };
+    this._state.indianColleges.unshift(newC);
+    this._save();
+    this._notify();
+    return newC;
+  },
+  deleteCollege(id) {
+    if (this._state.indianColleges) {
+      this._state.indianColleges = this._state.indianColleges.filter(c => c.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+  addScholarship(s) {
+    if (!this._state.indianScholarships) this._state.indianScholarships = [];
+    const newS = { id: 'sch_' + Date.now(), ...s };
+    this._state.indianScholarships.unshift(newS);
+    this._save();
+    this._notify();
+    return newS;
+  },
+  deleteScholarship(id) {
+    if (this._state.indianScholarships) {
+      this._state.indianScholarships = this._state.indianScholarships.filter(s => s.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+  addInternship(i) {
+    if (!this._state.indianInternships) this._state.indianInternships = [];
+    const newI = { id: 'int_' + Date.now(), ...i };
+    this._state.indianInternships.unshift(newI);
+    this._save();
+    this._notify();
+    return newI;
+  },
+  deleteInternship(id) {
+    if (this._state.indianInternships) {
+      this._state.indianInternships = this._state.indianInternships.filter(i => i.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+  addExam(e) {
+    if (!this._state.exams) this._state.exams = [];
+    const newE = { id: 'ex_' + Date.now(), ...e };
+    this._state.exams.unshift(newE);
+    this._save();
+    this._notify();
+    return newE;
+  },
+  deleteExam(id) {
+    if (this._state.exams) {
+      this._state.exams = this._state.exams.filter(e => e.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+  updateExamProgress(id, val) {
+    if (this._state.exams) {
+      const ex = this._state.exams.find(e => e.id === id);
+      if (ex) {
+        ex.syllabusProgress = Number(val);
+        this._save();
+        this._notify();
+      }
+    }
+  },
+  addInvestor(inv) {
+    if (!this._state.investors) this._state.investors = [];
+    const newInv = { id: 'inv_' + Date.now(), ...inv };
+    this._state.investors.unshift(newInv);
+    this._save();
+    this._notify();
+    return newInv;
+  },
+  deleteInvestor(id) {
+    if (this._state.investors) {
+      this._state.investors = this._state.investors.filter(inv => inv.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+  addJobOffer(offer) {
+    if (!this._state.jobOffers) this._state.jobOffers = [];
+    const newO = { id: 'off_' + Date.now(), ...offer };
+    this._state.jobOffers.unshift(newO);
+    this._save();
+    this._notify();
+    return newO;
+  },
+  deleteJobOffer(id) {
+    if (this._state.jobOffers) {
+      this._state.jobOffers = this._state.jobOffers.filter(o => o.id !== id);
+      this._save();
+      this._notify();
+    }
+  },
+
   // ─── Health Helpers ──────────────────────────────────────
   logWater(amountMl) {
     this._state.health.waterIntake = Math.max(0, (this._state.health.waterIntake || 0) + amountMl);
@@ -647,7 +801,7 @@ const Store = {
 
   async login(email, password) {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(this._apiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -677,7 +831,7 @@ const Store = {
 
   async notifyLoginSuccess(email, name) {
     try {
-      fetch('/api/auth/login-notify', {
+      fetch(this._apiUrl('/api/auth/login-notify'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name })
@@ -687,18 +841,20 @@ const Store = {
 
   async sendEmailNotification(subject, htmlBody, recipient = null) {
     try {
-      const email = recipient || this._state.profile.email || this._state.user?.email || 'saladisiddharth@gmail.com';
-      fetch('/api/send-email', {
+      const email = recipient || this._state.profile.email || this._state.user?.email || '';
+      if (!email) return;
+      const userName = this._state.profile.name || this._state.user?.name || email.split('@')[0];
+      fetch(this._apiUrl('/api/send-email'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: email, subject, body: htmlBody })
+        body: JSON.stringify({ to: email, subject, body: htmlBody, name: userName })
       }).catch(() => {});
     } catch (e) {}
   },
 
   async sendForgotPasswordOtp(email) {
     try {
-      const res = await fetch('/api/auth/forgot-otp', {
+      const res = await fetch(this._apiUrl('/api/auth/forgot-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -711,7 +867,7 @@ const Store = {
 
   async resetPassword(email, otp, newPassword) {
     try {
-      const res = await fetch('/api/auth/reset-password', {
+      const res = await fetch(this._apiUrl('/api/auth/reset-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword })
@@ -724,13 +880,13 @@ const Store = {
 
   async loginWithGoogle(customGoogleProfile = null) {
     const defaultProfile = {
-      name: 'Saladi Siddharth',
-      email: 'saladisiddharath@gmail.com',
+      name: 'Google User',
+      email: 'saladisiddharth@gmail.com',
       googleId: 'google_oauth_' + Date.now(),
       picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
     };
     const profile = customGoogleProfile || defaultProfile;
-    const cleanEmail = (profile.email || 'saladisiddharath@gmail.com').toLowerCase();
+    const cleanEmail = (profile.email || 'saladisiddharth@gmail.com').toLowerCase();
     const formattedName = profile.name || cleanEmail.split('@')[0];
 
     this._state.user = {
@@ -747,7 +903,7 @@ const Store = {
     this._notify();
 
     try {
-      const res = await fetch('/api/auth/google', {
+      const res = await fetch(this._apiUrl('/api/auth/google'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -764,6 +920,7 @@ const Store = {
         if (data.user.identity) this._state.identity = data.user.identity;
       }
       if (data.isNewUser) {
+        this._state.onboardingComplete = false;
         if (typeof EmailService !== 'undefined') {
           EmailService.sendWelcomeEmail(formattedName, cleanEmail, true);
         }
@@ -780,7 +937,7 @@ const Store = {
 
   async sendRegistrationOtp(email, name = '') {
     try {
-      const res = await fetch('/api/auth/send-otp', {
+      const res = await fetch(this._apiUrl('/api/auth/send-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name })
@@ -793,7 +950,7 @@ const Store = {
 
   async verifyRegistrationOtp(email, otp, name, password, identity = 'student', phone = '') {
     try {
-      const res = await fetch('/api/auth/verify-otp', {
+      const res = await fetch(this._apiUrl('/api/auth/verify-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, name, password, identity, phone })
@@ -808,7 +965,7 @@ const Store = {
         this._state.profile.phone = phone;
         this._state.isNewUser = true;
         this._state.hasSeenTour = false; // Tour runs for first-time users
-        this._state.onboardingComplete = true;
+        this._state.onboardingComplete = false; // Direct to onboarding
         this._save();
         this._notify();
 
@@ -831,13 +988,13 @@ const Store = {
     this._state.profile.name = formattedName;
     this._state.profile.email = email;
     this._state.profile.phone = phone;
-    this._state.onboardingComplete = true;
+    this._state.onboardingComplete = false; // New user must go through onboarding
     this._state.isNewUser = true;
     this._save();
     this._notify();
 
     try {
-      await fetch('/api/auth/register', {
+      await fetch(this._apiUrl('/api/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: formattedName, email, password, identity: initialIdentity, phone })

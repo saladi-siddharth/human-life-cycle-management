@@ -90,7 +90,7 @@ const AccountAggregator = {
           <div style="background:#070a14; border:1px solid #1e293b; border-radius:12px; padding:16px; margin-bottom:16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <label style="font-size:12px; font-weight:700; color:#cbd5e1;">Enter Mobile OTP for Consent Handle Approval:</label>
-              <button class="btn btn-ghost btn-sm" style="font-size:11px; color:#00f2fe; padding:0;" onclick="UI.toast('info','OTP Sent','A 6-digit OTP has been dispatched to your mobile.')">Resend OTP</button>
+              <button class="btn btn-ghost btn-sm" style="font-size:11px; color:#00f2fe; padding:0;" onclick="UI.toast('info','OTP Sent','A 6-digit OTP has been sent to your mobile.')">Resend OTP</button>
             </div>
             
             <div style="display:flex; gap:10px; align-items:center;">
@@ -210,11 +210,6 @@ const AccountAggregator = {
     // Award Gamification XP for Open Banking sync
     if (typeof GamificationEngine !== 'undefined') {
       GamificationEngine.awardXP(40, 'Linked Indian Bank Accounts via Account Aggregator');
-    }
-
-    // Trigger 3D spatial celebration
-    if (typeof ContinuumBridge !== 'undefined' && ContinuumBridge.onTelemetryAction) {
-      ContinuumBridge.onTelemetryAction({ type: 'wealth_sync', amount: totalDiscovered });
     }
 
     UI.closeModal();

@@ -52,31 +52,36 @@ function LifePage() {
       <div class="grid grid-2" id="life-radar-section" style="gap:24px;margin-bottom:var(--space-xl);">
         
         <!-- Radar Visualizer -->
-        <div class="card card-glass" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
-          <h3 style="margin:0 0 16px 0;width:100%;display:flex;align-items:center;justify-content:space-between;">
-            <span><i class="fas fa-dharmachakra" style="color:var(--purple);"></i> 5-Pillar Life Wheel Radar</span>
-            <span class="badge badge-purple">Harmony: 84%</span>
-          </h3>
-          <div class="chart-canvas-wrap" style="width:100%;max-width:320px;height:240px;">
-            <canvas id="life-radar-chart"></canvas>
+        <div class="card card-glass cyber-card-glow" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+          <div class="cyber-card-inner" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <h3 style="margin:0 0 16px 0;width:100%;display:flex;align-items:center;justify-content:space-between;">
+              <span style="display:flex; align-items:center; gap:8px;"><i class="fas fa-dharmachakra" style="color:var(--purple);"></i> 5-Pillar Living Radar</span>
+              <span class="badge badge-purple" style="font-size:11px;">Harmony: 84%</span>
+            </h3>
+            <div class="chart-canvas-wrap" style="width:100%;max-width:320px;height:260px;position:relative;">
+              <canvas id="life-radar-chart" style="width:100%;height:100%;"></canvas>
+            </div>
           </div>
         </div>
 
         <!-- 5 Core Pillar Cards -->
         <div style="display:flex;flex-direction:column;gap:10px;">
           ${[
-            { icon: '🌱', name: 'Growth & Mastery', score: scores.career || 85, desc: 'Technical depth, system design, and continuous learning.' },
-            { icon: '❤️', name: 'Relationships & Family', score: 80, desc: 'Quality time with loved ones and meaningful friendships.' },
-            { icon: '🎯', name: 'Purpose & Mission', score: 90, desc: 'Building high-impact software products & mentorship.' },
-            { icon: '🧭', name: 'Adventure & Exploration', score: 72, desc: 'Travel, nature treks, and trying new experiences.' },
-            { icon: '🏛️', name: 'Legacy & Giving', score: 82, desc: 'Open-source contributions and community scholarship.' }
-          ].map(p => `
-            <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(15,23,42,0.85);border-radius:12px;border:1px solid var(--glass-border);">
-              <span style="font-size:22px;">${p.icon}</span>
+            { icon: '🌱', name: 'Growth & Mastery', score: scores.career || 85, desc: 'Technical depth, system design, and continuous learning.', color: '#10b981' },
+            { icon: '❤️', name: 'Relationships & Family', score: 80, desc: 'Quality time with loved ones and meaningful friendships.', color: '#ec4899' },
+            { icon: '🎯', name: 'Purpose & Mission', score: 90, desc: 'Building high-impact software products & mentorship.', color: '#00f2fe' },
+            { icon: '🧭', name: 'Adventure & Exploration', score: 72, desc: 'Travel, nature treks, and trying new experiences.', color: '#f59e0b' },
+            { icon: '🏛️', name: 'Legacy & Giving', score: 82, desc: 'Open-source contributions and community scholarship.', color: '#a855f7' }
+          ].map((p, idx) => `
+            <div class="anim-fade-up anim-stagger-${idx + 1}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(15,23,42,0.85);border-radius:12px;border:1px solid var(--glass-border);transition:all 0.2s ease;">
+              <span style="font-size:24px;" class="star-twinkle-burst">${p.icon}</span>
               <div style="flex:1;">
-                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;color:#fff;">
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;color:#fff;margin-bottom:4px;">
                   <span>${p.name}</span>
-                  <span style="color:var(--purple);">${p.score}%</span>
+                  <span style="color:${p.color}; font-weight:800;">${p.score}%</span>
+                </div>
+                <div class="progress-bar" style="height:5px; background:rgba(255,255,255,0.06); border-radius:999px; margin-bottom:4px;">
+                  <div class="macro-shimmer-fill" style="width:${p.score}%; background:${p.color};"></div>
                 </div>
                 <div style="font-size:11px;color:var(--text-muted);">${p.desc}</div>
               </div>
@@ -115,17 +120,151 @@ function LifePage() {
     </div>
   `;
 
-  setTimeout(() => {
-    if (typeof Charts !== 'undefined') {
-      Charts.radar('life-radar-chart', {
-        labels: ['Growth', 'Relationships', 'Purpose', 'Adventure', 'Legacy'],
-        values: [scores.career || 85, 80, 90, 72, 82]
-      }, { height: 240 });
-    }
-  }, 200);
-
   return UI.dashboardLayout('/dashboard/life', content);
 }
+
+// ─── SACRED GEOMETRY 5-PILLAR LIVING RADAR ENGINE ─────────────
+function initLifeAnimations() {
+  const canvas = document.getElementById('life-radar-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const size = Math.min(rect.width || 300, rect.height || 260);
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  ctx.scale(dpr, dpr);
+
+  const scores = Store.get('scores') || {};
+  const labels = ['Growth', 'Relationships', 'Purpose', 'Adventure', 'Legacy'];
+  const values = [scores.career || 85, 80, 90, 72, 82];
+  const count = labels.length;
+  const angleStep = (Math.PI * 2) / count;
+
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = size / 2 - 38;
+
+  let time = 0;
+
+  function renderRadar() {
+    if (!document.getElementById('life-radar-chart')) return;
+    ctx.clearRect(0, 0, size, size);
+    time += 0.025;
+
+    // Draw concentric polygon grid levels
+    const levels = 4;
+    for (let lvl = 1; lvl <= levels; lvl++) {
+      const r = (radius / levels) * lvl;
+      ctx.beginPath();
+      for (let i = 0; i < count; i++) {
+        const a = i * angleStep - Math.PI / 2;
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = lvl === levels ? 'rgba(168, 85, 247, 0.4)' : 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Radial spokes
+    for (let i = 0; i < count; i++) {
+      const a = i * angleStep - Math.PI / 2;
+      const x = cx + radius * Math.cos(a);
+      const y = cy + radius * Math.sin(a);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Outer rotating constellation orbit ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 12, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw animated data polygon with subtle breathing
+    const breath = Math.sin(time * 2) * 2;
+    const dataPoints = values.map((val, i) => {
+      const r = (radius * (val / 100)) + breath;
+      const a = i * angleStep - Math.PI / 2;
+      return {
+        x: cx + r * Math.cos(a),
+        y: cy + r * Math.sin(a),
+        val,
+        label: labels[i]
+      };
+    });
+
+    // Fill data polygon with vibrant gradient
+    const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
+    grad.addColorStop(0, 'rgba(168, 85, 247, 0.5)');
+    grad.addColorStop(1, 'rgba(6, 182, 212, 0.15)');
+
+    ctx.beginPath();
+    dataPoints.forEach((p, idx) => {
+      if (idx === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Data polygon outline
+    ctx.strokeStyle = '#c084fc';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#a855f7';
+    ctx.shadowBlur = 12;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Draw vertex nodes and labels
+    dataPoints.forEach((p, idx) => {
+      // Outer pulse halo
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 6 + Math.sin(time * 3 + idx) * 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 242, 254, 0.25)';
+      ctx.fill();
+
+      // Vertex Core
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#00f2fe';
+      ctx.shadowColor = '#00f2fe';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Label at spoke tips
+      const labelAngle = idx * angleStep - Math.PI / 2;
+      const labelX = cx + (radius + 24) * Math.cos(labelAngle);
+      const labelY = cy + (radius + 24) * Math.sin(labelAngle);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 10px Inter';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.label, labelX, labelY);
+    });
+
+    requestAnimationFrame(renderRadar);
+  }
+
+  renderRadar();
+}
+window.initLifeAnimations = initLifeAnimations;
+
 
 function toggleGoalDone(id) {
   Store.toggleLifeGoal(id);
@@ -186,7 +325,8 @@ function saveLifeGoalForm(e) {
   const category = document.getElementById('g-cat')?.value;
   const targetYear = document.getElementById('g-year')?.value;
 
-  Store.addLifeGoal({ title, category, targetYear, progress: 10, completed: false });
+  const newGoal = { id: 'g-' + Date.now(), title, category, targetYear, progress: 10, completed: false };
+  Store.addLifeGoal(newGoal);
   UI.closeModal();
 
   if (typeof ActionPhysics !== 'undefined') {
@@ -198,5 +338,12 @@ function saveLifeGoalForm(e) {
 
   UI.toast('success', 'Life Goal Milestone Set 🌟', `Added "${title}" to your Life Success Matrix!`);
   Router.render();
+
+  setTimeout(() => {
+    const firstGoal = document.querySelector('#goal-row-' + newGoal.id + ', [id^="goal-row-"]');
+    if (firstGoal) {
+      firstGoal.classList.add('card-entry-pop', 'highlight-pulse-gold');
+    }
+  }, 40);
 }
 window.saveLifeGoalForm = saveLifeGoalForm;

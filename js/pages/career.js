@@ -61,6 +61,27 @@ function CareerPage() {
         </div>
       </div>
 
+      <!-- Futuristic Neural Skill Constellation & Trajectory Visualizer -->
+      <div class="canvas-interactive-wrap" style="margin-bottom:24px; padding:20px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="beacon-pulse beacon-pulse-info"></span>
+            <h3 style="margin:0; font-size:16.5px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <i class="fas fa-project-diagram" style="color:var(--cyan);"></i> Neural Skill Constellation & Trajectory Horizon
+            </h3>
+            <span class="badge badge-primary" style="font-size:10px;">Live Physics</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:14px;">
+            <span><strong style="color:var(--cyan);">●</strong> Active Conduits</span>
+            <span><strong style="color:var(--emerald);">●</strong> Verified Mastery</span>
+            <span><strong style="color:#c084fc;">★</strong> Target Destination</span>
+          </div>
+        </div>
+        <div style="position:relative; width:100%; height:200px;">
+          <canvas id="career-constellation-canvas" style="width:100%; height:100%; display:block; border-radius:12px;"></canvas>
+        </div>
+      </div>
+
       <!-- 2-Column Grid: Comprehensive Skills Matrix & AI Resume ATS Matcher -->
       <div class="grid grid-2" style="gap:24px; margin-bottom:24px;">
 
@@ -105,7 +126,7 @@ function CareerPage() {
                     
                     <div style="display:flex; align-items:center; gap:10px;">
                       <div class="progress-bar" style="flex:1; background:rgba(255,255,255,0.06); height:7px; border-radius:999px;">
-                        <div class="progress-fill" style="width:${Math.min(100, percent)}%; background:linear-gradient(90deg, #00f2fe 0%, #6366f1 100%); height:100%; border-radius:999px;"></div>
+                        <div class="progress-fill macro-shimmer-fill" style="width:${Math.min(100, percent)}%; background:linear-gradient(90deg, #00f2fe 0%, #6366f1 100%);"></div>
                       </div>
                       <span style="font-size:11.5px; font-weight:800; color:var(--indigo-light); min-width:38px; text-align:right;">${percent}%</span>
                     </div>
@@ -139,11 +160,12 @@ function CareerPage() {
 
           <div style="display:flex; flex-direction:column; gap:12px;">
             <!-- Modern File Upload Zone with Particle Glowing Animation -->
-            <div id="resume-drop-zone" onclick="document.getElementById('resume-file-input').click()" 
+            <div id="resume-drop-zone" class="radar-scan-box" onclick="document.getElementById('resume-file-input').click()" 
                  ondragover="handleResumeDragOver(event)" ondragleave="handleResumeDragLeave(event)" ondrop="handleResumeDrop(event)"
-                 style="border:2px dashed rgba(0,242,254,0.45); background:linear-gradient(135deg, rgba(0,242,254,0.05) 0%, rgba(99,102,241,0.05) 100%); border-radius:16px; padding:22px 16px; text-align:center; cursor:pointer; transition:all 0.25s ease;">
+                 style="padding:24px 16px; text-align:center; cursor:pointer; transition:all 0.25s ease;">
+              <div class="radar-scan-line"></div>
               <div id="resume-upload-icon-container">
-                <i class="fas fa-cloud-upload-alt" style="font-size:32px; color:#00f2fe; margin-bottom:8px; filter:drop-shadow(0 0 10px rgba(0,242,254,0.5));"></i>
+                <i class="fas fa-cloud-upload-alt animate-float" style="font-size:36px; color:#00f2fe; margin-bottom:8px; filter:drop-shadow(0 0 12px rgba(0,242,254,0.6));"></i>
               </div>
               <div style="font-weight:800; font-size:14px; color:#fff;" id="resume-file-label">Upload Resume (PDF, DOCX, TXT)</div>
               <div style="font-size:11.5px; color:var(--text-muted); margin-top:3px;">Drag & drop your CV here or click to browse</div>
@@ -254,7 +276,7 @@ function CareerPage() {
             <div style="font-size:13px; font-weight:800; color:#00f2fe; margin-bottom:2px;"><i class="fas fa-hammer"></i> Recommended Portfolio Project to Prove Mastery:</div>
             <div style="font-size:12px; color:#cbd5e1;">Build a "High-Concurrency Real-Time Analytics Pipeline" with Kafka, Redis, and TiDB Cloud. Star benchmark: ₹28LPA+ Tier.</div>
           </div>
-          <button class="btn btn-secondary btn-sm" onclick="UI.toast('info', 'Project Guide Dispatched', 'Detailed blueprint and starter repository link emailed to your inbox!')"><i class="fas fa-download"></i> Get Project Blueprint</button>
+          <button class="btn btn-secondary btn-sm" onclick="UI.toast('info', 'Project Guide Ready', 'Detailed blueprint and starter repository link is available!')"><i class="fas fa-download"></i> Get Project Blueprint</button>
         </div>
       </div>
 
@@ -421,29 +443,41 @@ function saveNewSkill(e) {
   Store.set('scores.career', avg);
   Store._save();
 
-  // Send SMTP Email Notification
-  const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
-  const userName = Store.get('profile.name') || 'Member';
-  EmailService.sendSkillUpdateEmail({
-    userEmail,
-    userName,
-    actionType: 'Added New Skill',
-    skillName: name,
-    skillCategory: category,
-    currentLevel: level,
-    targetLevel: target,
-    allSkills: skills
-  });
+  // Send SMTP Email Notification (Safe Try-Catch)
+  try {
+    const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
+    const userName = Store.get('profile.name') || 'Member';
+    EmailService.sendSkillUpdateEmail({
+      userEmail,
+      userName,
+      actionType: 'Added New Skill',
+      skillName: name,
+      skillCategory: category,
+      currentLevel: level,
+      targetLevel: target,
+      allSkills: skills
+    });
+  } catch (err) {
+    console.warn('Email dispatch notice:', err);
+  }
 
   UI.closeModal();
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.supernovaBurst('skill', `Skill Added: ${name}`);
+    ActionPhysics.supernovaBurst(name, category, level);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(15, `Added ${name} to Career Skills Matrix`);
   }
-  UI.toast('success', 'Skill Added & Dispatched!', `Added "${name}" to your matrix and sent email notification.`);
+  UI.toast('success', 'Skill Added! 🚀', `Added "${name}" to your matrix.`);
   Router.render();
+
+  setTimeout(() => {
+    const firstSkill = document.querySelector('#skill-item-' + newSkill.id + ', #live-skills-list > div:first-child');
+    if (firstSkill) {
+      firstSkill.classList.add('card-entry-pop', 'highlight-pulse-cyan');
+      firstSkill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 40);
 }
 window.saveNewSkill = saveNewSkill;
 
@@ -573,6 +607,13 @@ function quickLevelUpSkill(skillId) {
     const avg = Math.round((skills.reduce((sum, s) => sum + (s.level / (s.target || 5)), 0) / skills.length) * 100);
     Store.set('scores.career', avg);
     Store._save();
+
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.confetti?.();
+    }
+    if (typeof GamificationEngine !== 'undefined') {
+      GamificationEngine.awardXP?.(25, `Mastery Level Up: ${skill.name}`);
+    }
 
     const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
     const userName = Store.get('profile.name') || 'Member';
@@ -901,7 +942,7 @@ async function runAdvancedATSAnalysis() {
       improvementPoints: modifications
     });
 
-    UI.toast('success', 'ATS Analysis Complete! 🎯', `Scored ${atsScore}/100. Dispatched full report to ${userEmail}`);
+    UI.toast('success', 'ATS Analysis Complete! 🎯', `Scored ${atsScore}/100. Full report generated.`);
   }, 2600);
 }
 window.runAdvancedATSAnalysis = runAdvancedATSAnalysis;
@@ -959,27 +1000,38 @@ function saveJobForm(e) {
   Store.addJobApplication(job);
   UI.closeModal();
 
-  const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
-  EmailService.sendEmail({
-    to: userEmail,
-    subject: `Job Application Tracked: ${role} at ${company}`,
-    category: 'Career',
-    purpose: 'Job Application Pipeline Entry',
-    body: `
-      <h4 style="color:#10b981;margin-top:0;">🚀 New Career Opportunity Tracked</h4>
-      <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px;margin:12px 0;">
-        <div style="font-size:16px;font-weight:800;color:#fff;">${role} @ ${company}</div>
-        <div style="font-size:13px;color:#10b981;margin-top:4px;">💰 Target CTC: ₹${Number(salary).toLocaleString()}</div>
-        <div style="font-size:12px;color:#fbbf24;margin-top:4px;">📍 Stage: ${stage}</div>
-      </div>
-    `
-  });
+  try {
+    const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
+    EmailService.sendEmail({
+      to: userEmail,
+      subject: `Job Application Tracked: ${role} at ${company}`,
+      category: 'Career',
+      purpose: 'Job Application Pipeline Entry',
+      body: `
+        <h4 style="color:#10b981;margin-top:0;">🚀 New Career Opportunity Tracked</h4>
+        <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px;margin:12px 0;">
+          <div style="font-size:16px;font-weight:800;color:#fff;">${role} @ ${company}</div>
+          <div style="font-size:13px;color:#10b981;margin-top:4px;">💰 Target CTC: ₹${Number(salary).toLocaleString()}</div>
+          <div style="font-size:12px;color:#fbbf24;margin-top:4px;">📍 Stage: ${stage}</div>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.warn('Email dispatch notice:', err);
+  }
 
   if (typeof ActionPhysics !== 'undefined') {
     ActionPhysics.rocketLaunch(company, role);
   }
-  UI.toast('success', 'Application Tracked 🚀', `Tracked ${role} at ${company}. Sent email alert.`);
+  UI.toast('success', 'Application Tracked 🚀', `Tracked ${role} at ${company}.`);
   Router.render();
+
+  setTimeout(() => {
+    const newCard = document.querySelector('.pipeline-card, [id^="job-card-"]');
+    if (newCard) {
+      newCard.classList.add('card-entry-pop', 'highlight-pulse-emerald');
+    }
+  }, 40);
 }
 window.saveJobForm = saveJobForm;
 
@@ -1002,3 +1054,209 @@ function shiftJobStage(id, stage) {
   Router.render();
 }
 window.shiftJobStage = shiftJobStage;
+
+// ─── NEURAL SKILL CONSTELLATION & TRAJECTORY ANIMATION ENGINE ───
+function initCareerAnimations() {
+  const canvas = document.getElementById('career-constellation-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const width = rect.width || 800;
+  const height = rect.height || 200;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const skills = Store.get('career.skills') || [
+    { name: 'System Design', level: 4, target: 5 },
+    { name: 'Full-Stack React/Node', level: 5, target: 5 },
+    { name: 'Cloud & DevOps', level: 3, target: 5 },
+    { name: 'Database Optimization', level: 4, target: 5 },
+    { name: 'AI Engineering', level: 3, target: 5 }
+  ];
+
+  const profile = Store.get('profile') || {};
+  const targetTitle = profile.careerTarget || 'SDE 2 / AI Architect';
+
+  // Target Node at right center
+  const targetNode = {
+    x: width - 90,
+    y: height / 2,
+    label: targetTitle,
+    radius: 20,
+    color: '#c084fc',
+    isTarget: true
+  };
+
+  // Skill Nodes on left/middle
+  const nodes = skills.map((s, i) => {
+    const angle = ((i - (skills.length - 1) / 2) / skills.length) * (Math.PI * 0.55);
+    const dist = width * 0.45 + (i % 2 === 0 ? 30 : -20);
+    const x = Math.max(60, targetNode.x - dist * Math.cos(angle));
+    const y = targetNode.y + dist * Math.sin(angle);
+    return {
+      x,
+      y,
+      baseX: x,
+      baseY: y,
+      label: s.name,
+      level: s.level,
+      target: s.target || 5,
+      radius: 12 + s.level * 2,
+      color: s.level >= 4 ? '#10b981' : '#00f2fe',
+      phase: i * 1.2
+    };
+  });
+
+  // Flowing energy packets along conduits
+  const packets = [];
+  for (let i = 0; i < nodes.length; i++) {
+    packets.push({
+      from: nodes[i],
+      to: targetNode,
+      progress: Math.random(),
+      speed: 0.006 + Math.random() * 0.004,
+      size: 3 + Math.random() * 2
+    });
+  }
+
+  let mouseX = -999;
+  let mouseY = -999;
+  canvas.onmousemove = (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouseX = e.clientX - r.left;
+    mouseY = e.clientY - r.top;
+  };
+  canvas.onmouseleave = () => {
+    mouseX = -999;
+    mouseY = -999;
+  };
+
+  let animFrameId;
+  let time = 0;
+
+  function renderConstellation() {
+    if (!document.getElementById('career-constellation-canvas')) return;
+    ctx.clearRect(0, 0, width, height);
+
+    time += 0.03;
+
+    // Draw connecting conduits & animated light beams
+    nodes.forEach((node, idx) => {
+      // Slight floating motion
+      node.y = node.baseY + Math.sin(time + node.phase) * 4;
+
+      const grad = ctx.createLinearGradient(node.x, node.y, targetNode.x, targetNode.y);
+      grad.addColorStop(0, 'rgba(0, 242, 254, 0.4)');
+      grad.addColorStop(0.5, 'rgba(99, 102, 241, 0.6)');
+      grad.addColorStop(1, 'rgba(192, 132, 252, 0.8)');
+
+      ctx.beginPath();
+      ctx.moveTo(node.x, node.y);
+      ctx.bezierCurveTo(
+        node.x + (targetNode.x - node.x) * 0.5, node.y,
+        targetNode.x - 60, targetNode.y,
+        targetNode.x, targetNode.y
+      );
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+    });
+
+    // Draw energy packets
+    packets.forEach(p => {
+      p.progress += p.speed;
+      if (p.progress > 1) p.progress = 0;
+
+      const t = p.progress;
+      const x0 = p.from.x, y0 = p.from.y;
+      const x1 = p.from.x + (p.to.x - p.from.x) * 0.5, y1 = p.from.y;
+      const x2 = p.to.x - 60, y2 = p.to.y;
+      const x3 = p.to.x, y3 = p.to.y;
+
+      const cx = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * x1 + 3 * (1 - t) * t ** 2 * x2 + t ** 3 * x3;
+      const cy = (1 - t) ** 3 * y0 + 3 * (1 - t) ** 2 * t * y1 + 3 * (1 - t) * t ** 2 * y2 + t ** 3 * y3;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = '#00f2fe';
+      ctx.shadowColor = '#00f2fe';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    // Draw Skill Nodes
+    nodes.forEach(node => {
+      const dist = Math.hypot(node.x - mouseX, node.y - mouseY);
+      const isHovered = dist < node.radius + 10;
+
+      // Glow Halo
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + (isHovered ? 8 : 4), 0, Math.PI * 2);
+      ctx.fillStyle = isHovered ? 'rgba(0, 242, 254, 0.35)' : 'rgba(0, 242, 254, 0.12)';
+      ctx.fill();
+
+      // Node Body
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+      ctx.fillStyle = node.color;
+      ctx.shadowColor = node.color;
+      ctx.shadowBlur = isHovered ? 20 : 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Inner Core
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      // Label
+      ctx.fillStyle = '#ffffff';
+      ctx.font = isHovered ? 'bold 12px Inter' : '11px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(node.label, node.x, node.y - node.radius - 6);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '9.5px Inter';
+      ctx.fillText(`Lvl ${node.level}/${node.target}`, node.x, node.y + node.radius + 12);
+    });
+
+    // Draw Target Role Horizon Node
+    const targetDist = Math.hypot(targetNode.x - mouseX, targetNode.y - mouseY);
+    const isTargetHovered = targetDist < targetNode.radius + 10;
+
+    // Pulsing Outer Rings
+    for (let r = 1; r <= 3; r++) {
+      const pulseR = targetNode.radius + r * 8 + Math.sin(time * 2 + r) * 3;
+      ctx.beginPath();
+      ctx.arc(targetNode.x, targetNode.y, pulseR, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(192, 132, 252, ${0.4 / r})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    ctx.beginPath();
+    ctx.arc(targetNode.x, targetNode.y, targetNode.radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#a855f7';
+    ctx.shadowColor = '#c084fc';
+    ctx.shadowBlur = 24;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12.5px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎯 ' + targetNode.label, targetNode.x, targetNode.y + targetNode.radius + 16);
+
+    animFrameId = requestAnimationFrame(renderConstellation);
+  }
+
+  renderConstellation();
+}
+window.initCareerAnimations = initCareerAnimations;
+

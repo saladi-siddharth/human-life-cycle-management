@@ -149,7 +149,7 @@ const EmailService = {
               ⏰ Timestamp: ${timestamp} (IST) • System ID: BV-NOTIF-${Date.now().toString(36).toUpperCase()}<br>
               © 2026 BioVerse Platform • Multi-Role Human Life Cycle Architecture. All rights reserved.<br>
               <div style="margin-top: 10px; font-size: 11px;">
-                Don't want to receive daily automated motivational emails? <a href="http://localhost:3000/api/unsubscribe?email=${encodeURIComponent(userName)}" style="color: #94a3b8; text-decoration: underline;">Click here to Unsubscribe</a>
+                Don't want to receive daily automated motivational emails? <a href="http://localhost:3000/api/unsubscribe?email=${encodeURIComponent(targetEmail || '')}" style="color: #94a3b8; text-decoration: underline;">Click here to Unsubscribe</a>
               </div>
             </div>
           </div>
@@ -206,33 +206,11 @@ const EmailService = {
 
       if (response.ok) {
         emailLogItem.status = 'sent';
-        if (typeof UI !== 'undefined') {
-          UI.toast('success', '📧 Email Dispatched!', `Sent Gmail alert to <strong>${targetEmail}</strong> (${subject})`);
-        }
       } else {
         emailLogItem.status = 'simulated';
-        if (typeof UI !== 'undefined') {
-          UI.toast('info', '✉️ Notification Logged', `SMTP Event logged for <strong>${targetEmail}</strong> (${subject})`);
-        }
       }
     } catch (err) {
       emailLogItem.status = 'simulated';
-      if (typeof UI !== 'undefined') {
-        UI.toast('info', '✉️ Notification Logged', `Email Event: ${subject} -> ${targetEmail}`);
-      }
-    }
-
-    // Auto-sync into BioVerse Notification tray
-    if (typeof Store !== 'undefined') {
-      Store.addNotification({
-        type: category.toLowerCase(),
-        icon: category === 'Security' ? '🔒' : category === 'Health' ? '💪' : category === 'Finance' ? '💰' : category === 'Career' ? '🚀' : category === 'Work' ? '⚡' : '🧬',
-        title: `Email Sent: ${subject}`,
-        text: `Dispatched to ${targetEmail} via Gmail SMTP (${purpose})`,
-        time: 'Just now',
-        unread: true
-      });
-      Store._save();
     }
 
     return emailLogItem;

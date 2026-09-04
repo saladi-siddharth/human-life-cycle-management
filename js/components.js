@@ -160,11 +160,6 @@ const UI = {
             <i class="fas fa-th-large"></i> <span>Overview</span>
           </button>
 
-          <!-- 3D Continuum Launch -->
-          <a href="/continuum.html" target="_blank" class="btn btn-ghost btn-sm" data-tooltip="Launch 3D Continuum Pavilion" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; color:#c084fc; border:1px solid rgba(192,132,252,0.3); border-radius:999px; padding:4px 12px; text-decoration:none;">
-            <i class="fas fa-cube" style="color:#c084fc;"></i> <span>3D Continuum</span>
-          </a>
-
           <!-- Pan-India Language Switcher -->
           ${typeof i18n !== 'undefined' ? i18n.renderLanguageSwitcher() : ''}
 
@@ -263,7 +258,6 @@ const UI = {
     }
 
     const toolLinks = [
-      { href: '/continuum.html', icon: 'fas fa-cubes', label: '3D Continuum', target: '_blank', badge: '3D', color: '#c084fc' },
       { path: '/dashboard/coach', icon: 'fas fa-robot', label: 'AI Coach' },
       { path: '/dashboard/notifications', icon: 'fas fa-bell', label: 'Notifications', badge: unread },
       { path: '/dashboard/settings', icon: 'fas fa-cog', label: 'Settings' },

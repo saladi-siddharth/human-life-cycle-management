@@ -21,6 +21,7 @@
     "docx": "^9.7.1",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.23.3"
+    "mysql2": "^3.23.3",
+    "pptxgenjs": "^4.0.1"
   }
 }

@@ -860,11 +860,30 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999999;
+  z-index: 9999999;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle at center, rgba(0, 242, 254, 0.12) 0%, rgba(15, 23, 42, 0.6) 80%);
+  backdrop-filter: blur(4px);
 }
+.supernova-power-card {
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(20px);
+  border: 2.5px solid #00f2fe;
+  box-shadow: 0 0 60px rgba(0, 242, 254, 0.6), 0 0 100px rgba(99, 102, 241, 0.4), inset 0 0 30px rgba(0, 242, 254, 0.25);
+  padding: 28px 48px;
+  border-radius: 28px;
+  text-align: center;
+  animation: supernovaCardPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  max-width: 90vw;
+}
+@keyframes supernovaCardPop {
+  0% { transform: scale(0.3) translateY(30px); opacity: 0; }
+  60% { transform: scale(1.1) translateY(-6px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
 .supernova-center {
   width: 150px;
   height: 150px;
@@ -888,7 +907,7 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999999;
+  z-index: 9999999;
 }
 .rocket-launch-vehicle {
   position: fixed;
@@ -923,25 +942,28 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 999999;
+  z-index: 9999999;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.6) 80%);
+  backdrop-filter: blur(4px);
 }
 .flex-power-card {
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(20px);
   border: 2.5px solid #10b981;
-  box-shadow: 0 0 60px rgba(16, 185, 129, 0.6), inset 0 0 30px rgba(16, 185, 129, 0.3);
-  padding: 24px 44px;
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.6), 0 0 100px rgba(52, 211, 153, 0.35), inset 0 0 30px rgba(16, 185, 129, 0.25);
+  padding: 28px 48px;
   border-radius: 28px;
   text-align: center;
-  animation: flexPowerPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: flexPowerPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  max-width: 90vw;
 }
 @keyframes flexPowerPop {
-  0% { transform: scale(0.3); opacity: 0; }
-  70% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.3) translateY(30px); opacity: 0; }
+  60% { transform: scale(1.12) translateY(-6px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 /* 4. 💧 Health: Emerald Bioluminescence Pulse */
@@ -1301,6 +1323,278 @@
   50% { transform: scale(1.15) rotate(15deg); opacity: 1; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   20. 🚀 CYBER-VISUALIZERS & INTERACTIVE ANIMATIONS (CAREER, HEALTH, FINANCE, WORK, LIFE)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Animated Neon Border Flow */
+.cyber-card-glow {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.cyber-card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, #00f2fe, #6366f1, #ec4899, #10b981, #00f2fe);
+  background-size: 300% 300%;
+  animation: cyberBorderFlow 6s linear infinite;
+  border-radius: inherit;
+  z-index: 0;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+.cyber-card-glow:hover::before {
+  opacity: 0.85;
+}
+.cyber-card-inner {
+  position: relative;
+  z-index: 1;
+  background: rgba(15, 23, 42, 0.94);
+  border-radius: 15px;
+  padding: 20px;
+}
+
+@keyframes cyberBorderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pulsing Status Beacons for Eisenhower Matrix & Jobs */
+.beacon-pulse {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.beacon-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.6;
+  animation: beaconWave 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+.beacon-pulse-danger { background: #ef4444; }
+.beacon-pulse-info { background: #00f2fe; }
+.beacon-pulse-warning { background: #f59e0b; }
+.beacon-pulse-success { background: #10b981; }
+.beacon-pulse-purple { background: #a855f7; }
+
+@keyframes beaconWave {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ATS Radar Scanner Sweep Animation */
+.radar-scan-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: radial-gradient(circle at center, rgba(0, 242, 254, 0.08) 0%, rgba(15, 23, 42, 0.95) 75%);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+}
+.radar-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00f2fe, #6366f1, transparent);
+  box-shadow: 0 0 15px #00f2fe;
+  animation: radarScanSweep 2.4s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 5;
+}
+@keyframes radarScanSweep {
+  0% { top: 0%; opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { top: 96%; opacity: 0.2; }
+}
+
+/* Radial Focus Progress Rings */
+.pomo-ring-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px auto;
+}
+.pomo-ring-svg {
+  transform: rotate(-90deg);
+}
+.pomo-glow-aura {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.2) 0%, rgba(99, 102, 241, 0.05) 60%, transparent 70%);
+  animation: pomoAuraBreathe 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes pomoAuraBreathe {
+  0%, 100% { transform: scale(0.9); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* Interactive Canvas Wrappers */
+.canvas-interactive-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  background: rgba(10, 15, 29, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.canvas-interactive-wrap:hover {
+  border-color: rgba(0, 242, 254, 0.35);
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.15), inset 0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Staggered Element Entrance Animation */
+.anim-fade-up {
+  animation: animFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-stagger-1 { animation-delay: 0.05s; }
+.anim-stagger-2 { animation-delay: 0.1s; }
+.anim-stagger-3 { animation-delay: 0.15s; }
+.anim-stagger-4 { animation-delay: 0.2s; }
+.anim-stagger-5 { animation-delay: 0.25s; }
+
+@keyframes animFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating Milestone Stars */
+.star-twinkle-burst {
+  animation: starTwinkle 2s ease-in-out infinite;
+}
+@keyframes starTwinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 4px #fbbf24); }
+  50% { transform: scale(1.25) rotate(15deg); filter: drop-shadow(0 0 14px #f59e0b); }
+}
+
+/* Macro Bar Glowing Shimmer */
+.macro-shimmer-fill {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.macro-shimmer-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: translateX(-100%);
+  animation: macroShimmerSlide 2.5s infinite;
+}
+@keyframes macroShimmerSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 9b. 🥗 Health: Precision Metabolic Diet Synthesis Overlay */
+.action-diet-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.diet-synthesis-card {
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  border: 2.5px solid #10b981;
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.6), inset 0 0 30px rgba(16, 185, 129, 0.3);
+  padding: 24px 44px;
+  border-radius: 28px;
+  text-align: center;
+  animation: dietCardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes dietCardPop {
+  0% { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+  70% { transform: scale(1.12) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 9c. ⚡ Work/Life: Quantum Focus Lab Timer Ignition Overlay */
+.action-focus-ignite-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.focus-ignite-card {
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  border: 2.5px solid #00f2fe;
+  box-shadow: 0 0 70px rgba(0, 242, 254, 0.7), inset 0 0 35px rgba(99, 102, 241, 0.4);
+  padding: 24px 44px;
+  border-radius: 28px;
+  text-align: center;
+  animation: focusIgnitePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes focusIgnitePop {
+  0% { transform: scale(0.3) translateY(20px); opacity: 0; }
+  70% { transform: scale(1.12) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Newly added item entry animation */
+.card-entry-pop {
+  animation: cardEntryPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes cardEntryPop {
+  0% { opacity: 0; transform: translateY(-16px) scale(0.92); }
+  70% { opacity: 1; transform: translateY(0) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1.0); }
+}
+
+.highlight-pulse-emerald {
+  animation: pulseGlowEmerald 1.8s ease-out;
+}
+@keyframes pulseGlowEmerald {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+  50% { box-shadow: 0 0 25px 6px rgba(16, 185, 129, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.highlight-pulse-cyan {
+  animation: pulseGlowCyan 1.8s ease-out;
+}
+@keyframes pulseGlowCyan {
+  0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.8); }
+  50% { box-shadow: 0 0 25px 6px rgba(0, 242, 254, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+}
+
+.highlight-pulse-gold {
+  animation: pulseGlowGold 1.8s ease-out;
+}
+@keyframes pulseGlowGold {
+  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8); }
+  50% { box-shadow: 0 0 25px 6px rgba(251, 191, 36, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+}
+
+
 
 
 

@@ -81,29 +81,48 @@ function WorkPage() {
       <div class="grid grid-2" style="gap:24px;margin-bottom:24px;">
         
         <!-- 1. Pomodoro Focus Lab -->
-        <div class="card card-glass" style="text-align:center;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-stopwatch" style="color:var(--cyan);"></i> Pomodoro Focus Lab</h3>
-            <div style="display:flex;gap:4px;">
-              <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(25)">25m Sprint</button>
-              <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(50)">50m Deep</button>
-              <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(5)">5m Rest</button>
+        <div class="card card-glass cyber-card-glow" style="text-align:center;">
+          <div class="cyber-card-inner">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-stopwatch" style="color:var(--cyan);"></i> Quantum Focus Lab</h3>
+              <div style="display:flex;gap:4px;">
+                <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(25)">25m Sprint</button>
+                <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(50)">50m Deep</button>
+                <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;" onclick="setPomodoroPreset(5)">5m Rest</button>
+              </div>
             </div>
-          </div>
 
-          <div class="pomodoro-display" id="pomo-timer" style="font-size:48px;font-weight:900;letter-spacing:2px;color:#00f2fe;margin:12px 0;">25:00</div>
-          
-          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:14px;">
-            <button class="btn btn-primary" id="pomo-start-btn" onclick="togglePomodoro()"><i class="fas fa-play"></i> Start Focus</button>
-            <button class="btn btn-secondary" onclick="resetPomodoro()"><i class="fas fa-redo"></i> Reset</button>
-          </div>
+            <!-- Futuristic Circular Quantum Progress Ring -->
+            <div class="pomo-ring-container">
+              <div class="pomo-glow-aura"></div>
+              <svg class="pomo-ring-svg" width="160" height="160">
+                <circle cx="80" cy="80" r="68" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent"/>
+                <circle id="pomo-progress-ring" cx="80" cy="80" r="68" stroke="url(#pomoGrad)" stroke-width="8" stroke-dasharray="427" stroke-dashoffset="0" stroke-linecap="round" fill="transparent" style="transition:stroke-dashoffset 0.5s ease;"/>
+                <defs>
+                  <linearGradient id="pomoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2fe"/>
+                    <stop offset="100%" stop-color="#6366f1"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div style="position:absolute; text-align:center;">
+                <div class="pomodoro-display" id="pomo-timer" style="font-size:32px;font-weight:900;letter-spacing:1px;color:#fff;font-family:var(--font-mono, monospace);">25:00</div>
+                <span class="badge badge-primary" id="pomo-state-badge" style="font-size:10px; padding:2px 8px;">DEEP FOCUS</span>
+              </div>
+            </div>
+            
+            <div style="display:flex;justify-content:center;gap:12px;margin-bottom:14px;">
+              <button class="btn btn-primary" id="pomo-start-btn" onclick="togglePomodoro()"><i class="fas fa-play"></i> Start Focus</button>
+              <button class="btn btn-secondary" onclick="resetPomodoro()"><i class="fas fa-redo"></i> Reset</button>
+            </div>
 
-          <div style="font-size:11.5px;color:var(--text-muted);border-top:1px solid var(--glass-border);padding-top:10px;">
-            ⚡ 25 minutes of unbroken single-tasking accelerates cognitive output by 300%.
-          </div>
+            <div style="font-size:11.5px;color:var(--text-muted);border-top:1px solid var(--glass-border);padding-top:10px;">
+              ⚡ 25 minutes of unbroken single-tasking accelerates cognitive output by 300%.
+            </div>
 
-          <!-- Binaural Audio Soundscape Synthesizer -->
-          ${typeof AudioSoundscape !== 'undefined' ? AudioSoundscape.renderPomodoroAudioWidget() : ''}
+            <!-- Binaural Audio Soundscape Synthesizer -->
+            ${typeof AudioSoundscape !== 'undefined' ? AudioSoundscape.renderPomodoroAudioWidget() : ''}
+          </div>
         </div>
 
         <!-- 2. Real-Time Scheduled To-Do List with Times -->
@@ -113,9 +132,9 @@ function WorkPage() {
             <button class="btn btn-primary btn-sm" onclick="openTaskModal()"><i class="fas fa-plus"></i> Add Task</button>
           </div>
 
-          <div style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;padding-right:4px;">
+          <div style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;padding-right:4px;">
             ${tasks.map(t => `
-              <div id="todo-task-${t.id}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(15,23,42,0.85);border-radius:10px;border:1px solid var(--glass-border);">
+              <div id="todo-task-${t.id}" class="anim-fade-up" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(15,23,42,0.85);border-radius:10px;border:1px solid var(--glass-border);transition:all 0.2s ease;">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')" style="width:16px;height:16px;cursor:pointer;">
                   <div>
@@ -148,36 +167,36 @@ function WorkPage() {
       <div class="eisenhower-grid">
         
         <!-- Q1: Urgent & Important -->
-        <div class="eisenhower-quadrant eisenhower-q1">
+        <div class="eisenhower-quadrant eisenhower-q1" style="border-left:4px solid var(--red);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <strong style="color:var(--red);"><i class="fas fa-exclamation-circle"></i> DO FIRST (Urgent & Important)</strong>
+            <strong style="color:var(--red);display:flex;align-items:center;gap:8px;"><span class="beacon-pulse beacon-pulse-danger"></span> DO FIRST (Urgent & Important)</strong>
             <span class="badge badge-danger">${q1Tasks.length}</span>
           </div>
           ${renderQuadrantTasks(q1Tasks)}
         </div>
 
         <!-- Q2: Not Urgent & Important -->
-        <div class="eisenhower-quadrant eisenhower-q2">
+        <div class="eisenhower-quadrant eisenhower-q2" style="border-left:4px solid var(--indigo-light);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <strong style="color:var(--indigo-light);"><i class="fas fa-calendar-alt"></i> SCHEDULE (Not Urgent, Important)</strong>
+            <strong style="color:var(--indigo-light);display:flex;align-items:center;gap:8px;"><span class="beacon-pulse beacon-pulse-info"></span> SCHEDULE (Not Urgent, Important)</strong>
             <span class="badge badge-info">${q2Tasks.length}</span>
           </div>
           ${renderQuadrantTasks(q2Tasks)}
         </div>
 
         <!-- Q3: Urgent & Not Important -->
-        <div class="eisenhower-quadrant eisenhower-q3">
+        <div class="eisenhower-quadrant eisenhower-q3" style="border-left:4px solid var(--amber);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <strong style="color:var(--amber);"><i class="fas fa-user-friends"></i> DELEGATE (Urgent, Not Important)</strong>
+            <strong style="color:var(--amber);display:flex;align-items:center;gap:8px;"><span class="beacon-pulse beacon-pulse-warning"></span> DELEGATE (Urgent, Not Important)</strong>
             <span class="badge badge-warning">${q3Tasks.length}</span>
           </div>
           ${renderQuadrantTasks(q3Tasks)}
         </div>
 
         <!-- Q4: Not Urgent & Not Important -->
-        <div class="eisenhower-quadrant eisenhower-q4">
+        <div class="eisenhower-quadrant eisenhower-q4" style="border-left:4px solid var(--purple);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <strong style="color:var(--text-muted);"><i class="fas fa-trash-alt"></i> ELIMINATE (Neither)</strong>
+            <strong style="color:var(--text-muted);display:flex;align-items:center;gap:8px;"><span class="beacon-pulse beacon-pulse-purple"></span> ELIMINATE (Neither)</strong>
             <span class="badge badge-neutral">${q4Tasks.length}</span>
           </div>
           ${renderQuadrantTasks(q4Tasks)}
@@ -304,25 +323,27 @@ function saveTaskForm(e) {
   };
 
   const tasks = Store.get('tasks') || [];
-  tasks.push(newTask);
+  tasks.unshift(newTask);
   Store.set('tasks', tasks);
   UI.closeModal();
 
   // Send email alert to user's registered email
-  const userEmail = Store.get('profile.email') || 'saladisiddharth@gmail.com';
-  const htmlBody = `
-    <div style="background:#070a14;border:1px solid #ec4899;border-radius:18px;padding:24px;color:#fff;font-family:sans-serif;max-width:540px;margin:0 auto;">
-      <h2 style="color:#ec4899;margin:0 0 8px 0;">⚡ BioVerse Scheduled Task Alert</h2>
-      <p style="color:#cbd5e1;font-size:14px;">A new task has been scheduled in your BioVerse productivity dashboard:</p>
-      <div style="background:#0f172a;padding:16px;border-radius:12px;margin:16px 0;border:1px solid rgba(236,72,153,0.3);">
-        <div style="font-size:18px;font-weight:700;color:#fff;">${title}</div>
-        <div style="font-size:13px;color:#00f2fe;margin-top:4px;">⏰ Due Time: ${formattedTime}</div>
-        <div style="font-size:12px;color:#fbbf24;margin-top:4px;">Priority: ${priority.toUpperCase()} (${quadrant.toUpperCase()})</div>
+  const userEmail = Store.get('profile.email') || Store.get('user.email') || '';
+  if (userEmail) {
+    const htmlBody = `
+      <div style="background:#070a14;border:1px solid #ec4899;border-radius:18px;padding:24px;color:#fff;font-family:sans-serif;max-width:540px;margin:0 auto;">
+        <h2 style="color:#ec4899;margin:0 0 8px 0;">⚡ BioVerse Scheduled Task Alert</h2>
+        <p style="color:#cbd5e1;font-size:14px;">A new task has been scheduled in your BioVerse productivity dashboard:</p>
+        <div style="background:#0f172a;padding:16px;border-radius:12px;margin:16px 0;border:1px solid rgba(236,72,153,0.3);">
+          <div style="font-size:18px;font-weight:700;color:#fff;">${title}</div>
+          <div style="font-size:13px;color:#00f2fe;margin-top:4px;">⏰ Due Time: ${formattedTime}</div>
+          <div style="font-size:12px;color:#fbbf24;margin-top:4px;">Priority: ${priority.toUpperCase()} (${quadrant.toUpperCase()})</div>
+        </div>
+        <p style="font-size:12px;color:#94a3b8;">Ensure timely completion to keep your daily execution velocity at 100%!</p>
       </div>
-      <p style="font-size:12px;color:#94a3b8;">Ensure timely completion to keep your daily execution velocity at 100%!</p>
-    </div>
-  `;
-  Store.sendEmailNotification(`⏰ New Task Scheduled: ${title} (${formattedTime})`, htmlBody, userEmail);
+    `;
+    Store.sendEmailNotification(`⏰ New Task Scheduled: ${title} (${formattedTime})`, htmlBody, userEmail);
+  }
 
   if (typeof ActionPhysics !== 'undefined') {
     ActionPhysics.quantumPortal(title);
@@ -333,6 +354,13 @@ function saveTaskForm(e) {
 
   UI.toast('success', 'Task Scheduled & Alert Sent ⚡', `Scheduled "${title}" at ${formattedTime}.`);
   Router.render();
+
+  setTimeout(() => {
+    const firstTask = document.querySelector('#todo-task-' + newTask.id + ', #task-row-' + newTask.id + ', #work-todo-section > div > div:first-child');
+    if (firstTask) {
+      firstTask.classList.add('card-entry-pop', 'highlight-pulse-cyan');
+    }
+  }, 40);
 }
 window.saveTaskForm = saveTaskForm;
 
@@ -341,7 +369,8 @@ function sendTaskPendingEmail(taskId) {
   const task = tasks.find(t => t.id === taskId);
   if (!task) return;
 
-  const userEmail = Store.get('profile.email') || 'saladisiddharth@gmail.com';
+  const userEmail = Store.get('profile.email') || Store.get('user.email') || '';
+  if (!userEmail) return;
   const htmlBody = `
     <div style="background:#070a14;border:1px solid #f59e0b;border-radius:18px;padding:24px;color:#fff;font-family:sans-serif;max-width:540px;margin:0 auto;">
       <h2 style="color:#fbbf24;margin:0 0 8px 0;">⚠️ Pending Task Reminder</h2>
@@ -354,7 +383,7 @@ function sendTaskPendingEmail(taskId) {
     </div>
   `;
   Store.sendEmailNotification(`⚠️ Task Reminder: "${task.title}" is still pending`, htmlBody, userEmail);
-  UI.toast('info', 'Reminder Dispatched', `Sent pending reminder for "${task.title}" to ${userEmail}`);
+  UI.toast('info', 'Reminder Sent', `Sent pending reminder for "${task.title}" to ${userEmail}`);
 }
 window.sendTaskPendingEmail = sendTaskPendingEmail;
 
@@ -393,6 +422,12 @@ function togglePomodoro() {
   } else {
     pomoRunning = true;
     if (btn) btn.innerHTML = '<i class="fas fa-pause"></i> Pause Focus';
+
+    // Trigger focus lab ignition animation and bell
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.focusLabIgnite(Math.round(pomoSeconds / 60) || 25);
+    }
+
     pomoInterval = setInterval(() => {
       pomoSeconds--;
       updatePomoDisplay();
@@ -439,4 +474,18 @@ function updatePomoDisplay() {
   const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   const el = document.getElementById('pomo-timer');
   if (el) el.textContent = display;
+
+  // Calculate circular stroke offset (circumference = 2 * PI * 68 ≈ 427)
+  const total = 25 * 60;
+  const progress = Math.max(0, Math.min(1, pomoSeconds / total));
+  const ring = document.getElementById('pomo-progress-ring');
+  if (ring) {
+    ring.style.strokeDashoffset = (427 * (1 - progress)).toString();
+  }
 }
+
+function initWorkAnimations() {
+  updatePomoDisplay();
+}
+window.initWorkAnimations = initWorkAnimations;
+

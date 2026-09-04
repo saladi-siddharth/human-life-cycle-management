@@ -2,11 +2,10 @@
    BIOVERSE SERVICE WORKER — Progressive Web App Caching Engine
    ═══════════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'bioverse-v3.3.0';
+const CACHE_NAME = 'bioverse-v3.4.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/continuum.html',
   '/manifest.json',
   '/css/design-system.css',
   '/css/components.css',
@@ -27,7 +26,6 @@ const STATIC_ASSETS = [
   '/js/i18n.js',
   '/js/account-aggregator.js',
   '/js/morning-brief.js',
-  '/js/continuum-bridge.js',
   '/js/ai-predictive.js',
   '/js/email.js',
   '/js/ai.js'

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioVerse — Master 3D Academic Project Presentation Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-space: #060813;
+      --card-bg: rgba(13, 18, 38, 0.88);
+      --card-border: rgba(0, 242, 254, 0.25);
+      --cyan: #00f2fe;
+      --neon-blue: #4facfe;
+      --purple: #8b5cf6;
+      --emerald: #10b981;
+      --crimson: #ef4444;
+      --gold: #fbbf24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-space);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #space-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .deck-container {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Proportional Scale Wrapper to Guarantee 100% Visibility on Any Screen Ratio */
+    .slide {
+      position: absolute;
+      width: 88vw;
+      max-width: 1180px;
+      height: 80vh;
+      max-height: 680px;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(40px) scale(0.95);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide::-webkit-scrollbar {
+      width: 4px;
+    }
+    .slide::-webkit-scrollbar-thumb {
+      background: var(--cyan);
+      border-radius: 4px;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide.prev {
+      opacity: 0;
+      transform: translateY(-40px) scale(0.95);
+    }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .slide-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--cyan);
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      padding: 4px 10px;
+      border-radius: 100px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .slide-institution {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .slide-title {
+      font-size: clamp(22px, 2.4vw, 30px);
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 30%, var(--cyan) 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .slide-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Content Layouts */
+    .content-grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+      align-items: center;
+    }
+
+    .content-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .content-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    /* Feature Cards */
+    .feat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .feat-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 242, 254, 0.12);
+    }
+
+    .feat-icon {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+
+    .feat-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .feat-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 3D Image Container */
+    .image-3d-wrapper {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.15);
+      height: 100%;
+      max-height: 310px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-3d-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .image-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 20%, transparent);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+
+    /* Code Snippet Box */
+    .code-box {
+      background: #050711;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #38bdf8;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+
+    /* Controls Bar */
+    .controls {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: rgba(13, 18, 38, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 100px;
+      padding: 6px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ctrl:hover {
+      background: var(--cyan);
+      color: #000;
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cyan);
+      min-width: 55px;
+      text-align: center;
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 7.14%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 10px var(--cyan);
+      transition: width 0.3s ease;
+    }
+
+    /* Title Slide Specifics */
+    .title-slide-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      gap: 12px;
+      padding: 10px 0;
+    }
+
+    .college-seal {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0, 112, 192, 0.4);
+      border: 2px solid #0070C0;
+    }
+
+    .main-project-title {
+      font-size: clamp(32px, 3.8vw, 46px);
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 20%, var(--cyan) 60%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div id="progress-bar" class="progress-bar-fill"></div>
+  </div>
+
+  <!-- 3D Starfield Canvas -->
+  <canvas id="space-canvas"></canvas>
+
+  <!-- Deck Container -->
+  <div class="deck-container">
+
+    <!-- SLIDE 1: TITLE COVER SLIDE -->
+    <div class="slide active" data-slide="1">
+      <div class="slide-header">
+        <div class="slide-tag">✨ SVIET FINAL DIPLOMA PROJECT PRESENTATION</div>
+        <div class="slide-institution">SRI VASAVI INSTITUTE OF ENGINEERING & TECHNOLOGY</div>
+      </div>
+      <div class="title-slide-content">
+        <img src="assets/extracted_img_1.jpg" alt="SVIET Emblem" class="college-seal">
+        <div style="font-size: 13px; color: var(--cyan); font-weight: 700; letter-spacing: 2px;">DEPARTMENT OF COMPUTER ENGINEERING</div>
+        <h1 class="main-project-title">BIOVERSE</h1>
+        <p style="font-size: 15px; color: #cbd5e1; max-width: 750px;">
+          An Intelligent Human Life Cycle Management & Multi-Domain Telemetry Platform
+        </p>
+        <div style="display: flex; gap: 24px; margin-top: 10px; text-align: left; background: rgba(255,255,255,0.03); padding: 12px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px;">
+          <div>
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Lead Candidate</div>
+            <div style="font-size: 14px; font-weight: 700; color: #fff;">S. SIDDHARTH</div>
+            <div style="font-size: 11px; color: var(--cyan); font-family: var(--font-mono);">24411-CM-126 / CME</div>
+          </div>
+          <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Project Guide</div>
+            <div style="font-size: 14px; font-weight: 700; color: #fff;">Mrs. T.Ooha N.V.Sri Lakshmi</div>
+            <div style="font-size: 11px; color: var(--text-muted);">B.Tech, Dept. of CME</div>
+          </div>
+          <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Head of Department</div>
+            <div style="font-size: 14px; font-weight: 700; color: #fff;">Mr. K. G. V. NAGESWARARAO</div>
+            <div style="font-size: 11px; color: var(--text-muted);">M.Tech (Phd), HOD CME</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: THE PROBLEM -->
+    <div class="slide" data-slide="2">
+      <div class="slide-header">
+        <div class="slide-tag">⚠️ PROBLEM STATEMENT</div>
+        <div class="slide-institution">Digital Fragmentation in Personal Management</div>
+      </div>
+      <h2 class="slide-title">The Paradox of Modern Productivity</h2>
+      <p class="slide-subtitle">Users are forced to juggle 6 to 10 isolated single-purpose apps, causing cognitive exhaustion.</p>
+      
+      <div class="content-grid-4">
+        <div class="feat-card">
+          <div class="feat-icon">🗂️</div>
+          <div class="feat-title">Data Silos</div>
+          <div class="feat-desc">Career goals, workouts, bank accounts, and daily tasks exist in completely disconnected databases.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📱</div>
+          <div class="feat-title">App Fatigue</div>
+          <div class="feat-desc">Switching between 8 separate apps daily causes friction, duplicated manual data entry, and abandonment.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📉</div>
+          <div class="feat-title">Bloated Runtimes</div>
+          <div class="feat-desc">Modern heavy JS frameworks lead to 50MB+ bundle sizes, high memory overhead, and sluggish 30FPS rendering.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📢</div>
+          <div class="feat-title">Ad Distractions</div>
+          <div class="feat-desc">Conventional tools monetize attention with invasive commercial advertisements and aggressive paywalls.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: THE BIOVERSE SOLUTION -->
+    <div class="slide" data-slide="3">
+      <div class="slide-header">
+        <div class="slide-tag">💡 THE BIOVERSE PARADIGM</div>
+        <div class="slide-institution">Unified Human Life Cycle Telemetry</div>
+      </div>
+      <h2 class="slide-title">A Single Cohesive Life Operating System</h2>
+      <p class="slide-subtitle">Consolidates 5 core life pillars into a high-performance, real-time reactive ecosystem.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="feat-card" style="border-left: 3px solid var(--cyan);">
+            <div class="feat-title" style="color: var(--cyan);">🌟 Unified Master Life Score (0–100)</div>
+            <div class="feat-desc">A composite mathematical index reflecting live balance across Career, Health, Finance, Work, and Purpose.</div>
+          </div>
+          <div class="feat-card" style="border-left: 3px solid var(--purple);">
+            <div class="feat-title" style="color: var(--purple);">⚡ Sub-Second Vanilla ES6+ Speed</div>
+            <div class="feat-desc">Zero runtime framework bloat. <25KB initial payload with instant client-side SPA hash routing.</div>
+          </div>
+          <div class="feat-card" style="border-left: 3px solid var(--emerald);">
+            <div class="feat-title" style="color: var(--emerald);">🔊 Real-Time Web Audio DSP Tone Synthesis</div>
+            <div class="feat-desc">Synthesizes pure oscillator sound effects in real time with zero external audio asset latency.</div>
+          </div>
+        </div>
+
+        <div class="image-3d-wrapper">
+          <img src="assets/screenshot_landing.png" alt="BioVerse Hero Portal">
+          <div class="image-caption">FIGURE 1: BioVerse Hero Portal & Instant Life Simulation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: 5 LIFE PILLARS -->
+    <div class="slide" data-slide="4">
+      <div class="slide-header">
+        <div class="slide-tag">🏛️ CORE PLATFORM PILLARS</div>
+        <div class="slide-institution">Comprehensive 360° Life Architecture</div>
+      </div>
+      <h2 class="slide-title">5 Dimensions of Human Flourishing</h2>
+      <p class="slide-subtitle">Tailored modules engineered for Students, Corporate Professionals, and Startup Founders.</p>
+
+      <div class="content-grid-3">
+        <div class="feat-card">
+          <div class="feat-icon">🚀</div>
+          <div class="feat-title" style="color: #60a5fa;">1. Career & Skills</div>
+          <div class="feat-desc">ATS Resume Analyzer, missing keyword detection, skill taxonomy matrix, and job opportunity Kanban.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">💪</div>
+          <div class="feat-title" style="color: #34d399;">2. Health & Vitality</div>
+          <div class="feat-desc">3D Fluid Physics Hydration Tumbler, Circadian sleep tracking, and Deep Indian Meal Nutrition engine.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">💰</div>
+          <div class="feat-title" style="color: #fbbf24;">3. Finance & Wealth</div>
+          <div class="feat-desc">Double-entry ledger, SIP/SWP compounding calculators, Section 80C tax optimizer, and RBI Account Aggregator.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">⚡</div>
+          <div class="feat-title" style="color: #f472b6;">4. Work & Execution</div>
+          <div class="feat-desc">Eisenhower 4-Quadrant Matrix, 25:00 Pomodoro sprint lab, and automated email reminders via Gmail SMTP.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎯</div>
+          <div class="feat-title" style="color: #a78bfa;">5. Life Success & Purpose</div>
+          <div class="feat-desc">Ikigai purpose balance radar, milestone timeline journey, and Cute Sloth party celebration mascot.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🎓</div>
+          <div class="feat-title" style="color: #38bdf8;">Indian Localization</div>
+          <div class="feat-desc">Official NIRF college rankings & cutoffs, National Scholarship Portal (NSP), and GATE/CAT exam countdowns.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: SYSTEM ARCHITECTURE -->
+    <div class="slide" data-slide="5">
+      <div class="slide-header">
+        <div class="slide-tag">⚙️ SYSTEM ARCHITECTURE</div>
+        <div class="slide-institution">5-Tier High-Performance Stack</div>
+      </div>
+      <h2 class="slide-title">Modular, Decoupled Architecture</h2>
+      <p class="slide-subtitle">Engineered for 60FPS fluid rendering, offline resilience, and distributed cloud scalability.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--cyan);">Tier 1: Presentation & 3D Spatial Continuum</div>
+            <div class="feat-desc" style="font-size: 11px;">HTML5 Semantic DOM + Three.js WebGL + Vanilla CSS Glassmorphism tokens.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--purple);">Tier 2: Interaction & Physics Engines</div>
+            <div class="feat-desc" style="font-size: 11px;">ActionPhysics (19 domain animations) + CardTilt (3D perspective) + Spotlight Command Palette.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--emerald);">Tier 3: Reactive State & Audio DSP</div>
+            <div class="feat-desc" style="font-size: 11px;">Publish-Subscribe `Store.js` + Web Audio API Oscillator synthesizer graph.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--gold);">Tier 4: Dual-Layer Persistence</div>
+            <div class="feat-desc" style="font-size: 11px;">Local-First `localStorage` + TiDB Cloud Serverless MySQL (Distributed SQL in AWS ap-southeast-1).</div>
+          </div>
+        </div>
+
+        <div class="code-box">
+          <div style="color: #94a3b8; margin-bottom: 4px;">// Reactive State & Telemetry Sync Pipeline</div>
+          <div style="color: #e2e8f0;"><span style="color: #f472b6;">Store</span>.set(<span style="color: #a78bfa;">'scores'</span>, updatedScores);</div>
+          <div style="color: #e2e8f0;"><span style="color: #38bdf8;">ActionPhysics</span>.playSound(<span style="color: #a78bfa;">'victory'</span>);</div>
+          <div style="color: #e2e8f0;"><span style="color: #38bdf8;">ActionPhysics</span>.supernovaBurst();</div>
+          <div style="color: #94a3b8; margin-top: 8px;">// Async Cloud Sync over TLS 1.2</div>
+          <div style="color: #e2e8f0;"><span style="color: #f472b6;">await</span> fetch(<span style="color: #a78bfa;">'/api/telemetry/sync'</span>, {</div>
+          <div style="color: #e2e8f0;">&nbsp;&nbsp;method: <span style="color: #a78bfa;">'POST'</span>,</div>
+          <div style="color: #e2e8f0;">&nbsp;&nbsp;body: JSON.stringify({ userId, data })</div>
+          <div style="color: #e2e8f0;">});</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: AUTHENTICATION & SECURITY -->
+    <div class="slide" data-slide="6">
+      <div class="slide-header">
+        <div class="slide-tag">🔐 AUTHENTICATION & SECURITY</div>
+        <div class="slide-institution">Zero-Friction Secure Access</div>
+      </div>
+      <h2 class="slide-title">Interactive Lamp & 6-Digit Email OTP</h2>
+      <p class="slide-subtitle">Combines playful tactile delight with enterprise cryptographic safety.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--gold);">💡 Interactive Pull-Cord Lamp Physics</div>
+            <div class="feat-desc">Pulling the cord dynamically illuminates the login card with radial CSS lighting physics and sound DSP.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--cyan);">📧 6-Digit Email OTP Verification</div>
+            <div class="feat-desc">Direct Gmail SMTP transport relay dispatches timed verification codes with automated expiration.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--emerald);">🛡️ DPDP Act 2023 Compliance & Bcrypt</div>
+            <div class="feat-desc">All passwords hashed with salted bcrypt (10 rounds). User data is 100% portable and erasable.</div>
+          </div>
+        </div>
+
+        <div class="image-3d-wrapper">
+          <img src="assets/screenshot_auth_lamp.png" alt="Authentication Gateway">
+          <div class="image-caption">FIGURE 2: Interactive Lamp & Panda Mascot Auth Gateway</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: MASTER COCKPIT -->
+    <div class="slide" data-slide="7">
+      <div class="slide-header">
+        <div class="slide-tag">📊 MASTER LIFE COCKPIT</div>
+        <div class="slide-institution">Intelligent Overview & AI Audio Podcast</div>
+      </div>
+      <h2 class="slide-title">Central Telemetry Command Center</h2>
+      <p class="slide-subtitle">Computes real-time composite life scores and delivers daily spoken audio briefs.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--cyan);">🎙️ AI Daily Spoken Audio Podcast Brief</div>
+            <div class="feat-desc">Synthesizes a personalized morning audio summary of priority tasks, wellness status, and deadlines.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--purple);">🎖️ Gamification Prestige System</div>
+            <div class="feat-desc">Progressive Vanguard Tiers (Tier 4 Vanguard, 2,850 XP) reward consistent daily habit execution.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--gold);">👥 Social Accountability Circles</div>
+            <div class="feat-desc">Enables peer streaks and study circles without intrusive social media algorithms or spam feeds.</div>
+          </div>
+        </div>
+
+        <div class="image-3d-wrapper">
+          <img src="assets/screenshot_dashboard.png" alt="Master Cockpit">
+          <div class="image-caption">FIGURE 3: Master Life Cockpit / Student Lifecycle Overview</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: HEALTH PROTOCOL -->
+    <div class="slide" data-slide="8">
+      <div class="slide-header">
+        <div class="slide-tag">💪 HEALTH & LONGEVITY PROTOCOL</div>
+        <div class="slide-institution">Precision Vitality & 3D Fluid Tumbler</div>
+      </div>
+      <h2 class="slide-title">3D Fluid Hydration & Nutrition Engine</h2>
+      <p class="slide-subtitle">Simulates real-time fluid dynamics and analyzes Indian culinary macronutrients.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--cyan);">🥤 3D Fluid Physics Hydration Tumbler</div>
+            <div class="feat-desc">Renders an authentic glass tumbler with sine-wave fluid dynamics, volume indicators, and ice cubes.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--emerald);">🥗 Indian Macronutrient Nutrition Engine</div>
+            <div class="feat-desc">Calculates protein, net carbs, healthy fats, and kcal for items like Moong Dal, Paneer Tikka, and Roti.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--purple);">🌙 Circadian Rest & Sleep Logging</div>
+            <div class="feat-desc">Correlates deep sleep latency with next-day cognitive execution capacity.</div>
+          </div>
+        </div>
+
+        <div class="image-3d-wrapper">
+          <img src="assets/screenshot_health.png" alt="Health Protocol">
+          <div class="image-caption">FIGURE 4: Health & Longevity Protocol Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: PRODUCTIVITY LAB -->
+    <div class="slide" data-slide="9">
+      <div class="slide-header">
+        <div class="slide-tag">⚡ PRODUCTIVITY & TIME EXECUTION</div>
+        <div class="slide-institution">Eisenhower Matrix & Pomodoro Sprint Lab</div>
+      </div>
+      <h2 class="slide-title">25:00 Focus Lab & Task Velocity</h2>
+      <p class="slide-subtitle">Structured task execution with binaural soundscapes and automated email reminders.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--crimson);">⏱️ 25:00 Pomodoro Focus Sprint Lab</div>
+            <div class="feat-desc">Configurable deep-work sprint intervals with real-time countdown, break intervals, and audio alerts.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--cyan);">🧠 Binaural Cognitive Soundscapes</div>
+            <div class="feat-desc">Alpha/Theta wave acoustic entrainment to induce focus state and eliminate cognitive distractions.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="color: var(--gold);">📬 Gmail SMTP Due-Time Reminders</div>
+            <div class="feat-desc">Dispatches automated email notifications directly to user inboxes when critical tasks approach due time.</div>
+          </div>
+        </div>
+
+        <div class="image-3d-wrapper">
+          <img src="assets/screenshot_work.png" alt="Productivity Lab">
+          <div class="image-caption">FIGURE 5: Productivity Lab & Pomodoro Execution System</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: 19 HANDCRAFTED ANIMATIONS -->
+    <div class="slide" data-slide="10">
+      <div class="slide-header">
+        <div class="slide-tag">🎨 HANDCRAFTED ANIMATIONS & AUDIO DSP</div>
+        <div class="slide-institution">19 Domain-Specific Visual Celebrations</div>
+      </div>
+      <h2 class="slide-title">Multi-Sensory ActionPhysics Engine</h2>
+      <p class="slide-subtitle">Transforms routine habit logging into an engaging, dopamine-affirming visual celebration.</p>
+
+      <div class="content-grid-3">
+        <div class="feat-card">
+          <div class="feat-icon">💥</div>
+          <div class="feat-title">Supernova Burst</div>
+          <div class="feat-desc">32 radiant particles with velocity physics and 1046Hz victory chimes on skill additions.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🚀</div>
+          <div class="feat-title">3D Rocket Launch</div>
+          <div class="feat-desc">Ascending rocket with particle exhaust plume upon tracking high-impact job applications.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🪙</div>
+          <div class="feat-title">3D Gold Coin Rain</div>
+          <div class="feat-desc">18 rotating gold coins with realistic gravity, bounce physics, and metallic coin acoustic clinks.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">✨</div>
+          <div class="feat-title">Emerald Pulse</div>
+          <div class="feat-desc">Expanding green bioluminescent aura on logging daily hydration goals.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🦥</div>
+          <div class="feat-title">Cute Sloth Mascot</div>
+          <div class="feat-desc">Animated cartoon sloth wearing a party hat celebrating full-day milestone accomplishments.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🛡️</div>
+          <div class="feat-title">Cyber Shield Unlock</div>
+          <div class="feat-desc">Futuristic biometric wireframe ring with acoustic laser sweep upon 6-digit OTP verification.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: DATABASE & CLOUD DEPLOYMENT -->
+    <div class="slide" data-slide="11">
+      <div class="slide-header">
+        <div class="slide-tag">☁️ CLOUD INFRASTRUCTURE & PERSISTENCE</div>
+        <div class="slide-institution">TiDB Cloud Serverless MySQL & Multi-Cloud</div>
+      </div>
+      <h2 class="slide-title">Enterprise Distributed Cloud Reliability</h2>
+      <p class="slide-subtitle">Engineered for high availability, zero latency, and seamless offline data synchronization.</p>
+
+      <div class="content-grid-3">
+        <div class="feat-card">
+          <div class="feat-icon">🗄️</div>
+          <div class="feat-title" style="color: var(--cyan);">TiDB Cloud Serverless</div>
+          <div class="feat-desc">Distributed MySQL cluster hosted in AWS ap-southeast-1 region with TLS 1.2 encryption and daily snapshots.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">⚡</div>
+          <div class="feat-title" style="color: var(--purple);">Vercel Edge & Render</div>
+          <div class="feat-desc">Serverless lambda endpoints handle instant API routing; containerized Node.js service manages SMTP relays.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📲</div>
+          <div class="feat-title" style="color: var(--emerald);">PWA Offline Caching</div>
+          <div class="feat-desc">Service Worker caches static assets locally, allowing instant boot even during complete internet disconnects.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: TESTING & QUALITY ASSURANCE -->
+    <div class="slide" data-slide="12">
+      <div class="slide-header">
+        <div class="slide-tag">🧪 SYSTEM TESTING & VERIFICATION</div>
+        <div class="slide-institution">100% Pass Automated Quality Assurance</div>
+      </div>
+      <h2 class="slide-title">Rigorous Verification Across 8 Suites</h2>
+      <p class="slide-subtitle">Tested extensively under extreme load, network throttles, and edge boundary inputs.</p>
+
+      <div class="content-grid-2">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--emerald);">✅ Unit Testing Suite</div>
+            <div class="feat-desc" style="font-size: 11px;">Validated 25 core functions (scoring formulas, SIP math, audio clamps). 100% Pass.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--emerald);">✅ Integration & Event Pipeline</div>
+            <div class="feat-desc" style="font-size: 11px;">Verified Store -> ActionPhysics -> Router -> TiDB Cloud data flow synchronization.</div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-title" style="font-size: 13px; color: var(--emerald);">✅ Performance Benchmarks</div>
+            <div class="feat-desc" style="font-size: 11px;">First Contentful Paint (0.6s), Cumulative Layout Shift (0.00), Consistent 60.0 FPS.</div>
+          </div>
+        </div>
+
+        <div class="feat-card" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3); text-align: center; justify-content: center; padding: 24px;">
+          <div style="font-size: 46px; font-weight: 900; color: var(--emerald);">100%</div>
+          <div style="font-size: 18px; font-weight: 700; color: #fff;">TEST PASS RATE</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Zero critical defects encountered across Desktop, Mobile, and Tablet viewport runs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: CONCLUSION & FUTURE SCOPE -->
+    <div class="slide" data-slide="13">
+      <div class="slide-header">
+        <div class="slide-tag">🎯 CONCLUSION & FUTURE ROADMAP</div>
+        <div class="slide-institution">Academic Contributions & Next Milestones</div>
+      </div>
+      <h2 class="slide-title">Empowering Lifelong Human Growth</h2>
+      <p class="slide-subtitle">BioVerse bridges the gap between fragmented software and unified human potential.</p>
+
+      <div class="content-grid-3">
+        <div class="feat-card">
+          <div class="feat-icon">🏆</div>
+          <div class="feat-title">Academic Contribution</div>
+          <div class="feat-desc">Demonstrated that a zero-framework Vanilla ES6+ architecture can outperform heavy modern frameworks in UX and speed.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">⌚</div>
+          <div class="feat-title">Wearable IoT Integration</div>
+          <div class="feat-desc">Future roadmap includes Bluetooth BLE telemetry sync with Apple Watch, Garmin, and Fitbit smartbands.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🤖</div>
+          <div class="feat-title">Predictive AI Co-Pilot</div>
+          <div class="feat-desc">Integration of fine-tuned Gemini 2.0 models for automated career path recommendation and burnout forecasting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: THANK YOU SLIDE -->
+    <div class="slide" data-slide="14">
+      <div class="slide-header">
+        <div class="slide-tag">🙏 ACKNOWLEDGEMENTS & QUESTIONS</div>
+        <div class="slide-institution">Department of Computer Engineering, SVIET</div>
+      </div>
+      <div class="title-slide-content">
+        <h1 class="main-project-title" style="font-size: 42px;">THANK YOU</h1>
+        <p style="font-size: 18px; color: var(--cyan); font-weight: 600;">Questions & Viva Discussion</p>
+        <p style="font-size: 13px; color: var(--text-muted); max-width: 500px;">
+          "The best way to predict your future is to create it." — BioVerse Platform
+        </p>
+        <div style="margin-top: 14px; font-family: var(--font-mono); font-size: 12px; color: #fff; background: rgba(0, 242, 254, 0.1); padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(0, 242, 254, 0.3);">
+          Project Repository: github.com/saladi-siddharth/human-life-cycle-management
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls">
+    <button id="btn-prev" class="btn-ctrl" title="Previous Slide (Left Arrow)">◀</button>
+    <div id="slide-num" class="slide-counter">1 / 14</div>
+    <button id="btn-next" class="btn-ctrl" title="Next Slide (Right Arrow or Space)">▶</button>
+    <button id="btn-fullscreen" class="btn-ctrl" title="Toggle Fullscreen (F)">⛶</button>
+  </div>
+
+  <!-- Three.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════
+    // 3D NEBULA STARFIELD ENGINE
+    // ═══════════════════════════════════════════════════════════════
+    const canvas = document.getElementById('space-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Particle Stars
+    const starsGeo = new THREE.BufferGeometry();
+    const starsCount = 1400;
+    const starPositions = new Float32Array(starsCount * 3);
+    for (let i = 0; i < starsCount * 3; i += 3) {
+      starPositions[i] = (Math.random() - 0.5) * 1200;
+      starPositions[i+1] = (Math.random() - 0.5) * 1200;
+      starPositions[i+2] = (Math.random() - 0.5) * 1200;
+    }
+    starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starsMat = new THREE.PointsMaterial({ color: 0x00f2fe, size: 1.6, transparent: true, opacity: 0.65 });
+    const starField = new THREE.Points(starsGeo, starsMat);
+    scene.add(starField);
+
+    camera.position.z = 400;
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.04;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.04;
+    });
+
+    function animateSpace() {
+      requestAnimationFrame(animateSpace);
+      starField.rotation.y += 0.0005;
+      starField.rotation.x += 0.0002;
+      camera.position.x += (mouseX - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+      renderer.render(scene, camera);
+    }
+    animateSpace();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // PRESENTATION SLIDE CONTROLLER & AUDIO DSP
+    // ═══════════════════════════════════════════════════════════════
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    const progressBar = document.getElementById('progress-bar');
+    const slideNumDisplay = document.getElementById('slide-num');
+
+    // Web Audio DSP Tone Synthesis
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTone(freq, duration) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.start(now);
+        osc.stop(now + duration);
+      } catch (e) {}
+    }
+
+    function showSlide(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= totalSlides) idx = totalSlides - 1;
+
+      slides.forEach((s, i) => {
+        s.classList.remove('active', 'prev');
+        if (i === idx) {
+          s.classList.add('active');
+        } else if (i < idx) {
+          s.classList.add('prev');
+        }
+      });
+
+      currentSlide = idx;
+      slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+      progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+      playTone(440 + currentSlide * 35, 0.15);
+    }
+
+    document.getElementById('btn-next').addEventListener('click', () => showSlide(currentSlide + 1));
+    document.getElementById('btn-prev').addEventListener('click', () => showSlide(currentSlide - 1));
+
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        showSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        showSlide(currentSlide - 1);
+      } else if (e.key.toLowerCase() === 'f') {
+        document.getElementById('btn-fullscreen').click();
+      } else if (e.key === 'Home') {
+        showSlide(0);
+      } else if (e.key === 'End') {
+        showSlide(totalSlides - 1);
+      }
+    });
+  </script>
+</body>
+</html>

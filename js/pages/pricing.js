@@ -61,7 +61,7 @@ function PricingPage() {
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Camera Meal Nutrition Scanner</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Client-Side PDF Life Audit Export</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> All-India College NIRF Telemetry</div>
-                <div class="feature-row disabled"><i class="fas fa-times text-muted"></i> 3D Spatial Pavilion Continuum</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Daily Health & Micro-Nutrient Tracker</div>
               </div>
               <button class="btn btn-primary btn-full" onclick="BillingEngine.openCheckout('pro', document.getElementById('billing-toggle')?.checked ? 'annual' : 'monthly')">
                 <i class="fas fa-bolt"></i> Upgrade to Pro (₹299)
@@ -79,7 +79,7 @@ function PricingPage() {
               </div>
               <div class="pricing-features">
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Everything in Pro</div>
-                <div class="feature-row"><i class="fas fa-check text-emerald"></i> 3D Spatial Pavilion Continuum</div>
+                <div class="feature-row"><i class="fas fa-check text-emerald"></i> Executive Wealth & Milestone Planning</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Indian Tax Regime Optimizer (Old vs New)</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Peer Accountability Pod Leadership</div>
                 <div class="feature-row"><i class="fas fa-check text-emerald"></i> Automated Daily Web Push Affirmations</div>

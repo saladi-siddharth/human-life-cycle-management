@@ -67,7 +67,7 @@ function SettingsPage() {
             <span class="badge badge-success"><i class="fas fa-check-circle"></i> Connected & Active</span>
           </div>
           <p style="font-size:var(--text-xs);color:var(--text-secondary);margin-bottom:14px;">
-            All reactive life metrics, double-entry financial ledgers, health logs, task matrices, and profile data for <strong>${Store.get('profile.name') || 'Saladi Siddharth'}</strong> are automatically synchronized to TiDB Cloud over TLS 1.2 SSL.
+            All reactive life metrics, double-entry financial ledgers, health logs, task matrices, and profile data for <strong>${Store.get('profile.name') || 'User'}</strong> are automatically synchronized to TiDB Cloud over TLS 1.2 SSL.
           </p>
 
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;font-size:12px;">
@@ -198,10 +198,11 @@ function handleJSONImport(e) {
 }
 
 function forceTiDBSync() {
-  UI.toast('info', 'Syncing Database...', 'Sending Rohan Sharma state to TiDB Cloud Serverless MySQL...');
+  const userName = Store.get('profile.name') || 'User';
+  UI.toast('info', 'Syncing Database...', `Sending ${userName} state to TiDB Cloud Serverless MySQL...`);
   Store.syncWithBackend();
   setTimeout(() => {
-    UI.toast('success', '⚡ TiDB Cloud Synced!', 'All life metrics, tasks, and ledgers for Rohan Sharma persisted in TiDB Cloud database!');
+    UI.toast('success', '⚡ TiDB Cloud Synced!', `All life metrics, tasks, and ledgers for ${userName} persisted in TiDB Cloud database!`);
   }, 500);
 }
 

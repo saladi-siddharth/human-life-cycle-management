@@ -300,17 +300,20 @@ function HealthPage() {
         </div>
 
         <!-- WebGL / Canvas Particle Energy Sphere & Target Header -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:14px; background:rgba(15,23,42,0.6); padding:14px 18px; border-radius:14px; border:1px solid rgba(255,255,255,0.06);">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <canvas id="metabolic-canvas" width="60" height="60" style="border-radius:50%; background:radial-gradient(circle, rgba(16,185,129,0.3) 0%, rgba(0,0,0,0) 70%);"></canvas>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:14px; background:rgba(15,23,42,0.85); padding:16px 20px; border-radius:16px; border:1px solid rgba(16,185,129,0.3); box-shadow:0 0 25px rgba(16,185,129,0.1);">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <canvas id="metabolic-canvas" width="80" height="80" style="border-radius:50%; background:radial-gradient(circle, rgba(16,185,129,0.25) 0%, rgba(0,0,0,0) 70%); filter:drop-shadow(0 0 10px rgba(16,185,129,0.5));"></canvas>
             <div>
-              <div style="font-size:14px; font-weight:800; color:#fff;" id="diet-target-header">Target: 2,300 kcal/day (Pure Vegetarian Sattvic Protocol)</div>
-              <div style="font-size:12px; color:var(--text-muted);" id="diet-target-macros">149g Protein • 260g Net Carbs • 42g Prebiotic Fiber • 68g Healthy Fats</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="beacon-pulse beacon-pulse-success"></span>
+                <div style="font-size:14.5px; font-weight:800; color:#fff;" id="diet-target-header">Target: 2,300 kcal/day (Pure Vegetarian Sattvic Protocol)</div>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;" id="diet-target-macros">149g Protein • 260g Net Carbs • 42g Prebiotic Fiber • 68g Healthy Fats</div>
             </div>
           </div>
           <div style="display:flex; gap:6px;" id="diet-day-tabs">
             ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => `
-              <button class="btn ${idx === 0 ? 'btn-primary' : 'btn-ghost'} btn-sm" style="padding:4px 10px; font-size:11.5px; border-radius:8px;" onclick="switchDietDay(${idx})">${day}</button>
+              <button class="btn ${idx === 0 ? 'btn-primary' : 'btn-ghost'} btn-sm" style="padding:5px 12px; font-size:11.5px; border-radius:8px;" onclick="switchDietDay(${idx})">${day}</button>
             `).join('')}
           </div>
         </div>
@@ -321,41 +324,180 @@ function HealthPage() {
         </div>
       </div>
 
+      <!-- 2-Column Grid: Recent Workouts & Circadian Sleep Logs -->
+      <div class="grid grid-2" style="gap:24px; margin-top:24px;">
+        
+        <!-- 1. Recent Workouts -->
+        <div class="card card-glass">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h3 style="margin:0; font-size:16.5px; display:flex; align-items:center; gap:8px;">
+              <i class="fas fa-dumbbell" style="color:var(--emerald);"></i> Recent Workout Sessions (${workoutLogs.length})
+            </h3>
+            <button class="btn btn-primary btn-sm" onclick="openWorkoutModal()"><i class="fas fa-plus"></i> Log Workout</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:280px; overflow-y:auto; padding-right:4px;">
+            ${workoutLogs.length ? workoutLogs.map(w => `
+              <div id="wo-row-${w.id}" class="card-glass" style="padding:12px 14px; border-radius:12px; background:rgba(15,23,42,0.85); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; font-size:13.5px; color:#fff; display:flex; align-items:center; gap:6px;">
+                    <span>${w.type || 'Workout'}</span>
+                    <span class="badge badge-success" style="font-size:10px;">${w.duration || 45} mins</span>
+                  </div>
+                  <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                    ${w.muscle ? `Focus: <strong>${w.muscle}</strong> • ` : ''}${w.intensity ? `Intensity: ${w.intensity} • ` : ''}${w.date || 'Today'}
+                  </div>
+                </div>
+                <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteWorkoutItem('${w.id}')" data-tooltip="Delete Log" style="color:var(--rose);">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:12.5px; padding:12px 0;">No workouts logged yet. Click "Log Workout" above!</p>'}
+          </div>
+        </div>
+
+        <!-- 2. Circadian Sleep Logs -->
+        <div class="card card-glass">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h3 style="margin:0; font-size:16.5px; display:flex; align-items:center; gap:8px;">
+              <i class="fas fa-moon" style="color:var(--purple);"></i> Circadian Sleep Logs (${sleepLogs.length})
+            </h3>
+            <button class="btn btn-outline btn-sm" onclick="openSleepModal()"><i class="fas fa-bed"></i> Log Sleep</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:280px; overflow-y:auto; padding-right:4px;">
+            ${sleepLogs.length ? sleepLogs.map(s => `
+              <div id="sl-row-${s.id}" class="card-glass" style="padding:12px 14px; border-radius:12px; background:rgba(15,23,42,0.85); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; font-size:13.5px; color:#fff; display:flex; align-items:center; gap:6px;">
+                    <span>🌙 ${s.hours || 8} Hours Sleep</span>
+                    ${s.quality ? `<span class="badge badge-primary" style="font-size:10px;">★ ${s.quality}/5 Quality</span>` : ''}
+                  </div>
+                  <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                    ${s.mood ? `Morning Mood: <strong>${s.mood}</strong> • ` : ''}${s.date ? s.date.split('T')[0] : 'Today'}
+                  </div>
+                </div>
+                <button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSleepItem('${s.id}')" data-tooltip="Delete Log" style="color:var(--rose);">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:12.5px; padding:12px 0;">No sleep logs recorded yet. Click "Log Sleep" above!</p>'}
+          </div>
+        </div>
+
+      </div>
+
     </div>
   `;
 
   return UI.dashboardLayout('/dashboard/health', content);
 }
 
-// ─── WEBGL / CANVAS METABOLIC SHADER ORB ─────────────────────
+function deleteWorkoutItem(id) {
+  Store.deleteWorkoutLog(id);
+  UI.toast('info', 'Log Removed', 'Workout session removed.');
+  Router.render();
+}
+window.deleteWorkoutItem = deleteWorkoutItem;
+
+function deleteSleepItem(id) {
+  Store.deleteSleepLog(id);
+  UI.toast('info', 'Log Removed', 'Circadian sleep log removed.');
+  Router.render();
+}
+window.deleteSleepItem = deleteSleepItem;
+
+// ─── WEBGL / CANVAS METABOLIC SHADER ORB & BIOMETRIC ECG PULSE ───
+function initHealthAnimations() {
+  initMetabolicCanvas();
+}
+window.initHealthAnimations = initHealthAnimations;
+
 function initMetabolicCanvas() {
   const canvas = document.getElementById('metabolic-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 80 * dpr;
+  canvas.height = 80 * dpr;
+  ctx.scale(dpr, dpr);
+
   let angle = 0;
+  let ecgPhase = 0;
+
+  // Cellular vitality floating particles
+  const particles = [];
+  for (let i = 0; i < 12; i++) {
+    particles.push({
+      x: 40 + (Math.random() * 20 - 10),
+      y: 40 + (Math.random() * 20 - 10),
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: -0.3 - Math.random() * 0.5,
+      size: 1.5 + Math.random() * 1.5,
+      alpha: Math.random(),
+      color: i % 2 === 0 ? '#10b981' : '#00f2fe'
+    });
+  }
 
   function renderSphere() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+    if (!document.getElementById('metabolic-canvas')) return;
+    ctx.clearRect(0, 0, 80, 80);
+    const cx = 40;
+    const cy = 40;
     
-    // Draw animated rotating glowing rings
-    for (let r = 12; r <= 24; r += 6) {
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, r, r * 0.6, angle * (r / 10), 0, Math.PI * 2);
-      ctx.strokeStyle = r === 12 ? 'rgba(0, 242, 254, 0.85)' : r === 18 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(99, 102, 241, 0.5)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
+    // Draw animated rotating glowing gyroscopic rings
+    const ringColors = [
+      'rgba(0, 242, 254, 0.85)',
+      'rgba(16, 185, 129, 0.8)',
+      'rgba(251, 191, 36, 0.65)'
+    ];
 
+    [16, 24, 32].forEach((r, idx) => {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, r, r * 0.55, angle * (idx === 1 ? -1 : 1) + (idx * Math.PI / 3), 0, Math.PI * 2);
+      ctx.strokeStyle = ringColors[idx];
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = ringColors[idx];
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    });
+
+    // Floating cellular particles
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.015;
+      if (p.alpha <= 0 || p.y < 10) {
+        p.x = cx + (Math.random() * 16 - 8);
+        p.y = cy + (Math.random() * 16 - 8);
+        p.alpha = 0.8 + Math.random() * 0.2;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+    });
+
+    // Pulsing Glowing Core
+    const pulseScale = 1 + Math.sin(angle * 3) * 0.15;
     ctx.beginPath();
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 7 * pulseScale, 0, Math.PI * 2);
     ctx.fillStyle = '#10b981';
     ctx.shadowColor = '#10b981';
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 16;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Center spark
+    ctx.beginPath();
+    ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
     ctx.fill();
 
-    angle += 0.045;
+    angle += 0.035;
     requestAnimationFrame(renderSphere);
   }
   requestAnimationFrame(renderSphere);
@@ -581,7 +723,16 @@ function generateCustomDietPlan() {
   if (macros) macros.textContent = `${proteinTarget} • Customized for ${age}yo ${gender} (${activity} Lifestyle)`;
 
   const container = document.getElementById('diet-plan-content');
-  if (container) container.innerHTML = renderPrecisionDietDay(0, currentDietPref, currentDietGoal);
+  if (container) {
+    container.innerHTML = renderPrecisionDietDay(0, currentDietPref, currentDietGoal);
+    container.classList.remove('anim-fade-up');
+    void container.offsetWidth; // trigger reflow
+    container.classList.add('anim-fade-up');
+  }
+
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.dietPlanSynthesis(pref, calories);
+  }
 
   UI.toast('success', 'Diet Plan Generated! 🥗', `Generated personalized 7-day ${pref} plan matching your exact biometrics.`);
 }
@@ -611,22 +762,30 @@ function submitDailySleepCheckIn() {
   healthData.lastMoodDate = todayStr;
   Store.set('health', healthData);
 
-  // Background automated email dispatch (no UI triggers)
-  const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
-  const userName = Store.get('profile.name') || 'Member';
-  EmailService.sendHabitLogEmail({
-    userEmail,
-    userName,
-    habitType: 'Sleep & Recovery',
-    value: `${hours} Hours`,
-    target: '8.0 Hours',
-    details: `Quality: ${quality}/5 Stars • Mood: ${mood}`,
-    allHealthStats: {
-      water: healthData.waterIntake || 2000,
-      sleep: hours,
-      workout: 45
-    }
-  });
+  // Background automated email dispatch (Safe Try-Catch)
+  try {
+    const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
+    const userName = Store.get('profile.name') || 'Member';
+    EmailService.sendHabitLogEmail({
+      userEmail,
+      userName,
+      habitType: 'Sleep & Recovery',
+      value: `${hours} Hours`,
+      target: '8.0 Hours',
+      details: `Quality: ${quality}/5 Stars • Mood: ${mood}`,
+      allHealthStats: {
+        water: healthData.waterIntake || 2000,
+        sleep: hours,
+        workout: 45
+      }
+    });
+  } catch (err) {
+    console.warn('Email notice:', err);
+  }
+
+  if (typeof ActionPhysics !== 'undefined') {
+    ActionPhysics.moonSleep(Number(hours));
+  }
 
   UI.toast('success', 'Daily Recovery Logged! 😴', `Recorded ${hours}h sleep for today.`);
   Router.render();
@@ -780,43 +939,57 @@ function saveWorkoutForm(e) {
 
   const healthData = Store.get('health') || {};
   if (!healthData.workoutLogs) healthData.workoutLogs = [];
-  healthData.workoutLogs.unshift({
+  const newWorkout = {
     id: 'wo_' + Date.now(),
     type,
     duration: Number(dur),
     muscle,
     intensity,
     date: new Date().toISOString().split('T')[0]
-  });
+  };
+  healthData.workoutLogs.unshift(newWorkout);
   Store.set('health', healthData);
 
-  // Background automated email dispatch
-  const userEmail = Store.get('profile.email') || 'saladisiddharath@gmail.com';
-  const userName = Store.get('profile.name') || 'Member';
-  EmailService.sendHabitLogEmail({
-    userEmail,
-    userName,
-    habitType: 'Physical Workout',
-    value: `${dur} Minutes`,
-    target: '45 Minutes Daily',
-    details: `${type} (${intensity} Intensity • ${muscle})`,
-    allHealthStats: {
-      water: healthData.waterIntake || 2000,
-      sleep: healthData.sleepLogs?.[0]?.hours || 7.5,
-      workout: dur
+  // Background automated email dispatch (Safe Try-Catch)
+  try {
+    const userEmail = Store.get('profile.email') || Store.get('user.email') || '';
+    const userName = Store.get('profile.name') || 'Member';
+    if (userEmail) {
+      EmailService.sendHabitLogEmail({
+        userEmail,
+        userName,
+        habitType: 'Physical Workout',
+        value: `${dur} Minutes`,
+        target: '45 Minutes Daily',
+        details: `${type} (${intensity} Intensity • ${muscle})`,
+        allHealthStats: {
+          water: healthData.waterIntake || 2000,
+          sleep: healthData.sleepLogs?.[0]?.hours || 7.5,
+          workout: dur
+        }
+      });
     }
-  });
+  } catch (err) {
+    console.warn('Email notice:', err);
+  }
 
   UI.closeModal();
   if (typeof ActionPhysics !== 'undefined') {
-    ActionPhysics.dumbbellFlex(type);
-    ActionPhysics.emeraldPulse(`💪 ${dur}m ${type}`);
+    ActionPhysics.dumbbellFlex(type, dur, muscle);
   }
   if (typeof GamificationEngine !== 'undefined') {
     GamificationEngine.awardXP(25, 'Completed Daily Physical Training');
   }
   UI.toast('success', 'Workout Logged! 🔥', `Recorded ${dur} mins of ${type} (${muscle}).`);
   Router.render();
+
+  setTimeout(() => {
+    const firstWorkout = document.querySelector('#wo-row-' + newWorkout.id + ', [id^="wo-row-"]');
+    if (firstWorkout) {
+      firstWorkout.classList.add('card-entry-pop', 'highlight-pulse-emerald');
+      firstWorkout.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 40);
 }
 window.saveWorkoutForm = saveWorkoutForm;
 

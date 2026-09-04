@@ -105,9 +105,39 @@ try {
     });
   }
 
-  console.log('⚡ Connected to TiDB Cloud Database Pool!');
+  console.log('⚡ Initializing TiDB Cloud Database Pool...');
 } catch (err) {
   console.error('❌ Failed to initialize TiDB Pool:', err.message);
+}
+
+// ─── Safe TiDB Query Wrapper with Rapid Timeout & Fallback ────────────
+async function safeDbQuery(sql, params = [], timeoutMs = 1500) {
+  if (!dbPool) throw new Error('TiDB Database pool is not active');
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        reject(new Error(`TiDB query timed out after ${timeoutMs}ms (using local fallback)`));
+      }
+    }, timeoutMs);
+
+    dbPool.query(sql, params)
+      .then(res => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          resolve(res);
+        }
+      })
+      .catch(err => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          reject(err);
+        }
+      });
+  });
 }
 
 // Keep standard input and event loop anchored
@@ -115,11 +145,11 @@ if (process.stdin.isTTY) {
   try { process.stdin.resume(); } catch (e) {}
 }
 
-// Auto Initialize Tables
+// Auto Initialize Tables (Non-blocking with timeouts)
 async function initTables() {
   if (!dbPool) return;
   try {
-    await dbPool.query(`
+    await safeDbQuery(`
       CREATE TABLE IF NOT EXISTS bv_users (
         id VARCHAR(64) PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -129,23 +159,22 @@ async function initTables() {
         unsubscribed TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    `);
+    `, [], 2000);
 
-    // Ensure column exists if table was previously created
     try {
-      await dbPool.query(`ALTER TABLE bv_users ADD COLUMN IF NOT EXISTS unsubscribed TINYINT(1) DEFAULT 0;`);
+      await safeDbQuery(`ALTER TABLE bv_users ADD COLUMN IF NOT EXISTS unsubscribed TINYINT(1) DEFAULT 0;`, [], 1500);
     } catch (e) {}
 
-    await dbPool.query(`
+    await safeDbQuery(`
       CREATE TABLE IF NOT EXISTS bv_state (
         id VARCHAR(64) PRIMARY KEY,
         user_id VARCHAR(64) DEFAULT 'default_user',
         state_json LONGTEXT NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    `);
+    `, [], 2000);
 
-    await dbPool.query(`
+    await safeDbQuery(`
       CREATE TABLE IF NOT EXISTS bv_tasks (
         id VARCHAR(64) PRIMARY KEY,
         user_id VARCHAR(64),
@@ -157,9 +186,9 @@ async function initTables() {
         due_date VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    `);
+    `, [], 2000);
 
-    await dbPool.query(`
+    await safeDbQuery(`
       CREATE TABLE IF NOT EXISTS bv_life_goals (
         id VARCHAR(64) PRIMARY KEY,
         user_id VARCHAR(64),
@@ -170,9 +199,9 @@ async function initTables() {
         progress INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    `);
+    `, [], 2000);
 
-    await dbPool.query(`
+    await safeDbQuery(`
       CREATE TABLE IF NOT EXISTS bv_transactions (
         id VARCHAR(64) PRIMARY KEY,
         user_id VARCHAR(64),
@@ -183,11 +212,11 @@ async function initTables() {
         note TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    `);
+    `, [], 2000);
 
     console.log('✅ TiDB Cloud Database Tables Verified!');
   } catch (err) {
-    console.error('⚠️ Warning initializing TiDB tables (Using Local File DB Fallback):', err.message);
+    console.log('ℹ️ TiDB Cloud currently offline or firewalled. Seamlessly using Local Disk DB Engine:', err.message);
   }
 }
 
@@ -311,7 +340,7 @@ const server = http.createServer(async (req, res) => {
 
     if (dbPool) {
       try {
-        const [rows] = await dbPool.query('SELECT NOW() as now, VERSION() as ver');
+        const [rows] = await safeDbQuery('SELECT NOW() as now, VERSION() as ver', [], 1500);
         dbStatus = 'online';
         tidbInfo = { serverTime: rows[0].now, tidbVersion: rows[0].ver };
       } catch (err) {
@@ -334,8 +363,8 @@ const server = http.createServer(async (req, res) => {
     let state = null;
     if (dbPool) {
       try {
-        const [rows] = await dbPool.query('SELECT state_json FROM bv_state WHERE id = ?', ['global_state']);
-        if (rows.length > 0) {
+        const [rows] = await safeDbQuery('SELECT state_json FROM bv_state WHERE id = ?', ['global_state'], 1500);
+        if (rows && rows.length > 0) {
           state = JSON.parse(rows[0].state_json);
         }
       } catch (err) {}
@@ -362,9 +391,10 @@ const server = http.createServer(async (req, res) => {
         let syncedToTiDB = false;
         if (dbPool) {
           try {
-            await dbPool.query(
+            await safeDbQuery(
               'INSERT INTO bv_state (id, state_json) VALUES (?, ?) ON DUPLICATE KEY UPDATE state_json = VALUES(state_json)',
-              ['global_state', stateStr]
+              ['global_state', stateStr],
+              1500
             );
             syncedToTiDB = true;
           } catch (err) {}
@@ -498,7 +528,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const payload = JSON.parse(rawBody || '{}');
         const recipient = payload.email || EMAIL_USER;
-        const name = payload.name || 'Saladi Siddharth';
+        const name = payload.name || (recipient ? recipient.split('@')[0] : 'BioVerse User');
         const scores = payload.scores || { life: 78, career: 75, health: 82, finance: 70, work: 80 };
 
           const appBaseUrl = process.env.APP_URL || (req.headers.host && !req.headers.host.includes('localhost') ? `https://${req.headers.host}` : 'https://bioverse.vercel.app');
@@ -511,7 +541,7 @@ const server = http.createServer(async (req, res) => {
             <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Career Matrix:</strong> <span style="color:#6366f1;">${scores.career}/100</span></div>
             <div style="background:#1e293b;padding:10px;border-radius:8px;"><strong>Finance & SIP:</strong> <span style="color:#fbbf24;">${scores.finance}/100</span></div>
           </div>
-          <p style="font-size:12px;color:#94a3b8;">Keep up the streak! Log in to your <a href="${appBaseUrl}/#dashboard" style="color:#00f2fe;">BioVerse Dashboard</a> or explore your <a href="${appBaseUrl}/continuum.html" style="color:#a855f7;">3D Life Journey</a>.</p>
+          <p style="font-size:12px;color:#94a3b8;">Keep up the streak! Log in to your <a href="${appBaseUrl}/#dashboard" style="color:#00f2fe;">BioVerse Dashboard</a> to explore your real-time analytics.</p>
         `;
 
         const result = await sendGmailSMTP({
@@ -549,12 +579,12 @@ const server = http.createServer(async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-        otpStorage.set(cleanEmail, { otp, expiresAt });
+        otpStorage.set(cleanEmail, { otp, expiresAt, name: name || cleanEmail.split('@')[0] });
 
         const otpHtml = `
           <div style="background:#0b1120;border:1px solid #38bdf8;border-radius:16px;padding:24px;text-align:center;color:#fff;font-family:'Segoe UI',Roboto,sans-serif;">
             <h2 style="color:#00f2fe;margin:0 0 8px 0;">🧬 BioVerse Security Verification</h2>
-            <p style="color:#cbd5e1;font-size:14px;margin-bottom:20px;">Hello <strong>${name || 'BioVerse Explorer'}</strong>, use the 6-digit OTP code below to verify your BioVerse account registration:</p>
+            <p style="color:#cbd5e1;font-size:14px;margin-bottom:20px;">Hello <strong>${name || (cleanEmail ? cleanEmail.split('@')[0] : 'BioVerse Explorer')}</strong>, use the 6-digit OTP code below to verify your BioVerse account registration:</p>
             <div style="font-size:38px;font-weight:900;letter-spacing:10px;color:#fbbf24;background:rgba(251,191,36,0.12);border:2px dashed #fbbf24;border-radius:12px;padding:18px;margin:20px auto;max-width:320px;">
               ${otp}
             </div>
@@ -568,18 +598,15 @@ const server = http.createServer(async (req, res) => {
             subject: `🔐 Your BioVerse Verification Code: ${otp}`,
             body: otpHtml
           });
+          console.log(`🔑 Verification OTP successfully sent via Gmail SMTP to [${cleanEmail}]: ${otp}`);
         } catch (smtpErr) {
-          console.warn('⚠️ SMTP Send Warning (Demo fallback active):', smtpErr.message);
+          console.warn('⚠️ SMTP Send Warning:', smtpErr.message);
         }
-
-        console.log(`🔑 Generated OTP for [${cleanEmail}]: ${otp}`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
-          message: `Verification code sent to ${cleanEmail}`,
-          // Demo development hint in case SMTP is in test mode
-          devOtp: otp
+          message: `Verification code sent to ${cleanEmail}`
         }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -611,21 +638,23 @@ const server = http.createServer(async (req, res) => {
 
         const userId = 'usr_' + Date.now();
         const formattedName = name || cleanEmail.split('@')[0];
+        const hashedPassword = await bcrypt.hash(password || 'BioVerse2026!', BCRYPT_ROUNDS);
 
         if (dbPool) {
           try {
-            await dbPool.query(
+            await safeDbQuery(
               'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)',
-              [userId, cleanEmail, formattedName, password || 'BioVerse2026!']
+              [userId, cleanEmail, formattedName, hashedPassword],
+              1500
             );
           } catch (err) {
-            console.warn('TiDB user insert notice:', err.message);
+            console.warn('TiDB user insert notice (using local fallback):', err.message);
           }
         }
 
         const localDB = getLocalDB();
-        const existingIdx = localDB.users.findIndex(u => u.email.toLowerCase() === cleanEmail);
-        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password: password || 'BioVerse2026!', identity: identity || 'student', phone: phone || '' };
+        const existingIdx = localDB.users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+        const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password: hashedPassword, identity: identity || 'student', phone: phone || '' };
         if (existingIdx >= 0) {
           localDB.users[existingIdx] = newUserObj;
         } else {
@@ -633,9 +662,11 @@ const server = http.createServer(async (req, res) => {
         }
         saveLocalDB(localDB);
 
+        const token = jwt.sign({ userId, email: cleanEmail }, JWT_SECRET, { expiresIn: '7d' });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
+          token,
           message: 'Account verified successfully!',
           user: { id: userId, name: formattedName, email: cleanEmail, identity: identity || 'student' }
         }));
@@ -660,12 +691,13 @@ const server = http.createServer(async (req, res) => {
 
         if (dbPool) {
           try {
-            await dbPool.query(
+            await safeDbQuery(
               'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)',
-              [userId, cleanEmail, formattedName, 'GOOGLE_OAUTH_VERIFIED']
+              [userId, cleanEmail, formattedName, 'GOOGLE_OAUTH_VERIFIED'],
+              1500
             );
           } catch (err) {
-            console.warn('TiDB Google User upsert notice:', err.message);
+            console.warn('TiDB Google User upsert notice (using local fallback):', err.message);
           }
         }
 
@@ -716,19 +748,20 @@ const server = http.createServer(async (req, res) => {
         const formattedName = name || cleanEmail.split('@')[0];
 
         // Hash password with bcrypt before storage
-        const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+        const hashedPassword = await bcrypt.hash(password || 'BioVerse2026!', BCRYPT_ROUNDS);
 
         if (dbPool) {
           try {
-            await dbPool.query(
+            await safeDbQuery(
               'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)',
-              [userId, cleanEmail, formattedName, hashedPassword]
+              [userId, cleanEmail, formattedName, hashedPassword],
+              1500
             );
           } catch (err) {}
         }
 
         const localDB = getLocalDB();
-        const existingIdx = localDB.users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+        const existingIdx = localDB.users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
         const newUserObj = { id: userId, name: formattedName, email: cleanEmail, password: hashedPassword, identity: identity || 'student', phone: phone || '' };
         if (existingIdx >= 0) {
           localDB.users[existingIdx] = newUserObj;
@@ -762,8 +795,8 @@ const server = http.createServer(async (req, res) => {
         // 1. Check TiDB Cloud Database
         if (dbPool) {
           try {
-            const [rows] = await dbPool.query('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
-            if (rows.length > 0) user = rows[0];
+            const [rows] = await safeDbQuery('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail], 1500);
+            if (rows && rows.length > 0) user = rows[0];
           } catch (err) {}
         }
 
@@ -807,7 +840,7 @@ const server = http.createServer(async (req, res) => {
             user.password = upgradedHash;
             if (dbPool) {
               try {
-                await dbPool.query('UPDATE bv_users SET password = ? WHERE id = ?', [upgradedHash, user.id]);
+                await safeDbQuery('UPDATE bv_users SET password = ? WHERE id = ?', [upgradedHash, user.id], 1500);
               } catch (err) {}
             }
             const localDB = getLocalDB();
@@ -926,8 +959,8 @@ const server = http.createServer(async (req, res) => {
         let user = null;
         if (dbPool) {
           try {
-            const [rows] = await dbPool.query('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
-            if (rows.length > 0) user = rows[0];
+            const [rows] = await safeDbQuery('SELECT * FROM bv_users WHERE LOWER(email) = ?', [cleanEmail], 1500);
+            if (rows && rows.length > 0) user = rows[0];
           } catch (err) {}
         }
 
@@ -936,27 +969,16 @@ const server = http.createServer(async (req, res) => {
           user = localDB.users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
         }
 
-        if (!user && (cleanEmail === 'saladisiddharth@gmail.com' || cleanEmail === 'siddharth@bioverse.ai')) {
-          user = { email: cleanEmail, name: 'Saladi Siddharth' };
-        }
-
-        if (!user) {
-          res.writeHead(404, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({
-            success: false,
-            error: 'No registered BioVerse account was found with this email address.'
-          }));
-        }
-
+        const userName = user ? (user.name || cleanEmail.split('@')[0]) : cleanEmail.split('@')[0];
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const expiresAt = Date.now() + 10 * 60 * 1000;
-        otpStorage.set(`forgot_${cleanEmail}`, { otp, expiresAt });
+        const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+        otpStorage.set(`forgot_${cleanEmail}`, { otp, expiresAt, name: userName });
 
         const resetHtml = `
           <div style="background:#070a14;border:1px solid #f59e0b;border-radius:20px;padding:28px;max-width:540px;margin:0 auto;color:#fff;font-family:sans-serif;text-align:center;">
             <div style="font-size:36px;margin-bottom:8px;">🔑</div>
             <h2 style="color:#fbbf24;margin:0 0 10px 0;">BioVerse Password Reset Code</h2>
-            <p style="color:#cbd5e1;font-size:13.5px;line-height:1.5;">Hello <strong>${user.name || 'User'}</strong>, enter the 6-digit OTP code below to create your new password:</p>
+            <p style="color:#cbd5e1;font-size:13.5px;line-height:1.5;">Hello <strong>${userName}</strong>, enter the 6-digit OTP code below to create your new password:</p>
             
             <div style="font-size:36px;font-weight:900;letter-spacing:10px;color:#fbbf24;background:rgba(251,191,36,0.12);border:2px dashed #fbbf24;border-radius:14px;padding:16px;margin:20px auto;max-width:300px;">
               ${otp}
@@ -972,17 +994,15 @@ const server = http.createServer(async (req, res) => {
             subject: `🔑 BioVerse Password Reset Code: ${otp}`,
             body: resetHtml
           });
+          console.log(`🔑 Successfully dispatched Reset OTP to [${cleanEmail}]: ${otp}`);
         } catch (e) {
-          console.warn('Reset email send error:', e.message);
+          console.warn('⚠️ SMTP Reset Send Warning:', e.message);
         }
-
-        console.log(`🔑 Generated Reset OTP for [${cleanEmail}]: ${otp}`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
-          message: `Password reset code sent to ${cleanEmail}`,
-          devOtp: otp
+          message: `Password reset code sent to ${cleanEmail}`
         }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -1020,7 +1040,11 @@ const server = http.createServer(async (req, res) => {
 
         if (dbPool) {
           try {
-            await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [hashedNewPassword, cleanEmail]);
+            await safeDbQuery(
+              'INSERT INTO bv_users (id, email, name, password) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE password = VALUES(password)',
+              ['usr_' + Date.now(), cleanEmail, cleanEmail.split('@')[0], hashedNewPassword],
+              1500
+            );
           } catch (err) {}
         }
 
@@ -1033,7 +1057,8 @@ const server = http.createServer(async (req, res) => {
             id: 'usr_' + Date.now(),
             name: cleanEmail.split('@')[0],
             email: cleanEmail,
-            password: hashedNewPassword
+            password: hashedNewPassword,
+            identity: 'student'
           });
         }
         saveLocalDB(localDB);
@@ -1150,8 +1175,8 @@ const server = http.createServer(async (req, res) => {
         
         if (dbPool) {
           try {
-            await dbPool.query('DELETE FROM bv_users WHERE LOWER(email) = ?', [cleanEmail]);
-            await dbPool.query('DELETE FROM bv_state WHERE LOWER(user_email) = ?', [cleanEmail]);
+            await safeDbQuery('DELETE FROM bv_users WHERE LOWER(email) = ?', [cleanEmail], 1500);
+            await safeDbQuery('DELETE FROM bv_state WHERE LOWER(user_email) = ?', [cleanEmail], 1500);
           } catch (err) {}
         }
 

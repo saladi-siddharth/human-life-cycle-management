@@ -48,8 +48,8 @@ function FinancePage() {
   const content = `
     <div class="finance-page">
       ${UI.sectionHeader(
-        'Financial Freedom & Real-Time Ledger',
-        'Dynamic double-entry ledger tracking live income, expenses, Indian tax regime optimization, and compound growth.',
+        'Wealth & Financial Intelligence',
+        'Dynamic cashflow intelligence tracking live income, expenses, and Indian tax regime optimization.',
         `<div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-secondary btn-sm" onclick="AccountAggregator.openConsentModal()"><i class="fas fa-university"></i> Link Bank / Demat (AA)</button>
           <button class="btn btn-outline btn-sm" onclick="openIncomeModal()"><i class="fas fa-edit"></i> Edit Income (₹${totalIncome.toLocaleString()})</button>
@@ -84,34 +84,57 @@ function FinancePage() {
       <div class="grid grid-4" id="finance-metrics-section" style="gap:16px;margin-bottom:var(--space-xl);">
         
         <!-- Metric 1: Monthly Income -->
-        <div class="card card-glass card-hover" onclick="openIncomeModal()" style="cursor:pointer;" title="Click to update monthly income">
-          <div style="font-size:var(--text-xs);color:var(--text-muted);display:flex;justify-content:space-between;">
-            <span>Monthly Income</span>
-            <i class="fas fa-edit" style="color:var(--emerald);font-size:11px;"></i>
+        <div class="card card-glass card-hover cyber-card-glow" onclick="openIncomeModal()" style="cursor:pointer;" title="Click to update monthly income">
+          <div class="cyber-card-inner">
+            <div style="font-size:var(--text-xs);color:var(--text-muted);display:flex;justify-content:space-between;">
+              <span>Monthly Income</span>
+              <i class="fas fa-edit" style="color:var(--emerald);font-size:11px;"></i>
+            </div>
+            <div style="font-size:24px;font-weight:800;color:var(--emerald);margin:4px 0;">₹${totalIncome.toLocaleString()}</div>
+            <div style="font-size:11px;color:var(--text-secondary);">Annual: ₹${annualCTC.toLocaleString()}</div>
           </div>
-          <div style="font-size:24px;font-weight:800;color:var(--emerald);margin:4px 0;">₹${totalIncome.toLocaleString()}</div>
-          <div style="font-size:11px;color:var(--text-secondary);">Annual: ₹${annualCTC.toLocaleString()}</div>
         </div>
 
         <!-- Metric 2: Monthly Net Savings -->
-        <div class="card card-glass">
+        <div class="card card-glass card-hover">
           <div style="font-size:var(--text-xs);color:var(--text-muted);">Monthly Net Savings</div>
           <div style="font-size:24px;font-weight:800;color:var(--cyan);margin:4px 0;">₹${netSavings.toLocaleString()}</div>
           <div style="font-size:11px;color:var(--emerald);font-weight:700;">Savings Rate: ${savingsRate}%</div>
         </div>
 
         <!-- Metric 3: Emergency Runway -->
-        <div class="card card-glass">
+        <div class="card card-glass card-hover">
           <div style="font-size:var(--text-xs);color:var(--text-muted);">Emergency Runway</div>
           <div style="font-size:24px;font-weight:800;color:var(--indigo-light);margin:4px 0;">${emergencyMonths} Months</div>
           <div style="font-size:11px;color:var(--text-secondary);">Target: ₹${emergencyTarget.toLocaleString()}</div>
         </div>
 
         <!-- Metric 4: Finance Score -->
-        <div class="card card-glass">
+        <div class="card card-glass card-hover">
           <div style="font-size:var(--text-xs);color:var(--text-muted);">Finance Score</div>
           <div style="font-size:24px;font-weight:800;color:var(--purple);margin:4px 0;">${computedFinanceScore}/100</div>
           <div style="font-size:11px;color:var(--text-secondary);">Dynamic Real Data Analysis</div>
+        </div>
+      </div>
+
+      <!-- Live Interactive Cash-Flow Pipeline Reactor Canvas -->
+      <div class="canvas-interactive-wrap" style="margin-bottom:24px; padding:20px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="beacon-pulse beacon-pulse-success"></span>
+            <h3 style="margin:0; font-size:16.5px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <i class="fas fa-stream" style="color:var(--emerald);"></i> Real-Time Cash Flow Reactor & Capital Pipeline
+            </h3>
+            <span class="badge badge-success" style="font-size:10px;">Active Velocity</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:14px;">
+            <span><strong style="color:#10b981;">● Income (₹${totalIncome.toLocaleString()})</strong></span>
+            <span><strong style="color:#ef4444;">● Burn (₹${totalExpenses.toLocaleString()})</strong></span>
+            <span><strong style="color:#00f2fe;">● Surplus (₹${netSavings.toLocaleString()})</strong></span>
+          </div>
+        </div>
+        <div style="position:relative; width:100%; height:130px;">
+          <canvas id="finance-flow-canvas" style="width:100%; height:100%; display:block; border-radius:12px;"></canvas>
         </div>
       </div>
 
@@ -201,65 +224,14 @@ function FinancePage() {
           </div>
         </div>
 
-        <!-- 3. Interactive Step-Up SIP Compound Wealth Visualizer -->
-        <div class="card card-glass" style="grid-column: span 2; padding:24px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-            <div>
-              <h3 style="margin:0;display:flex;align-items:center;gap:8px;"><i class="fas fa-chart-area" style="color:var(--emerald);"></i> Interactive Step-Up SIP Compound Wealth Visualizer</h3>
-              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Model compounding with 10% annual step-up increment</div>
-            </div>
-            <span class="badge badge-success" style="font-size:12.5px; padding:6px 14px;">Projected Wealth: <strong id="sip-future-value" style="color:#00f2fe;">₹1,75,48,740</strong></span>
-          </div>
-
-          <div class="grid grid-4" style="gap:16px;margin-bottom:16px;">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-                <span>Monthly SIP (₹)</span>
-                <strong style="color:var(--emerald);" id="sip-slider-monthly-txt">₹${Math.round(netSavings * 0.5 || 25000).toLocaleString()}</strong>
-              </div>
-              <input type="range" class="bio-slider" id="sip-slider-monthly" min="1000" max="200000" step="1000" value="${Math.min(200000, Math.round(netSavings * 0.5 || 25000))}" oninput="onSIPSliderChange()">
-            </div>
-
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-                <span>Expected CAGR Rate (%)</span>
-                <strong style="color:var(--cyan);" id="sip-slider-rate-txt">14%</strong>
-              </div>
-              <input type="range" class="bio-slider" id="sip-slider-rate" min="8" max="25" step="0.5" value="14" oninput="onSIPSliderChange()">
-            </div>
-
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-                <span>Horizon (Years)</span>
-                <strong style="color:var(--gold);" id="sip-slider-years-txt">15 Years</strong>
-              </div>
-              <input type="range" class="bio-slider" id="sip-slider-years" min="1" max="35" step="1" value="15" oninput="onSIPSliderChange()">
-            </div>
-
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-                <span>Annual Step-Up (%)</span>
-                <strong style="color:var(--purple);" id="sip-slider-step-txt">10%</strong>
-              </div>
-              <input type="range" class="bio-slider" id="sip-slider-step" min="0" max="20" step="1" value="10" oninput="onSIPSliderChange()">
-            </div>
-          </div>
-
-          <div class="chart-canvas-wrap" style="height:220px;">
-            <canvas id="finance-sip-chart"></canvas>
-          </div>
-        </div>
-
       </div>
 
     </div>
   `;
 
   setTimeout(() => {
-    const sipMonthly = Math.round(netSavings * 0.5 || 25000);
-    renderSIPChartCanvas(sipMonthly, 14, 15, 10);
     calculateTaxOptimization();
-  }, 200);
+  }, 150);
 
   return UI.dashboardLayout('/dashboard/finance', content);
 }
@@ -348,106 +320,145 @@ function calculateTaxOptimization() {
 }
 window.calculateTaxOptimization = calculateTaxOptimization;
 
-// ─── SIP COMPOUNDING VISUALIZER ─────────────────────────────
+// ─── FINANCE ANIMATIONS & CASH FLOW PIPELINE REACTOR ──────────
 
-function onSIPSliderChange() {
-  const monthly = Number(document.getElementById('sip-slider-monthly')?.value || 25000);
-  const rate = Number(document.getElementById('sip-slider-rate')?.value || 14);
-  const years = Number(document.getElementById('sip-slider-years')?.value || 15);
-  const stepUp = Number(document.getElementById('sip-slider-step')?.value || 10);
-
-  const mTxt = document.getElementById('sip-slider-monthly-txt');
-  const rTxt = document.getElementById('sip-slider-rate-txt');
-  const yTxt = document.getElementById('sip-slider-years-txt');
-  const sTxt = document.getElementById('sip-slider-step-txt');
-
-  if (mTxt) mTxt.textContent = `₹${monthly.toLocaleString()}`;
-  if (rTxt) rTxt.textContent = `${rate}%`;
-  if (yTxt) yTxt.textContent = `${years} Years`;
-  if (sTxt) sTxt.textContent = `${stepUp}%`;
-
-  renderSIPChartCanvas(monthly, rate, years, stepUp);
+function initFinanceAnimations() {
+  const netSavings = Math.max(0, (Number(Store.get('finances.monthlyIncome')) || 100000) - 28000);
+  const sipMonthly = Math.round(netSavings * 0.5 || 25000);
+  renderSIPChartCanvas(sipMonthly, 14, 15, 10);
+  calculateTaxOptimization();
+  initCashFlowReactorCanvas();
 }
-window.onSIPSliderChange = onSIPSliderChange;
+window.initFinanceAnimations = initFinanceAnimations;
 
-function renderSIPChartCanvas(monthly, cagr, years, stepUp = 10) {
-  const canvas = document.getElementById('finance-sip-chart');
+function initCashFlowReactorCanvas() {
+  const canvas = document.getElementById('finance-flow-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
-
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  const width = rect.width || 800;
+  const height = rect.height || 130;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
   ctx.scale(dpr, dpr);
 
-  let currentMonthly = monthly;
-  let totalCorpus = 0;
-  let totalInvested = 0;
-  const monthlyRate = (cagr / 100) / 12;
+  const finances = Store.get('finances') || {};
+  const income = Number(finances.monthlyIncome) || 100000;
+  const transactions = finances.transactions || [];
+  const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount || 0), 0) || 28000;
+  const savings = Math.max(0, income - expenses);
 
-  const dataPoints = [];
-  const investedPoints = [];
+  const nodes = [
+    { x: 70, y: height / 2, label: 'Monthly Inflow', sub: `₹${income.toLocaleString()}`, color: '#10b981', r: 24, icon: '💰' },
+    { x: width * 0.48, y: 35, label: 'Living Burn', sub: `₹${expenses.toLocaleString()}`, color: '#ef4444', r: 18, icon: '🔥' },
+    { x: width * 0.48, y: height - 35, label: 'Net Surplus', sub: `₹${savings.toLocaleString()}`, color: '#00f2fe', r: 18, icon: '⚡' },
+    { x: width - 80, y: height / 2, label: 'Wealth Compounding', sub: 'Index SIPs', color: '#fbbf24', r: 26, icon: '📈' }
+  ];
 
-  for (let y = 1; y <= years; y++) {
-    for (let m = 1; m <= 12; m++) {
-      totalCorpus = (totalCorpus + currentMonthly) * (1 + monthlyRate);
-      totalInvested += currentMonthly;
-    }
-    dataPoints.push(totalCorpus);
-    investedPoints.push(totalInvested);
-    currentMonthly += currentMonthly * (stepUp / 100);
+  // Moving light energy packets
+  const flowParticles = [];
+  // Income -> Expenses
+  for (let i = 0; i < 6; i++) {
+    flowParticles.push({ from: nodes[0], to: nodes[1], progress: Math.random(), speed: 0.008, color: '#ef4444' });
+  }
+  // Income -> Savings
+  for (let i = 0; i < 8; i++) {
+    flowParticles.push({ from: nodes[0], to: nodes[2], progress: Math.random(), speed: 0.01, color: '#00f2fe' });
+  }
+  // Savings -> Wealth
+  for (let i = 0; i < 8; i++) {
+    flowParticles.push({ from: nodes[2], to: nodes[3], progress: Math.random(), speed: 0.012, color: '#fbbf24' });
   }
 
-  const futureEl = document.getElementById('sip-future-value');
-  if (futureEl) futureEl.textContent = `₹${Math.round(totalCorpus).toLocaleString()}`;
+  let time = 0;
 
-  // Draw smooth compounding curve
-  ctx.clearRect(0, 0, rect.width, rect.height);
-  const maxVal = totalCorpus * 1.1;
-  const stepX = rect.width / (years - 1);
+  function renderFlow() {
+    if (!document.getElementById('finance-flow-canvas')) return;
+    ctx.clearRect(0, 0, width, height);
+    time += 0.03;
 
-  // Gradient fill for corpus
-  const grad = ctx.createLinearGradient(0, 0, 0, rect.height);
-  grad.addColorStop(0, 'rgba(0, 242, 254, 0.35)');
-  grad.addColorStop(1, 'rgba(0, 242, 254, 0.0)');
+    // Draw connecting pipelines
+    const drawPipe = (n1, n2, strokeColor) => {
+      ctx.beginPath();
+      ctx.moveTo(n1.x, n1.y);
+      ctx.bezierCurveTo(
+        n1.x + (n2.x - n1.x) * 0.5, n1.y,
+        n1.x + (n2.x - n1.x) * 0.5, n2.y,
+        n2.x, n2.y
+      );
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    };
 
-  ctx.beginPath();
-  ctx.moveTo(0, rect.height);
-  dataPoints.forEach((val, idx) => {
-    const x = idx * stepX;
-    const y = rect.height - (val / maxVal) * (rect.height - 30);
-    ctx.lineTo(x, y);
-  });
-  ctx.lineTo(rect.width, rect.height);
-  ctx.fillStyle = grad;
-  ctx.fill();
+    drawPipe(nodes[0], nodes[1], 'rgba(239, 68, 68, 0.4)');
+    drawPipe(nodes[0], nodes[2], 'rgba(0, 242, 254, 0.4)');
+    drawPipe(nodes[2], nodes[3], 'rgba(251, 191, 36, 0.5)');
 
-  // Corpus Line
-  ctx.beginPath();
-  dataPoints.forEach((val, idx) => {
-    const x = idx * stepX;
-    const y = rect.height - (val / maxVal) * (rect.height - 30);
-    if (idx === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = '#00f2fe';
-  ctx.lineWidth = 3;
-  ctx.stroke();
+    // Draw flow particles
+    flowParticles.forEach(p => {
+      p.progress += p.speed;
+      if (p.progress > 1) p.progress = 0;
 
-  // Invested Line
-  ctx.beginPath();
-  investedPoints.forEach((val, idx) => {
-    const x = idx * stepX;
-    const y = rect.height - (val / maxVal) * (rect.height - 30);
-    if (idx === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4, 4]);
-  ctx.stroke();
-  ctx.setLineDash([]);
+      const t = p.progress;
+      const x0 = p.from.x, y0 = p.from.y;
+      const x1 = p.from.x + (p.to.x - p.from.x) * 0.5, y1 = p.from.y;
+      const x2 = p.from.x + (p.to.x - p.from.x) * 0.5, y2 = p.to.y;
+      const x3 = p.to.x, y3 = p.to.y;
+
+      const cx = (1 - t) ** 3 * x0 + 3 * (1 - t) ** 2 * t * x1 + 3 * (1 - t) * t ** 2 * x2 + t ** 3 * x3;
+      const cy = (1 - t) ** 3 * y0 + 3 * (1 - t) ** 2 * t * y1 + 3 * (1 - t) * t ** 2 * y2 + t ** 3 * y3;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    // Draw Pipeline Hub Nodes
+    nodes.forEach((n, idx) => {
+      // Glow Ring
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r + 4 + Math.sin(time * 2 + idx) * 2, 0, Math.PI * 2);
+      ctx.strokeStyle = n.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Node Body
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      ctx.fill();
+      ctx.strokeStyle = n.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Icon
+      ctx.font = '14px Inter';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(n.icon, n.x, n.y);
+
+      // Labels
+      ctx.font = 'bold 11px Inter';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(n.label, n.x, n.y + n.r + 14);
+
+      ctx.font = '10px Inter';
+      ctx.fillStyle = n.color;
+      ctx.fillText(n.sub, n.x, n.y + n.r + 26);
+    });
+
+    requestAnimationFrame(renderFlow);
+  }
+
+  renderFlow();
 }
 
 // ─── TRANSACTION MODAL & CONTROLS ───────────────────────────
@@ -515,14 +526,14 @@ function openTransactionModal() {
           <option value="Housing & Rent">Housing & Rent</option>
           <option value="Food & Groceries">Food & Groceries</option>
           <option value="Tech Consulting & Salary">Tech Consulting & Salary</option>
-          <option value="Mutual Funds & SIP">Mutual Funds & SIP</option>
+          <option value="Mutual Funds & Investments">Mutual Funds & Investments</option>
           <option value="Utilities & Subscriptions">Utilities & Subscriptions</option>
           <option value="Dining & Entertainment">Dining & Entertainment</option>
         </select>
       </div>
       <div>
         <label style="font-size:12px;color:var(--text-muted);">Note / Description</label>
-        <input type="text" id="t-note" class="chat-input" placeholder="e.g. Mutual fund SIP or Rent">
+        <input type="text" id="t-note" class="chat-input" placeholder="e.g. Monthly salary or Groceries">
       </div>
       ${UI.pillButton({ text: 'Save Entry', icon: '<i class="fas fa-coins"></i>', theme: 'emerald', type: 'submit' })}
     </form>
@@ -564,6 +575,13 @@ function saveTransactionForm(e) {
 
   UI.toast('success', 'Entry Recorded', `Logged ${type} of ₹${amount.toLocaleString()}`);
   Router.render();
+
+  setTimeout(() => {
+    const firstTx = document.querySelector('#tx-row-' + newTx.id + ', table tbody tr:first-child');
+    if (firstTx) {
+      firstTx.classList.add('card-entry-pop', 'highlight-pulse-gold');
+    }
+  }, 40);
 }
 window.saveTransactionForm = saveTransactionForm;
 

@@ -125,8 +125,19 @@
         if (customHandler && typeof window[customHandler] === 'function') {
           e.preventDefault();
           this.triggerSubmit(() => window[customHandler](e));
-        } else if (this.el.hasAttribute('onclick')) {
-          // Inline callback handler execution
+          return;
+        }
+
+        // If the pill button is inside a form and acts as a submit button:
+        const form = this.el.closest('form');
+        const submitBtn = this.el.querySelector('button[type="submit"], input[type="submit"]');
+        if (form && submitBtn && e.target !== submitBtn) {
+          e.preventDefault();
+          if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit(submitBtn);
+          } else {
+            submitBtn.click();
+          }
         }
       });
     }

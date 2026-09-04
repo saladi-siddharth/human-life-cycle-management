@@ -28,7 +28,7 @@ const ActionPhysics = {
       if (!ctx) return;
       const now = ctx.currentTime;
 
-      if (type === 'type') {
+      if (type === 'type' || type === 'snap') {
         // Soft mechanical keypress chime
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -41,7 +41,7 @@ const ActionPhysics = {
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.04);
-      } else if (type === 'sloth' || type === 'victory') {
+      } else if (type === 'sloth' || type === 'victory' || type === 'chime') {
         // Joyful 4-tone victory harmonic chime
         const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         freqs.forEach((freq, idx) => {
@@ -96,7 +96,7 @@ const ActionPhysics = {
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.5);
-      } else if (type === 'wand' || type === 'sparkle') {
+      } else if (type === 'wand' || type === 'sparkle' || type === 'portal') {
         // Magic wand starburst chime
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -139,7 +139,7 @@ const ActionPhysics = {
           osc.start(now + idx * 0.045);
           osc.stop(now + idx * 0.045 + 0.12);
         });
-      } else if (type === 'pomodoroBell') {
+      } else if (type === 'pomodoroBell' || type === 'focusBell') {
         // Tibetan singing bowl gong
         [432, 864, 1296].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -152,6 +152,20 @@ const ActionPhysics = {
           gain.connect(ctx.destination);
           osc.start(now);
           osc.stop(now + 2.5);
+        });
+      } else if (type === 'dietChime') {
+        // Ascending 4-tone pentatonic chime
+        [739.99, 932.33, 1108.73, 1479.98].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + idx * 0.06 + 0.25);
         });
       }
     } catch (e) {}
@@ -237,7 +251,7 @@ const ActionPhysics = {
         width: 100vw;
         height: 100vh;
         pointer-events: none;
-        z-index: 999999;
+        z-index: 9999999;
       `;
       document.body.appendChild(canvas);
     }
@@ -247,7 +261,10 @@ const ActionPhysics = {
     const height = window.innerHeight;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
     const ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
 
     const themeConfig = {
@@ -492,54 +509,88 @@ const ActionPhysics = {
   // 🎨 10 HANDCRAFTED DOMAIN SUBMISSION ANIMATION RENDERERS 🎨
   // ═══════════════════════════════════════════════════════════════════
 
-  // 1. 🚀 Career: Supernova Celestial Burst (32 glowing radial particles)
-  supernovaBurst(type = 'skill', label = 'Skill Mastered!') {
-    this.launchCelebration('career', label, 'Career Skills Matrix Level Up 🚀');
+  // 1. 🚀 Career: Supernova Celestial Burst (36 glowing radial particles & card)
+  supernovaBurst(skillName = 'Skill Mastered!', category = 'Core Systems', level = 3) {
+    this.launchCelebration('career', skillName, `Level ${level} ${category} Mastered 🚀`);
 
     const overlay = document.createElement('div');
     overlay.className = 'action-supernova-overlay';
     overlay.innerHTML = `
-      <div class="supernova-center">
-        <span>🚀</span>
+      <div class="supernova-power-card">
+        <div style="font-size:62px; filter:drop-shadow(0 0 28px #00f2fe);">🚀</div>
+        <div style="font-size:22px; font-weight:900; color:#fff; margin-top:10px; letter-spacing:0.5px;">NEW SKILL MASTERED!</div>
+        <div style="font-size:15px; font-weight:700; color:#00f2fe; margin-top:4px;">${skillName}</div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;">
+          <span class="badge badge-primary" style="font-size:11px; padding:3px 8px;">${category}</span>
+          <span style="font-size:12px; color:#c084fc; font-weight:700;">★ Level ${level}</span>
+        </div>
+        <div style="margin-top:12px; font-size:13px; color:#10b981; font-weight:800; text-shadow:0 0 12px rgba(16,185,129,0.5);">
+          +15 Career Matrix XP ⚡
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
 
     const colors = ['#00f2fe', '#6366f1', '#a855f7', '#38bdf8', '#fbbf24', '#ffffff'];
-    for (let i = 0; i < 32; i++) {
-      const angle = (i / 32) * Math.PI * 2;
-      const dist = 140 + Math.random() * 110;
+    const emojis = ['✨', '🚀', '⚡', '💎', '🌟'];
+    for (let i = 0; i < 36; i++) {
+      const angle = (i / 36) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const dist = 160 + Math.random() * 160;
+      const isEmoji = i % 5 === 0;
       const p = document.createElement('div');
-      p.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: ${Math.random() * 8 + 4}px;
-        height: ${Math.random() * 8 + 4}px;
-        background: ${colors[i % colors.length]};
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 1000000;
-        box-shadow: 0 0 14px currentColor;
-        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease-out;
-      `;
+      
+      if (isEmoji) {
+        p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        p.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          font-size: ${Math.random() * 14 + 18}px;
+          pointer-events: none;
+          z-index: 10000000;
+          transform: translate(-50%, -50%) scale(0.2);
+          transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease-out;
+          filter: drop-shadow(0 0 10px #00f2fe);
+        `;
+      } else {
+        const size = Math.random() * 9 + 4;
+        p.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${colors[i % colors.length]};
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 10000000;
+          box-shadow: 0 0 16px ${colors[i % colors.length]};
+          transform: translate(-50%, -50%) scale(0.3);
+          transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.1s ease-out;
+        `;
+      }
       document.body.appendChild(p);
 
       requestAnimationFrame(() => {
         const tx = Math.cos(angle) * dist;
         const ty = Math.sin(angle) * dist;
-        p.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
+        p.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(${isEmoji ? 1.2 : 0})`;
         p.style.opacity = '0';
       });
 
       setTimeout(() => {
         if (p.parentNode) p.parentNode.removeChild(p);
-      }, 900);
+      }, 1300);
     }
 
     setTimeout(() => {
-      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }, 1200);
+      overlay.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 400);
+    }, 1800);
   },
 
   // 2. 🚀 Career: 3D Rocket Launch
@@ -561,24 +612,88 @@ const ActionPhysics = {
     }, 1800);
   },
 
-  // 3. 💪 Health: Dumbbell Power Flex
-  dumbbellFlex(workoutType = 'Workout') {
-    this.launchCelebration('health', `${workoutType} Complete`, 'Muscle Hypertrophy & Vitality 💪');
+  // 3. 💪 Health: Dumbbell Power Flex (32 kinetic particles & card)
+  dumbbellFlex(workoutType = 'Physical Training', duration = 45, muscle = 'Full Body') {
+    this.launchCelebration('health', `${workoutType} (${duration}m)`, 'Muscle Hypertrophy & Vitality 💪');
 
     const overlay = document.createElement('div');
     overlay.className = 'action-flex-overlay';
     overlay.innerHTML = `
       <div class="flex-power-card">
-        <div style="font-size:58px;filter:drop-shadow(0 0 25px #10b981);">🏋️‍♂️</div>
-        <div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;">POWER FLEX COMPLETE!</div>
-        <div style="font-size:13px;color:#10b981;font-weight:700;">+25 Physical Vitality XP</div>
+        <div style="font-size:62px; filter:drop-shadow(0 0 30px #10b981);">🏋️‍♂️</div>
+        <div style="font-size:22px; font-weight:900; color:#fff; margin-top:10px; letter-spacing:0.5px;">WORKOUT SESSION LOGGED!</div>
+        <div style="font-size:15px; font-weight:700; color:#10b981; margin-top:4px;">${workoutType} • ${duration} Minutes</div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px;">
+          <span class="badge badge-success" style="font-size:11px; padding:3px 8px;">Target: ${muscle}</span>
+          <span style="font-size:12px; color:#34d399; font-weight:700;">🔥 High Intensity</span>
+        </div>
+        <div style="margin-top:12px; font-size:13px; color:#fbbf24; font-weight:800; text-shadow:0 0 12px rgba(251,191,36,0.5);">
+          +25 Physical Vitality XP 💪
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
 
+    const colors = ['#10b981', '#34d399', '#00f2fe', '#fbbf24', '#ffffff', '#059669'];
+    const emojis = ['💪', '🏋️', '🔥', '⚡', '💧'];
+    for (let i = 0; i < 32; i++) {
+      const angle = (i / 32) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const dist = 150 + Math.random() * 150;
+      const isEmoji = i % 4 === 0;
+      const p = document.createElement('div');
+      
+      if (isEmoji) {
+        p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        p.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          font-size: ${Math.random() * 14 + 18}px;
+          pointer-events: none;
+          z-index: 10000000;
+          transform: translate(-50%, -50%) scale(0.2);
+          transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease-out;
+          filter: drop-shadow(0 0 12px #10b981);
+        `;
+      } else {
+        const size = Math.random() * 9 + 4;
+        p.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${colors[i % colors.length]};
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 10000000;
+          box-shadow: 0 0 16px ${colors[i % colors.length]};
+          transform: translate(-50%, -50%) scale(0.3);
+          transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.1s ease-out;
+        `;
+      }
+      document.body.appendChild(p);
+
+      requestAnimationFrame(() => {
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        p.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(${isEmoji ? 1.2 : 0})`;
+        p.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        if (p.parentNode) p.parentNode.removeChild(p);
+      }, 1300);
+    }
+
     setTimeout(() => {
-      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }, 1400);
+      overlay.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      overlay.style.opacity = '0';
+      overlay.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }, 400);
+    }, 1800);
   },
 
   // 4. 💧 Health: Emerald Bioluminescence Pulse (24 droplets)
@@ -753,6 +868,48 @@ const ActionPhysics = {
     setTimeout(() => {
       if (wand.parentNode) wand.parentNode.removeChild(wand);
     }, 1200);
+  },
+
+  // 9b. 🥗 Health: Precision Metabolic Diet Synthesis
+  dietPlanSynthesis(pref = 'Vegetarian', calories = '2,300 kcal') {
+    this.playSound('dietChime');
+    this.launchCelebration('health', `${pref} Diet Plan Generated!`, `Metabolic Target: ${calories} 🥗`);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-diet-overlay';
+    overlay.innerHTML = `
+      <div class="diet-synthesis-card">
+        <div style="font-size:56px;filter:drop-shadow(0 0 25px #10b981);">🥗✨</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;">PRECISION DIET SYNTHESIZED</div>
+        <div style="font-size:13px;color:#10b981;font-weight:700;">${pref} Protocol • ${calories}</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1600);
+  },
+
+  // 9c. ⚡ Work/Life: Quantum Focus Lab Timer Ignition
+  focusLabIgnite(duration = 25) {
+    this.playSound('pomodoroBell');
+    this.launchCelebration('work', `Focus Lab Activated! ⚡`, `${duration}-Min Deep Flow Sprint Started 🎯`);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'action-focus-ignite-overlay';
+    overlay.innerHTML = `
+      <div class="focus-ignite-card">
+        <div style="font-size:58px;filter:drop-shadow(0 0 30px #00f2fe);">⚡⏱️</div>
+        <div style="font-size:19px;font-weight:900;color:#fff;margin-top:10px;">QUANTUM FOCUS ENGAGED</div>
+        <div style="font-size:13px;color:#00f2fe;font-weight:700;">Zero Distraction Flow State</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }, 1600);
   },
 
   // 10. 🌟 Life: Cute Sloth "Hurray!" Party Mascot (35 confetti pieces)
@@ -1077,3 +1234,18 @@ const ActionPhysics = {
 };
 
 window.ActionPhysics = ActionPhysics;
+
+// Global AudioContext unlock on first user interaction gesture
+if (typeof window !== 'undefined') {
+  const unlockAudio = () => {
+    try {
+      ActionPhysics.getAudioContext();
+    } catch (e) {}
+    window.removeEventListener('pointerdown', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+  };
+  window.addEventListener('pointerdown', unlockAudio, { passive: true });
+  window.addEventListener('keydown', unlockAudio, { passive: true });
+  window.addEventListener('touchstart', unlockAudio, { passive: true });
+}

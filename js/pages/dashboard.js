@@ -172,7 +172,7 @@ function DashboardPage() {
   const content = `
     <div class="dashboard-page">
       ${UI.sectionHeader(
-        `Welcome, ${profile.name || 'Saladi Siddharth'}! 👋`,
+        `Welcome, ${profile.name || 'Member'}! 👋`,
         `Your personalized command center is configured for the <strong>${roleTitleMap[identity] || 'BioVerse Life Track'}</strong>. Master Life Score is ${scores.life || 78}/100.`,
         `<div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button class="btn btn-sm" onclick="LifeAuditExporter.exportPDF()" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700;"><i class="fas fa-file-pdf"></i> Export Life Audit PDF</button>
@@ -191,7 +191,7 @@ function DashboardPage() {
             </div>
             <h2 style="margin:0; font-size:30px; font-weight:900;">Master Life Score: <span style="color:var(--cyan);">${scores.life || 78}/100</span></h2>
             <p style="margin:6px 0 0 0; color:var(--text-secondary); font-size:13px;">
-              Computed across Career (<strong>${scores.career || 75}</strong>), Health (<strong>${scores.health || 82}</strong>), Finance (<strong>${scores.finance || 70}</strong>), Work (<strong>${scores.work || 80}</strong>), and Life Continuum (<strong>${scores.success || 77}</strong>).
+              Computed across Career (<strong>${scores.career || 75}</strong>), Health (<strong>${scores.health || 82}</strong>), Finance (<strong>${scores.finance || 70}</strong>), Work (<strong>${scores.work || 80}</strong>), and Life Harmony (<strong>${scores.success || 77}</strong>).
             </p>
           </div>
           <div style="display:flex; gap:10px;">

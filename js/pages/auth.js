@@ -162,12 +162,12 @@ function LoginPage() {
             <div id="mode-email" class="auth-mode-content">
               <div class="form-group" style="margin-bottom:12px;">
                 <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Email Address</label>
-                <input type="email" class="form-input" id="email-input" placeholder="you@example.com" value="siddharth@bioverse.ai" style="padding:10px 12px; font-size:13px;">
+                <input type="email" class="form-input" id="email-input" placeholder="you@example.com" value="" style="padding:10px 12px; font-size:13px;">
               </div>
 
               <div class="form-group" style="position:relative; margin-bottom:12px;">
                 <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Password</label>
-                <input type="password" class="form-input" id="password-input" placeholder="••••••••••••" value="BioVerse2026!" style="padding:10px 12px; padding-right:40px; font-size:13px;">
+                <input type="password" class="form-input" id="password-input" placeholder="••••••••••••" value="" style="padding:10px 12px; padding-right:40px; font-size:13px;">
                 <button type="button" class="password-toggle" onclick="togglePandaPassword('password-input', this)" style="position:absolute; right:12px; top:28px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:14px; padding:4px;">
                   <i class="fas fa-eye"></i>
                 </button>
@@ -203,7 +203,7 @@ function LoginPage() {
                     <option value="+1">🇺🇸 +1</option>
                     <option value="+44">🇬🇧 +44</option>
                   </select>
-                  <input type="tel" class="form-input" id="phone-number" placeholder="98765 43210" value="9876543210" style="flex:1; padding:8px 12px; font-size:13px;">
+                  <input type="tel" class="form-input" id="phone-number" placeholder="98765 43210" value="" style="flex:1; padding:8px 12px; font-size:13px;">
                 </div>
               </div>
 
@@ -224,69 +224,79 @@ function LoginPage() {
                 </div>
               </div>
 
-              <button class="btn-auto-fill" onclick="demoAutoFillOtp()" style="margin: 4px auto 12px; font-size:11px; padding:4px 10px;">
-                <i class="fas fa-magic"></i> Auto-fill Demo Code (849201)
-              </button>
-
-              <button type="button" class="btn btn-primary btn-full" onclick="handleUserSignIn('phone')" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
+              <button type="button" class="btn btn-primary btn-full" onclick="handleUserSignIn('phone')" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px; margin-top:8px;">
                 <i class="fas fa-shield-alt"></i> Verify Phone & Login
               </button>
             </div>
 
-            <!-- MODE 3: SIGN UP WITH REAL-TIME VALIDATION & 6-DIGIT EMAIL OTP -->
+            <!-- MODE 3: SIGN UP WITH MANDATORY 6-DIGIT EMAIL OTP VERIFICATION -->
             <div id="mode-register" class="auth-mode-content" style="display:none;">
               
-              <div class="form-group" style="margin-bottom:8px;">
-                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Full Name</label>
-                <input type="text" class="form-input" id="reg-name-input" placeholder="e.g. Saladi Siddharth" value="Saladi Siddharth" style="padding:7px 10px; font-size:12.5px;">
-              </div>
+              <!-- Register Form Step 1: User Details -->
+              <div id="reg-step-1">
+                <div class="form-group" style="margin-bottom:8px;">
+                  <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Full Name</label>
+                  <input type="text" class="form-input" id="reg-name-input" placeholder="e.g. Aarav Sharma" value="" style="padding:7px 10px; font-size:12.5px;">
+                </div>
 
-              <div class="form-group" style="margin-bottom:8px;">
-                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:flex; justify-content:space-between;">
-                  <span>Email Address</span>
-                  <span id="reg-email-status" style="font-size:10.5px;"></span>
-                </label>
-                <input type="email" class="form-input" id="reg-email-input" oninput="validateRegEmail(this.value)" placeholder="you@example.com" value="saladisiddharth@gmail.com" style="padding:7px 10px; font-size:12.5px;">
-              </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                  <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:flex; justify-content:space-between;">
+                    <span>Email Address</span>
+                    <span id="reg-email-status" style="font-size:10.5px;"></span>
+                  </label>
+                  <input type="email" class="form-input" id="reg-email-input" oninput="validateRegEmail(this.value)" placeholder="you@example.com" value="" style="padding:7px 10px; font-size:12.5px;">
+                </div>
 
-              <div class="form-group" style="margin-bottom:8px;">
-                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Primary Track</label>
-                <select class="form-select" id="reg-identity-select" style="background:rgba(15,23,42,0.9); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:6px 10px; width:100%; font-size:12px;">
-                  <option value="student">🎓 Student (Colleges, Cutoffs & Scholarships)</option>
-                  <option value="employee">💼 Employee / Professional (Salary & Wealth)</option>
-                  <option value="business">🏢 Business Owner / Founder (Scale & Ops)</option>
-                </select>
-              </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                  <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Primary Track</label>
+                  <select class="form-select" id="reg-identity-select" style="background:rgba(15,23,42,0.9); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:6px 10px; width:100%; font-size:12px;">
+                    <option value="student">🎓 Student (Colleges, Cutoffs & Scholarships)</option>
+                    <option value="employee">💼 Employee / Professional (Salary & Wealth)</option>
+                    <option value="business">🏢 Business Owner / Founder (Scale & Ops)</option>
+                  </select>
+                </div>
 
-              <div class="form-group" style="position:relative; margin-bottom:8px;">
-                <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Create Password</label>
-                <input type="password" class="form-input" id="reg-password-input" oninput="updatePasswordVaultStrength(this.value)" placeholder="Enter password..." value="BioVerse2026!" style="padding:7px 10px; padding-right:38px; font-size:12.5px;">
-                <button type="button" class="password-toggle" onclick="togglePandaPassword('reg-password-input', this)" style="position:absolute; right:10px; top:24px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
-                  <i class="fas fa-eye"></i>
+                <div class="form-group" style="position:relative; margin-bottom:8px;">
+                  <label class="form-label" style="font-size:11.5px; color:#cbd5e1; margin-bottom:2px; display:block;">Create Password</label>
+                  <input type="password" class="form-input" id="reg-password-input" onkeydown="if(event.key==='Enter') handleUserSignUp()" oninput="updatePasswordVaultStrength(this.value)" placeholder="Create a strong password..." value="" style="padding:7px 10px; padding-right:38px; font-size:12.5px;">
+                  <button type="button" class="password-toggle" onclick="togglePandaPassword('reg-password-input', this)" style="position:absolute; right:10px; top:24px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+
+                <!-- Streamlined Entropy Bar -->
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:11px; color:#94a3b8;">
+                  <span>Security: <strong id="entropy-tier-name" style="color:#10b981;">Biometric Encrypted</strong></span>
+                  <span id="entropy-badge" style="color:#10b981;"><i class="fas fa-lock"></i> Strong</span>
+                </div>
+
+                <!-- Primary Sign Up Action Button: Dispatches OTP to Email -->
+                <button type="button" id="btn-submit-signup" class="btn btn-primary btn-full" onclick="handleUserSignUp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; box-shadow:0 6px 20px rgba(16,185,129,0.35); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:6px;">
+                  <i class="fas fa-paper-plane"></i> Sign Up & Verify Email OTP
                 </button>
               </div>
 
-              <!-- Streamlined Entropy Bar -->
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:11px; color:#94a3b8;">
-                <span>Security: <strong id="entropy-tier-name" style="color:#10b981;">Biometric Encrypted</strong></span>
-                <span id="entropy-badge" style="color:#10b981;"><i class="fas fa-lock"></i> Strong</span>
-              </div>
+              <!-- Register Form Step 2: Email OTP Verification Card -->
+              <div id="reg-step-2" style="display:none; padding:14px; background:rgba(0,242,254,0.06); border:1px solid rgba(0,242,254,0.3); border-radius:14px; margin-bottom:10px; text-align:center;">
+                <div style="font-size:24px; margin-bottom:4px;">📬</div>
+                <h4 style="font-size:14px; color:#00f2fe; margin:0 0 4px 0; font-weight:700;">Verify Your Email Address</h4>
+                <p style="font-size:11.5px; color:#94a3b8; margin:0 0 10px 0; line-height:1.4;">
+                  Enter the 6-digit code sent to <strong id="reg-target-email" style="color:#fbbf24;">your email</strong>
+                  <br><a onclick="backToRegisterStep1()" style="color:#38bdf8; font-size:11px; cursor:pointer; text-decoration:underline;">Change email</a>
+                </p>
 
-              <!-- OTP Dispatch Button -->
-              <button type="button" id="btn-send-reg-otp" class="btn btn-outline btn-full" onclick="handleSendRegistrationOtp()" style="border-radius:12px; font-weight:700; color:#00f2fe; border-color:#00f2fe; background:rgba(0,242,254,0.08); padding:9px; font-size:12.5px;">
-                <i class="fas fa-paper-plane"></i> Send 6-Digit OTP to Email
-              </button>
+                <input type="text" maxlength="6" class="form-input" id="reg-otp-input" onkeydown="if(event.key==='Enter') handleVerifyRegistrationOtp()" placeholder="• • • • • •" style="letter-spacing:8px; text-align:center; font-size:20px; font-weight:900; color:#fbbf24; background:rgba(15,23,42,0.9); border:2px solid #fbbf24; border-radius:12px; padding:8px 12px; width:180px; margin:0 auto 10px auto; display:block;">
 
-              <!-- OTP Verification Box (Reveals once OTP is sent) -->
-              <div id="reg-otp-container" style="display:none; margin-top:10px; padding:12px; background:rgba(0,242,254,0.06); border:1px solid rgba(0,242,254,0.3); border-radius:14px; text-align:center;">
-                <label style="font-size:11.5px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:6px;">Enter 6-Digit Verification Code</label>
-                <input type="text" maxlength="6" id="reg-otp-input" placeholder="• • • • • •" style="letter-spacing:6px; text-align:center; font-size:18px; font-weight:800; color:#fbbf24; background:rgba(15,23,42,0.9); border:1px solid #fbbf24; border-radius:10px; padding:6px 10px; width:160px; margin:0 auto 8px auto; display:block;">
-                <button type="button" id="btn-verify-reg-otp" class="btn btn-success btn-full btn-sm" onclick="handleVerifyRegistrationOtp()" style="border-radius:10px; font-weight:800; padding:8px; font-size:12px;">
-                  <i class="fas fa-check-circle"></i> Verify OTP & Open Dashboard
+                <button type="button" id="btn-verify-reg-otp" class="btn btn-success btn-full" onclick="handleVerifyRegistrationOtp()" style="border-radius:12px; font-weight:800; padding:10px; font-size:13px; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; box-shadow:0 4px 16px rgba(16,185,129,0.4); margin-bottom:8px;">
+                  <i class="fas fa-check-circle"></i> Verify OTP & Start Onboarding
+                </button>
+
+                <button type="button" id="btn-resend-reg-otp" class="btn btn-ghost btn-sm" onclick="handleResendRegistrationOtp()" style="font-size:11.5px; color:#94a3b8; padding:4px 8px;">
+                  <i class="fas fa-redo"></i> Resend code (<span id="reg-countdown">30</span>s)
                 </button>
               </div>
 
-              <div style="text-align:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
+              <div style="text-align:center; margin-top:8px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.08);">
                 <span style="color:#94a3b8; font-size:12px;">Already registered?</span>
                 <button type="button" class="btn btn-outline btn-sm" onclick="switchAuthMode('email')" style="margin-left:8px; border-radius:999px; border-color:var(--amber); color:var(--amber); background:rgba(251,191,36,0.08); font-weight:700; font-size:11px; padding:3px 8px;">
                   <i class="fas fa-sign-in-alt"></i> Sign In
@@ -324,31 +334,38 @@ function ForgotPasswordPage() {
         </button>
       </div>
 
-      <div class="liquid-glass-wrapper" style="max-width:440px; margin:0 auto;">
+      <div class="liquid-glass-wrapper" style="max-width:440px; margin:0 auto; width:100%;">
         <div class="liquid-glass-card" style="padding:28px 24px; border-radius:24px;">
           <div style="text-align:center; margin-bottom:16px;">
             <div style="font-size:36px; margin-bottom:6px;">🔑</div>
             <h2 style="font-size:22px; font-weight:800; color:#fff; margin:0;">Reset Password</h2>
-            <p style="color:#94a3b8; font-size:12.5px; margin-top:4px;">We'll send a 6-digit OTP verification code to your registered email</p>
+            <p style="color:#94a3b8; font-size:12.5px; margin-top:4px;">We'll send a 6-digit OTP verification code to your email</p>
           </div>
 
           <!-- Step 1: Email Form -->
           <div id="forgot-step-1">
             <div class="form-group" style="margin-bottom:16px;">
               <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Registered Email Address</label>
-              <input type="email" class="form-input" id="forgot-email" placeholder="you@example.com" value="saladisiddharth@gmail.com" style="padding:10px 12px; font-size:13px;">
+              <input type="email" class="form-input" id="forgot-email" onkeydown="if(event.key==='Enter') handleSendForgotOtp()" placeholder="you@example.com" value="" style="padding:10px 12px; font-size:13px;">
             </div>
 
-            <button type="button" id="btn-forgot-send-otp" class="btn btn-primary btn-full" onclick="handleSendForgotOtp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
+            <button type="button" id="btn-forgot-send-otp" class="btn btn-primary btn-full" onclick="handleSendForgotOtp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px; background:linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color:#0f172a; border:none; box-shadow:0 4px 16px rgba(251,191,36,0.35);">
               <i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code
             </button>
           </div>
 
           <!-- Step 2: OTP & New Password Form -->
           <div id="forgot-step-2" style="display:none;">
+            <div style="background:rgba(251,191,36,0.06); border:1px dashed rgba(251,191,36,0.3); border-radius:14px; padding:12px; margin-bottom:14px; text-align:center;">
+              <p style="font-size:12px; color:#cbd5e1; margin:0 0 6px 0;">
+                Code sent to <strong id="forgot-target-email" style="color:#fbbf24;"></strong>
+              </p>
+              <a onclick="backToForgotStep1()" style="color:#00f2fe; font-size:11px; cursor:pointer; text-decoration:underline;">Change email</a>
+            </div>
+
             <div class="form-group" style="margin-bottom:12px; text-align:center;">
-              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:6px;">Enter 6-Digit OTP from Email</label>
-              <input type="text" maxlength="6" class="form-input" id="forgot-otp-input" placeholder="• • • • • •" style="letter-spacing:6px; text-align:center; font-size:18px; font-weight:800; color:#fbbf24; padding:8px 12px; width:170px; margin:0 auto; display:block;">
+              <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:6px;">Enter 6-Digit OTP</label>
+              <input type="text" maxlength="6" class="form-input" id="forgot-otp-input" placeholder="• • • • • •" style="letter-spacing:8px; text-align:center; font-size:20px; font-weight:800; color:#fbbf24; padding:8px 12px; width:180px; margin:0 auto; display:block;">
             </div>
 
             <div class="form-group" style="position:relative; margin-bottom:12px;">
@@ -361,15 +378,21 @@ function ForgotPasswordPage() {
 
             <div class="form-group" style="position:relative; margin-bottom:16px;">
               <label class="form-label" style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:4px;">Confirm New Password</label>
-              <input type="password" class="form-input" id="forgot-confirm-password" placeholder="Repeat new password..." style="padding:10px 12px; padding-right:38px; font-size:13px;">
+              <input type="password" class="form-input" id="forgot-confirm-password" onkeydown="if(event.key==='Enter') handleSaveNewPassword()" placeholder="Repeat new password..." style="padding:10px 12px; padding-right:38px; font-size:13px;">
               <button type="button" class="password-toggle" onclick="togglePandaPassword('forgot-confirm-password', this)" style="position:absolute; right:10px; top:26px; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:4px;">
                 <i class="fas fa-eye"></i>
               </button>
             </div>
 
-            <button type="button" id="btn-forgot-save-pass" class="btn btn-success btn-full" onclick="handleSaveNewPassword()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px;">
+            <button type="button" id="btn-forgot-save-pass" class="btn btn-success btn-full" onclick="handleSaveNewPassword()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13.5px; margin-bottom:10px;">
               <i class="fas fa-check-circle"></i> Save New Password & Continue
             </button>
+
+            <div style="text-align:center;">
+              <button type="button" id="btn-forgot-resend" class="btn btn-ghost btn-sm" onclick="handleSendForgotOtp(true)" style="font-size:11.5px; color:#94a3b8;">
+                <i class="fas fa-redo"></i> Resend code (<span id="forgot-countdown">30</span>s)
+              </button>
+            </div>
           </div>
 
           <div style="text-align:center; margin-top:16px; font-size:12.5px;">
@@ -685,70 +708,235 @@ function switchAuthMode(mode) {
 window.switchAuthMode = switchAuthMode;
 
 /* ═══════════════════════════════════════════════════════════════════
-   GOOGLE OAUTH / SSO SIMULATOR & AUTHENTICATOR
+   GOOGLE OAUTH / SSO MODAL & AUTHENTICATOR
    ═══════════════════════════════════════════════════════════════════ */
+let googlePendingAccount = null;
+let googleCountdownInterval = null;
+
 async function handleGoogleAuth() {
-  const btn = document.getElementById('google-auth-btn');
-  if (btn) {
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Connecting to Google Accounts...</span>`;
-  }
+  const storedName = Store.get('profile.name') || 'Saladi Siddharth';
+  const storedEmail = Store.get('profile.email') || 'saladisiddharth@gmail.com';
+  const defaultName = storedName !== 'Google User' ? storedName : 'Saladi Siddharth';
+  const defaultEmail = storedEmail !== 'google_user@bioverse.ai' ? storedEmail : 'saladisiddharth@gmail.com';
 
-  const panda = document.getElementById('panda-avatar');
-  if (panda) {
-    panda.style.transform = 'translateY(-12px) scale(1.08)';
-    panda.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-  }
+  const modalHtml = `
+    <div style="padding:22px 18px; text-align:center; max-width:400px; margin:0 auto; color:#fff;">
+      <div style="display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; background:rgba(255,255,255,0.06); border-radius:50%; margin-bottom:12px; border:1px solid rgba(255,255,255,0.15); box-shadow:0 6px 20px rgba(0,0,0,0.3);">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.79l7.97-6.2z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+      </div>
+      <h3 style="font-size:19px; font-weight:800; margin:0 0 6px 0; color:#fff;">Google Authentication</h3>
+      <p style="font-size:12px; color:#94a3b8; margin:0 0 18px 0; line-height:1.4;">Sign up or sign in securely with your Google email verification</p>
 
-  try {
-    // Simulated Google OAuth Verified Identity Token
-    const googleProfile = {
-      name: 'Saladi Siddharth',
-      email: 'saladisiddharath@gmail.com',
-      googleId: 'goog_oauth_' + Date.now(),
-      picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
-    };
+      <!-- Google Step 1: Account Selection & Input -->
+      <div id="g-step-1">
+        <div onclick="selectGoogleAccount('${defaultName}', '${defaultEmail}')" style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:14px; cursor:pointer; margin-bottom:14px; text-align:left; transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #00f2fe, #6366f1); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; color:#fff;">${defaultName[0]}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:700; color:#fff;">${defaultName}</div>
+            <div style="font-size:11.5px; color:#94a3b8;">${defaultEmail}</div>
+          </div>
+          <i class="fas fa-check-circle" style="color:#10b981; font-size:15px;"></i>
+        </div>
 
-    const res = await Store.loginWithGoogle(googleProfile);
+        <div style="margin-bottom:14px; text-align:left;">
+          <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">Or enter any Google email address:</label>
+          <input type="email" class="form-input" id="g-custom-email" placeholder="you@gmail.com" value="" style="padding:9px 12px; font-size:13px;">
+        </div>
 
-    if (res.success) {
-      if (typeof ActionPhysics !== 'undefined') {
-        ActionPhysics.cyberShieldUnlock(googleProfile.name);
-      }
-      if (typeof UI !== 'undefined') {
-        UI.toast('success', '🌟 Google Authentication Verified!', `Welcome, ${googleProfile.name}! Signed in via Google.`);
-      }
-      setTimeout(() => {
-        if (!Store.isOnboarded()) {
-          Router.navigate('/onboarding/identity');
-        } else {
-          Router.navigate('/dashboard');
-        }
-      }, 500);
-    } else {
-      if (typeof UI !== 'undefined') {
-        UI.toast('error', 'Google Auth Error', res.error || 'Failed to authenticate with Google.');
-      }
-      if (btn) {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.innerHTML = `
-          <svg viewBox="0 0 48 48" width="20" height="20">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.79l7.97-6.2z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          <span id="google-btn-text">Sign in with Google</span>
-        `;
-      }
-    }
-  } catch (err) {
-    if (typeof UI !== 'undefined') UI.toast('error', 'Authentication Failed', err.message);
+        <button type="button" id="btn-g-send-otp" class="btn btn-primary btn-full" onclick="handleSendGoogleOtp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13px; margin-bottom:8px; background:linear-gradient(135deg, #00f2fe, #6366f1); color:#fff; border:none; box-shadow:0 4px 16px rgba(0,242,254,0.35);">
+          <i class="fas fa-paper-plane"></i> Send OTP Verification Code
+        </button>
+
+        <button type="button" class="btn btn-ghost btn-full btn-sm" onclick="handleInstantGoogleDevLogin('${defaultName}', '${defaultEmail}')" style="font-size:11.5px; color:#00f2fe; padding:6px;">
+          <i class="fas fa-bolt"></i> Instant Google One-Click Login
+        </button>
+      </div>
+
+      <!-- Google Step 2: OTP Verification -->
+      <div id="g-step-2" style="display:none; text-align:center;">
+        <div style="background:rgba(0,242,254,0.06); border:1px dashed rgba(0,242,254,0.3); border-radius:12px; padding:10px; margin-bottom:14px;">
+          <p style="font-size:12px; color:#cbd5e1; margin:0 0 4px 0;">Verification code sent to <strong id="g-target-email" style="color:#fbbf24;"></strong></p>
+          <a onclick="backToGoogleStep1()" style="color:#00f2fe; font-size:11px; cursor:pointer; text-decoration:underline;">Change account</a>
+        </div>
+
+        <input type="text" maxlength="6" id="g-otp-input" onkeydown="if(event.key==='Enter') handleVerifyGoogleOtp()" placeholder="• • • • • •" style="letter-spacing:8px; text-align:center; font-size:20px; font-weight:900; color:#fbbf24; background:rgba(15,23,42,0.9); border:2px solid #fbbf24; border-radius:12px; padding:8px 12px; width:180px; margin:0 auto 12px auto; display:block;">
+
+        <button type="button" id="btn-g-verify-otp" class="btn btn-success btn-full" onclick="handleVerifyGoogleOtp()" style="border-radius:12px; font-weight:800; padding:11px; font-size:13px; margin-bottom:8px; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; box-shadow:0 4px 16px rgba(16,185,129,0.4);">
+          <i class="fas fa-check-circle"></i> Verify OTP & Sign In
+        </button>
+
+        <button type="button" id="btn-g-resend" class="btn btn-ghost btn-sm" onclick="handleSendGoogleOtp(true)" style="font-size:11px; color:#94a3b8;">
+          <i class="fas fa-redo"></i> Resend code (<span id="g-countdown">30</span>s)
+        </button>
+      </div>
+    </div>
+  `;
+
+  if (typeof UI !== 'undefined' && UI.modal) {
+    UI.modal(modalHtml);
   }
 }
 window.handleGoogleAuth = handleGoogleAuth;
+
+function selectGoogleAccount(name, email) {
+  const input = document.getElementById('g-custom-email');
+  if (input) input.value = email;
+  handleSendGoogleOtp();
+}
+window.selectGoogleAccount = selectGoogleAccount;
+
+async function handleSendGoogleOtp(isResend = false) {
+  const customEmail = document.getElementById('g-custom-email')?.value?.trim();
+  const defaultEmail = Store.get('profile.email') || 'saladisiddharth@gmail.com';
+  const targetEmail = customEmail || defaultEmail;
+  const targetName = customEmail ? customEmail.split('@')[0] : (Store.get('profile.name') || 'Google User');
+
+  if (!targetEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Valid Email Required', 'Please enter a valid Google email address.');
+    document.getElementById('g-custom-email')?.focus();
+    return;
+  }
+
+  googlePendingAccount = { name: targetName, email: targetEmail };
+
+  const btn = isResend ? document.getElementById('btn-g-resend') : document.getElementById('btn-g-send-otp');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending code...';
+  }
+
+  const res = await Store.sendRegistrationOtp(targetEmail, targetName);
+  if (res.success) {
+    if (typeof UI !== 'undefined') UI.toast('success', 'Verification Code Sent', `6-digit code sent to ${targetEmail}`);
+    const step1 = document.getElementById('g-step-1');
+    const step2 = document.getElementById('g-step-2');
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'block';
+
+    const targetEl = document.getElementById('g-target-email');
+    if (targetEl) targetEl.textContent = targetEmail;
+
+    const otpInput = document.getElementById('g-otp-input');
+    if (otpInput) {
+      otpInput.value = '';
+      otpInput.focus();
+    }
+
+    startGoogleCountdown();
+  } else {
+    if (typeof UI !== 'undefined') UI.toast('error', 'Failed to Send Code', res.error || 'Failed to dispatch email verification');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = isResend ? '<i class="fas fa-redo"></i> Resend code' : '<i class="fas fa-paper-plane"></i> Send OTP Verification Code';
+    }
+  }
+}
+window.handleSendGoogleOtp = handleSendGoogleOtp;
+
+function startGoogleCountdown() {
+  let seconds = 30;
+  const countEl = document.getElementById('g-countdown');
+  const btn = document.getElementById('btn-g-resend');
+  if (btn) btn.disabled = true;
+  if (googleCountdownInterval) clearInterval(googleCountdownInterval);
+
+  googleCountdownInterval = setInterval(() => {
+    seconds--;
+    if (countEl) countEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(googleCountdownInterval);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-redo"></i> Resend code';
+      }
+    }
+  }, 1000);
+}
+
+function backToGoogleStep1() {
+  const step1 = document.getElementById('g-step-1');
+  const step2 = document.getElementById('g-step-2');
+  if (step1) step1.style.display = 'block';
+  if (step2) step2.style.display = 'none';
+}
+window.backToGoogleStep1 = backToGoogleStep1;
+
+async function handleVerifyGoogleOtp() {
+  const otp = document.getElementById('g-otp-input')?.value?.trim();
+  if (!otp || otp.length < 6) {
+    if (typeof UI !== 'undefined') UI.toast('warning', 'Enter 6-Digit OTP', 'Please enter the 6-digit verification code.');
+    document.getElementById('g-otp-input')?.focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-g-verify-otp');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  }
+
+  const email = googlePendingAccount?.email || 'saladisiddharth@gmail.com';
+  const name = googlePendingAccount?.name || email.split('@')[0];
+
+  const res = await Store.verifyRegistrationOtp(email, otp, name, 'GOOGLE_AUTH_VERIFIED', 'student');
+  if (res.success) {
+    if (typeof UI !== 'undefined') {
+      UI.closeModal();
+      UI.toast('success', `🌟 Welcome, ${name}!`, 'Google account verified! Starting your onboarding...');
+    }
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.cyberShieldUnlock(name);
+    }
+    setTimeout(() => {
+      if (typeof Router !== 'undefined') {
+        Router.navigate(Store.isOnboarded() ? '/dashboard' : '/onboarding/identity');
+      }
+    }, 450);
+  } else {
+    if (typeof UI !== 'undefined') UI.toast('error', 'Verification Failed', res.error || 'Invalid OTP code.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP & Sign In';
+    }
+  }
+}
+window.handleVerifyGoogleOtp = handleVerifyGoogleOtp;
+
+async function handleInstantGoogleDevLogin(name = 'Saladi Siddharth', email = 'saladisiddharth@gmail.com') {
+  const customEmail = document.getElementById('g-custom-email')?.value?.trim();
+  const targetEmail = customEmail || email;
+  const targetName = customEmail ? customEmail.split('@')[0] : name;
+
+  if (typeof UI !== 'undefined') UI.closeModal();
+
+  const googleProfile = {
+    name: targetName,
+    email: targetEmail,
+    googleId: 'goog_dev_' + Date.now(),
+    picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+  };
+
+  const res = await Store.loginWithGoogle(googleProfile);
+  if (res.success) {
+    if (typeof ActionPhysics !== 'undefined') {
+      ActionPhysics.cyberShieldUnlock(targetName);
+    }
+    if (typeof UI !== 'undefined') {
+      UI.toast('success', '🌟 Google Authentication Verified!', `Signed in as ${targetName}!`);
+    }
+    setTimeout(() => {
+      if (typeof Router !== 'undefined') {
+        Router.navigate(Store.isOnboarded() ? '/dashboard' : '/onboarding/identity');
+      }
+    }, 450);
+  }
+}
+window.handleInstantGoogleDevLogin = handleInstantGoogleDevLogin;
 
 function toggleLoginRegister() {
   const isRegister = document.getElementById('mode-register')?.style.display !== 'none';
@@ -763,9 +951,11 @@ function toggleLoginRegister() {
 window.toggleLoginRegister = toggleLoginRegister;
 
 /* ═══════════════════════════════════════════════════════════════════
-   6-DIGIT EMAIL OTP SEND & VERIFY HANDLERS
+   MANDATORY EMAIL OTP SIGN UP & ONBOARDING LAUNCHER
    ═══════════════════════════════════════════════════════════════════ */
-async function handleSendRegistrationOtp() {
+let regCountdownInterval = null;
+
+async function handleUserSignUp() {
   const name = document.getElementById('reg-name-input')?.value?.trim();
   const email = document.getElementById('reg-email-input')?.value?.trim();
   const password = document.getElementById('reg-password-input')?.value;
@@ -786,43 +976,112 @@ async function handleSendRegistrationOtp() {
     return;
   }
 
-  const btn = document.getElementById('btn-send-reg-otp');
+  const btn = document.getElementById('btn-submit-signup');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending 6-Digit OTP to Email...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending 6-Digit OTP...';
   }
 
-  const res = await Store.sendRegistrationOtp(email, name);
+  const panda = document.getElementById('panda-avatar');
+  if (panda) {
+    panda.style.transform = 'translateY(-12px) scale(1.08)';
+    panda.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  }
 
-  if (res.success) {
-    if (typeof UI !== 'undefined') {
-      UI.toast('success', '📧 6-Digit OTP Dispatched!', `Verification code sent to ${email}. Check your inbox!`);
+  try {
+    const res = await Store.sendRegistrationOtp(email, name);
+    if (res.success) {
+      if (typeof UI !== 'undefined') {
+        UI.toast('success', 'Verification Code Sent', `6-digit verification code sent to ${email}. Check your inbox!`);
+      }
+      const step1 = document.getElementById('reg-step-1');
+      const step2 = document.getElementById('reg-step-2');
+      if (step1) step1.style.display = 'none';
+      if (step2) step2.style.display = 'block';
+
+      const targetEl = document.getElementById('reg-target-email');
+      if (targetEl) targetEl.textContent = email;
+
+      const otpInput = document.getElementById('reg-otp-input');
+      if (otpInput) {
+        otpInput.value = '';
+        otpInput.focus();
+      }
+
+      startRegCountdown();
+    } else {
+      if (typeof UI !== 'undefined') {
+        UI.toast('error', 'Failed to Send OTP', res.error || 'Please check your email address and try again.');
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Sign Up & Verify Email OTP';
+      }
     }
-    const otpContainer = document.getElementById('reg-otp-container');
-    if (otpContainer) {
-      otpContainer.style.display = 'block';
-      otpContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    const otpInput = document.getElementById('reg-otp-input');
-    if (otpInput) {
-      if (res.devOtp) otpInput.placeholder = res.devOtp; // Helpful development placeholder
-      otpInput.focus();
-    }
+  } catch (err) {
+    if (typeof UI !== 'undefined') UI.toast('error', 'Sign Up Error', err.message);
     if (btn) {
-      btn.innerHTML = '<i class="fas fa-redo"></i> Resend OTP Code';
       btn.disabled = false;
-    }
-  } else {
-    if (typeof UI !== 'undefined') {
-      UI.toast('error', 'Failed to Send OTP', res.error || 'Please check your email address and retry.');
-    }
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send 6-Digit OTP to Email';
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Sign Up & Verify Email OTP';
     }
   }
 }
-window.handleSendRegistrationOtp = handleSendRegistrationOtp;
+window.handleUserSignUp = handleUserSignUp;
+
+function backToRegisterStep1() {
+  const step1 = document.getElementById('reg-step-1');
+  const step2 = document.getElementById('reg-step-2');
+  if (step1) step1.style.display = 'block';
+  if (step2) step2.style.display = 'none';
+  const btn = document.getElementById('btn-submit-signup');
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Sign Up & Verify Email OTP';
+  }
+}
+window.backToRegisterStep1 = backToRegisterStep1;
+
+function startRegCountdown() {
+  let seconds = 30;
+  const countEl = document.getElementById('reg-countdown');
+  const btn = document.getElementById('btn-resend-reg-otp');
+  if (btn) btn.disabled = true;
+  if (regCountdownInterval) clearInterval(regCountdownInterval);
+
+  regCountdownInterval = setInterval(() => {
+    seconds--;
+    if (countEl) countEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(regCountdownInterval);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-redo"></i> Resend code';
+      }
+    }
+  }, 1000);
+}
+
+async function handleResendRegistrationOtp() {
+  const name = document.getElementById('reg-name-input')?.value?.trim();
+  const email = document.getElementById('reg-email-input')?.value?.trim();
+  if (!email) return;
+
+  const btn = document.getElementById('btn-resend-reg-otp');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resending...';
+  }
+
+  const res = await Store.sendRegistrationOtp(email, name);
+  if (res.success) {
+    if (typeof UI !== 'undefined') UI.toast('success', 'Code Resent', `New verification code sent to ${email}`);
+    startRegCountdown();
+  } else {
+    if (typeof UI !== 'undefined') UI.toast('error', 'Resend Failed', res.error || 'Failed to resend code');
+    if (btn) btn.disabled = false;
+  }
+}
+window.handleResendRegistrationOtp = handleResendRegistrationOtp;
 
 async function handleVerifyRegistrationOtp() {
   const name = document.getElementById('reg-name-input')?.value?.trim();
@@ -850,23 +1109,23 @@ async function handleVerifyRegistrationOtp() {
       ActionPhysics.cyberShieldUnlock(name || 'New Member');
     }
     if (typeof UI !== 'undefined') {
-      UI.toast('success', `🎉 Welcome to BioVerse, ${name || 'Explorer'}!`, 'Account verified! Launching your personalized dashboard & demo tour...');
+      UI.toast('success', `🎉 Welcome to BioVerse, ${name || 'Explorer'}!`, 'Account verified! Starting your personalized life onboarding...');
     }
 
     setTimeout(() => {
       if (typeof Router !== 'undefined') {
-        Router.navigate('/dashboard');
+        Router.navigate('/onboarding/identity');
       } else {
-        window.location.href = 'index.html#/dashboard';
+        window.location.href = 'index.html#/onboarding/identity';
       }
-    }, 600);
+    }, 500);
   } else {
     if (typeof UI !== 'undefined') {
       UI.toast('error', 'Verification Failed', res.error || 'Invalid OTP code. Please verify and try again.');
     }
     if (verifyBtn) {
       verifyBtn.disabled = false;
-      verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP & Open Dashboard';
+      verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP & Start Onboarding';
     }
   }
 }
@@ -929,7 +1188,12 @@ async function handleUserSignIn(method = 'email') {
 }
 window.handleUserSignIn = handleUserSignIn;
 
-async function handleSendForgotOtp() {
+/* ═══════════════════════════════════════════════════════════════════
+   FORGOT PASSWORD: OTP DISPATCH & RESET FLOW
+   ═══════════════════════════════════════════════════════════════════ */
+let forgotCountdownInterval = null;
+
+async function handleSendForgotOtp(isResend = false) {
   const email = document.getElementById('forgot-email')?.value?.trim();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     if (typeof UI !== 'undefined') UI.toast('warning', 'Valid Email Required', 'Please enter your registered email address.');
@@ -937,39 +1201,77 @@ async function handleSendForgotOtp() {
     return;
   }
 
-  const btn = document.getElementById('btn-forgot-send-otp');
+  const btn = isResend ? document.getElementById('btn-forgot-resend') : document.getElementById('btn-forgot-send-otp');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking & Sending OTP...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP code...';
   }
 
   const res = await Store.sendForgotPasswordOtp(email);
 
   if (res.success) {
     if (typeof UI !== 'undefined') {
-      UI.toast('success', '📧 Reset OTP Dispatched!', `Verification code sent to ${email}. Check your inbox!`);
+      UI.toast('success', 'Reset Code Sent', `Verification code sent to ${email}. Check your inbox!`);
     }
     const step1 = document.getElementById('forgot-step-1');
     const step2 = document.getElementById('forgot-step-2');
     if (step1) step1.style.display = 'none';
     if (step2) step2.style.display = 'block';
 
+    const targetEl = document.getElementById('forgot-target-email');
+    if (targetEl) targetEl.textContent = email;
+
     const otpInput = document.getElementById('forgot-otp-input');
     if (otpInput) {
-      if (res.devOtp) otpInput.placeholder = res.devOtp;
+      otpInput.value = '';
       otpInput.focus();
     }
+
+    startForgotCountdown();
   } else {
     if (typeof UI !== 'undefined') {
-      UI.toast('error', 'Reset Failed', res.error || 'No registered account found with this email.');
+      UI.toast('error', 'Reset Failed', res.error || 'Failed to dispatch reset code.');
     }
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code';
+      btn.innerHTML = isResend ? '<i class="fas fa-redo"></i> Resend code' : '<i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code';
     }
   }
 }
 window.handleSendForgotOtp = handleSendForgotOtp;
+
+function startForgotCountdown() {
+  let seconds = 30;
+  const countEl = document.getElementById('forgot-countdown');
+  const btn = document.getElementById('btn-forgot-resend');
+  if (btn) btn.disabled = true;
+  if (forgotCountdownInterval) clearInterval(forgotCountdownInterval);
+
+  forgotCountdownInterval = setInterval(() => {
+    seconds--;
+    if (countEl) countEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(forgotCountdownInterval);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-redo"></i> Resend code';
+      }
+    }
+  }, 1000);
+}
+
+function backToForgotStep1() {
+  const step1 = document.getElementById('forgot-step-1');
+  const step2 = document.getElementById('forgot-step-2');
+  if (step1) step1.style.display = 'block';
+  if (step2) step2.style.display = 'none';
+  const btn = document.getElementById('btn-forgot-send-otp');
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send 6-Digit Reset Code';
+  }
+}
+window.backToForgotStep1 = backToForgotStep1;
 
 async function handleSaveNewPassword() {
   const email = document.getElementById('forgot-email')?.value?.trim();
@@ -1024,7 +1326,6 @@ async function handleSaveNewPassword() {
   }
 }
 window.handleSaveNewPassword = handleSaveNewPassword;
-
 
 function demoAutoFillOtp() {
   const sampleCode = "849201".split('');

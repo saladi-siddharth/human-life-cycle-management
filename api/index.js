@@ -349,7 +349,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'POST' && cleanPath === '/api/daily-digest') {
     const payload = await parseBody(req);
     const recipient = payload.email || EMAIL_USER;
-    const name = payload.name || 'Saladi Siddharth';
+    const name = payload.name || (recipient ? recipient.split('@')[0] : 'BioVerse User');
     const scores = payload.scores || { life: 78, career: 75, health: 82, finance: 70, work: 80 };
 
     const appBaseUrl = process.env.APP_URL || (req.headers.host && !req.headers.host.includes('localhost') ? `https://${req.headers.host}` : 'https://bioverse.vercel.app');
@@ -417,8 +417,7 @@ module.exports = async function handler(req, res) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
       success: true,
-      message: `OTP sent to ${cleanEmail}`,
-      devOtp: otp
+      message: `OTP sent to ${cleanEmail}`
     }));
   }
 
@@ -604,8 +603,7 @@ module.exports = async function handler(req, res) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({
       success: true,
-      message: `Password reset code sent to ${cleanEmail}`,
-      devOtp: otp
+      message: `Password reset code sent to ${cleanEmail}`
     }));
   }
 
@@ -626,11 +624,14 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ success: false, error: 'New password must be at least 6 characters.' }));
     }
 
-    otpStorage.delete(`forgot_${cleanEmail}`);
+    let hashedPassword = newPassword;
+    if (bcrypt) {
+      try { hashedPassword = await bcrypt.hash(newPassword, BCRYPT_ROUNDS); } catch (e) {}
+    }
 
     if (dbPool) {
       try {
-        await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [newPassword, cleanEmail]);
+        await dbPool.query('UPDATE bv_users SET password = ? WHERE LOWER(email) = ?', [hashedPassword, cleanEmail]);
       } catch (err) {}
     }
 
