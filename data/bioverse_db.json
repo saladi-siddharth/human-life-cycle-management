@@ -158,17 +158,17 @@
   ],
   "state": {
     "user": {
-      "id": "usr_saladi_siddharth",
-      "name": "Saladi Siddharth",
-      "email": "saladisiddharath@gmail.com"
+      "id": "usr_guest",
+      "name": "Explorer",
+      "email": ""
     },
     "isAuthenticated": true,
     "identity": "student",
     "onboardingStep": 0,
     "onboardingComplete": true,
     "profile": {
-      "name": "Saladi Siddharth",
-      "email": "saladisiddharath@gmail.com",
+      "name": "Explorer",
+      "email": "",
       "avatar": "",
       "lifeStage": "Higher Education & Career Build",
       "goalIntensity": "ambitious",
@@ -1171,13 +1171,13 @@
       }
     ],
     "theme": "dark",
-    "sidebarOpen": true,
-    "_updatedAt": 1787901035655,
+    "sidebarOpen": false,
+    "_updatedAt": 1788518716542,
     "gamification": {
       "xp": 450,
       "level": 3,
       "streakDays": 6,
-      "lastActiveDate": "2026-08-28",
+      "lastActiveDate": "2026-09-04",
       "unlockedBadges": [
         "b_hydration",
         "b_wealth",
@@ -1189,8 +1189,8 @@
     },
     "accountAggregator": {
       "connected": true,
-      "consentHandle": "AA-CONSENT-00975754",
-      "lastSynced": "12:39 pm",
+      "consentHandle": "AA-CONSENT-18716509",
+      "lastSynced": "04:15 pm",
       "accounts": [
         {
           "id": "hdfc",

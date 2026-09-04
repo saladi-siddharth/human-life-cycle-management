@@ -4,6 +4,7 @@
   "description": "BioVerse — Intelligent Life Management Platform with Machine Learning & Gmail SMTP Dispatcher",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'BioVerse static build ready'",
     "start": "node server.js"
   },
   "keywords": [
